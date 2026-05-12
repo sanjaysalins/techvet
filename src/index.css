@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 dark:bg-navy-950 dark:text-slate-100;
+  }
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-white dark:ring-offset-navy-950 rounded;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all duration-150 select-none;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-white hover:bg-brand-dark active:scale-[0.98] shadow-soft;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-navy-900 border border-slate-200 hover:bg-slate-50 dark:bg-navy-900 dark:text-slate-100 dark:border-navy-700 dark:hover:bg-navy-700;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-navy-800;
+  }
+  .card {
+    @apply bg-white dark:bg-navy-900 border border-slate-200 dark:border-navy-700 rounded-2xl shadow-soft;
+  }
+  .input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-navy-700 bg-white dark:bg-navy-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-brand focus:ring-1 focus:ring-brand transition;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+  .badge-green {
+    @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300;
+  }
+  .badge-yellow {
+    @apply badge bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300;
+  }
+  .badge-red {
+    @apply badge bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300;
+  }
+  .tier-card-green {
+    @apply bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 dark:from-emerald-900/30 dark:to-emerald-800/20 dark:border-emerald-700;
+  }
+  .tier-card-yellow {
+    @apply bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200 dark:from-amber-900/30 dark:to-amber-800/20 dark:border-amber-700;
+  }
+  .tier-card-red {
+    @apply bg-gradient-to-br from-rose-50 to-rose-100 border-rose-200 dark:from-rose-900/30 dark:to-rose-800/20 dark:border-rose-700;
+  }
+}
+
+/* Print styles for PDF export */
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; color: black !important; }
+}

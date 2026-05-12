@@ -1,0 +1,1311 @@
+[
+  {
+    "id": "react",
+    "name": "React",
+    "category": "Frontend",
+    "currentVersion": "19.2",
+    "releasedYear": 2013,
+    "versionTiers": [
+      { "min": "19.0", "label": "Excellent", "color": "green", "note": "Latest — Server Components, Compiler, Actions stable" },
+      { "min": "18.0", "label": "Good", "color": "green", "note": "Concurrent features, Suspense, widely used in production" },
+      { "min": "16.0", "label": "Review / Probe", "color": "yellow", "note": "Still widely used in many enterprise applications. React 16 era — verify Hooks familiarity (16.8+) vs class-only background." },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Pre-React-16 — significantly outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Have you used Server Components or Server Actions?",
+      "Experience with React Compiler or memoization patterns?",
+      "When was your last greenfield React project?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask which major version they last worked with and whether they've used Hooks vs class components."
+  },
+  {
+    "id": "nextjs",
+    "name": "Next.js",
+    "category": "Frontend",
+    "currentVersion": "15.4",
+    "versionTiers": [
+      { "min": "15.0", "label": "Excellent", "color": "green", "note": "App Router, Server Actions, Turbopack stable" },
+      { "min": "13.4", "label": "Good", "color": "green", "note": "App Router available, modern patterns" },
+      { "min": "12.0", "label": "Review / Probe", "color": "yellow", "note": "Pages Router only — still in many production apps" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Pre-Pages Router modern era" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "App Router or Pages Router?",
+      "Experience with server actions and streaming?",
+      "Deployment platform (Vercel, self-host, container)?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm Pages vs App Router familiarity."
+  },
+  {
+    "id": "vue",
+    "name": "Vue.js",
+    "category": "Frontend",
+    "currentVersion": "3.5",
+    "versionTiers": [
+      { "min": "3.4", "label": "Excellent", "color": "green", "note": "Composition API, Vapor mode awareness" },
+      { "min": "3.0", "label": "Good", "color": "green", "note": "Composition API mainstream" },
+      { "min": "2.0", "label": "Review / Probe", "color": "yellow", "note": "Vue 2 — Options API, large enterprise footprint still (EOL Dec 2023)" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Vue 1 — significantly outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Composition API or Options API?",
+      "Familiar with Pinia? Vuex?",
+      "Have you migrated a Vue 2 codebase to Vue 3?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — many enterprise apps still on Vue 2, verify which."
+  },
+  {
+    "id": "angular",
+    "name": "Angular",
+    "category": "Frontend",
+    "currentVersion": "19",
+    "versionTiers": [
+      { "min": "18", "label": "Excellent", "color": "green", "note": "Signals, control flow, standalone components" },
+      { "min": "15", "label": "Good", "color": "green", "note": "Standalone components, modern Angular" },
+      { "min": "12", "label": "Review / Probe", "color": "yellow", "note": "Still common in enterprise — verify upgrade familiarity" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "AngularJS (1.x) or very old Angular — likely outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Signals vs RxJS state management?",
+      "Standalone components or NgModules?",
+      "Experience with Angular Universal / SSR?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Angular version matters a lot, probe specifics."
+  },
+  {
+    "id": "svelte",
+    "name": "Svelte / SvelteKit",
+    "category": "Frontend",
+    "currentVersion": "5",
+    "versionTiers": [
+      { "min": "5", "label": "Excellent", "color": "green", "note": "Runes API, modern reactivity" },
+      { "min": "4", "label": "Good", "color": "green", "note": "Stable, production-ready" },
+      { "min": "3", "label": "Review / Probe", "color": "yellow", "note": "Still in production, but Runes is the future" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Pre-3 — outdated" }
+    ],
+    "enterpriseStillUsed": false,
+    "suggestedProbes": [
+      "Familiarity with Runes (Svelte 5)?",
+      "SvelteKit deployment experience?",
+      "Why Svelte over React/Vue in their project?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Svelte is small but moving fast."
+  },
+  {
+    "id": "typescript",
+    "name": "TypeScript",
+    "category": "Frontend",
+    "currentVersion": "5.7",
+    "versionTiers": [
+      { "min": "5.5", "label": "Excellent", "color": "green", "note": "Current TS, modern features" },
+      { "min": "4.9", "label": "Good", "color": "green", "note": "satisfies operator, well-established" },
+      { "min": "4.0", "label": "Review / Probe", "color": "yellow", "note": "Functional but missing modern ergonomics" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "TS 3 or earlier — significantly behind" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "How comfortable with generics and conditional types?",
+      "Strict mode in your projects?",
+      "Have you authored library types or just consumed them?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — most teams update TypeScript frequently, surprising not to know."
+  },
+  {
+    "id": "tailwind",
+    "name": "Tailwind CSS",
+    "category": "Frontend",
+    "currentVersion": "4.0",
+    "versionTiers": [
+      { "min": "4.0", "label": "Excellent", "color": "green", "note": "Oxide engine, native CSS variables" },
+      { "min": "3.0", "label": "Good", "color": "green", "note": "JIT mode mainstream" },
+      { "min": "2.0", "label": "Review / Probe", "color": "yellow", "note": "Pre-JIT, may be slower workflows" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Very old Tailwind" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Custom design tokens / theme extension?",
+      "Have you used Tailwind v4 with the new engine?",
+      "How do you organize component variants?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — fine if generally familiar, just confirm comfort."
+  },
+  {
+    "id": "vite",
+    "name": "Vite",
+    "category": "Frontend",
+    "currentVersion": "6",
+    "versionTiers": [
+      { "min": "6", "label": "Excellent", "color": "green", "note": "Latest, Environment API" },
+      { "min": "4", "label": "Good", "color": "green", "note": "Modern, widely adopted" },
+      { "min": "2", "label": "Review / Probe", "color": "yellow", "note": "Older but functional" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Very early Vite" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Have you written a Vite plugin?",
+      "Comfortable migrating from Webpack to Vite?",
+      "SSR / SSG configuration experience?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — most devs don't memorize Vite versions; gauge general comfort."
+  },
+  {
+    "id": "webpack",
+    "name": "Webpack",
+    "category": "Frontend",
+    "currentVersion": "5",
+    "versionTiers": [
+      { "min": "5", "label": "Good", "color": "green", "note": "Still widely used in enterprise" },
+      { "min": "4", "label": "Review / Probe", "color": "yellow", "note": "Older but in many legacy apps" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Webpack 1-3 — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Have you optimized bundle size / code splitting?",
+      "Module Federation experience?",
+      "Why pick Webpack over Vite/Turbopack today?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — version less critical, probe usage depth."
+  },
+  {
+    "id": "nodejs",
+    "name": "Node.js",
+    "category": "Backend",
+    "currentVersion": "22 LTS",
+    "versionTiers": [
+      { "min": "22", "label": "Excellent", "color": "green", "note": "Active LTS, modern features" },
+      { "min": "20", "label": "Good", "color": "green", "note": "Still supported LTS until 2026" },
+      { "min": "18", "label": "Review / Probe", "color": "yellow", "note": "End-of-life 2025 — should be upgrading" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Node 16 or older — unsupported" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "ESM or CommonJS in production?",
+      "Node Test Runner or external framework?",
+      "Familiarity with worker_threads / async hooks?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — most devs know their Node version, probe gently."
+  },
+  {
+    "id": "express",
+    "name": "Express",
+    "category": "Backend",
+    "currentVersion": "5",
+    "versionTiers": [
+      { "min": "5", "label": "Excellent", "color": "green", "note": "Express 5 released — async-aware" },
+      { "min": "4", "label": "Good", "color": "green", "note": "Mature workhorse, still pervasive" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Express 3 or older — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Middleware composition patterns?",
+      "Error handling for async routes?",
+      "Considered Fastify / Hono / NestJS alternatives?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Express version rarely matters in practice."
+  },
+  {
+    "id": "nestjs",
+    "name": "NestJS",
+    "category": "Backend",
+    "currentVersion": "10",
+    "versionTiers": [
+      { "min": "10", "label": "Excellent", "color": "green", "note": "Latest, full feature set" },
+      { "min": "8", "label": "Good", "color": "green", "note": "Production-grade" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Older versions" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Dependency injection patterns you use?",
+      "GraphQL or REST modules?",
+      "Microservices transport — TCP, Kafka, NATS?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — pivot to architecture knowledge."
+  },
+  {
+    "id": "fastify",
+    "name": "Fastify",
+    "category": "Backend",
+    "currentVersion": "5",
+    "versionTiers": [
+      { "min": "5", "label": "Excellent", "color": "green", "note": "Latest" },
+      { "min": "4", "label": "Good", "color": "green", "note": "Widely used" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Older versions" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Schema validation patterns?",
+      "Plugin encapsulation?",
+      "Why pick Fastify over Express?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm general framework intuition."
+  },
+  {
+    "id": "spring-boot",
+    "name": "Spring Boot",
+    "category": "Backend",
+    "currentVersion": "3.4",
+    "versionTiers": [
+      { "min": "3.2", "label": "Excellent", "color": "green", "note": "Latest 3.x — Java 17+, virtual threads" },
+      { "min": "3.0", "label": "Good", "color": "green", "note": "Modern Spring Boot, Jakarta EE 9" },
+      { "min": "2.7", "label": "Review / Probe", "color": "yellow", "note": "Still in many enterprise apps — end-of-OSS-support 2023, commercial support ongoing" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Spring Boot 1.x or 2.0–2.6 — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Reactive (WebFlux) or traditional MVC?",
+      "Virtual threads experience?",
+      "Native image / GraalVM?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Spring Boot version matters; probe Java version too."
+  },
+  {
+    "id": "django",
+    "name": "Django",
+    "category": "Backend",
+    "currentVersion": "5.1",
+    "versionTiers": [
+      { "min": "5.0", "label": "Excellent", "color": "green", "note": "Latest — async views, modern ORM" },
+      { "min": "4.2", "label": "Good", "color": "green", "note": "LTS, widely deployed" },
+      { "min": "3.2", "label": "Review / Probe", "color": "yellow", "note": "Older LTS, end-of-life 2024" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Django 2 or older — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "DRF or Django Ninja for APIs?",
+      "Async views experience?",
+      "Celery / background task patterns?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm general Django proficiency."
+  },
+  {
+    "id": "flask",
+    "name": "Flask",
+    "category": "Backend",
+    "currentVersion": "3",
+    "versionTiers": [
+      { "min": "3", "label": "Excellent", "color": "green", "note": "Latest" },
+      { "min": "2", "label": "Good", "color": "green", "note": "Async support, modern" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Flask 1.x — older" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Application factory pattern?",
+      "Have you used Flask blueprints at scale?",
+      "Considered FastAPI for newer projects?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Flask version usually not memorized."
+  },
+  {
+    "id": "fastapi",
+    "name": "FastAPI",
+    "category": "Backend",
+    "currentVersion": "0.115",
+    "versionTiers": [
+      { "min": "0.100", "label": "Excellent", "color": "green", "note": "Modern Pydantic v2 era" },
+      { "min": "0.80", "label": "Good", "color": "green", "note": "Well-established" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Pydantic v1 era — older" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Pydantic v2 migration experience?",
+      "Background tasks vs Celery?",
+      "Dependency injection patterns?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — version less important, probe async knowledge."
+  },
+  {
+    "id": "dotnet",
+    "name": ".NET / ASP.NET Core",
+    "category": "Backend",
+    "currentVersion": "9",
+    "versionTiers": [
+      { "min": "8", "label": "Excellent", "color": "green", "note": ".NET 8 LTS or .NET 9 current" },
+      { "min": "6", "label": "Good", "color": "green", "note": ".NET 6 LTS — widely deployed" },
+      { "min": "5", "label": "Review / Probe", "color": "yellow", "note": ".NET 5 / Core 3.1 — out of support but common" },
+      { "min": "0", "label": "Concern", "color": "red", "note": ".NET Framework only or very old Core" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Minimal APIs or Controllers?",
+      "Native AOT experience?",
+      "EF Core or Dapper?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — clarify .NET Framework vs Core/modern."
+  },
+  {
+    "id": "rails",
+    "name": "Ruby on Rails",
+    "category": "Backend",
+    "currentVersion": "8",
+    "versionTiers": [
+      { "min": "7.1", "label": "Excellent", "color": "green", "note": "Modern Rails — Hotwire, Solid Cache/Queue" },
+      { "min": "6.1", "label": "Good", "color": "green", "note": "Stable, well-maintained" },
+      { "min": "5", "label": "Review / Probe", "color": "yellow", "note": "Older but in production" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Rails 4 or older — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Hotwire / Turbo / Stimulus?",
+      "Background jobs — Sidekiq, Solid Queue?",
+      "ActionCable for realtime?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Rails devs usually know version."
+  },
+  {
+    "id": "laravel",
+    "name": "Laravel",
+    "category": "Backend",
+    "currentVersion": "11",
+    "versionTiers": [
+      { "min": "10", "label": "Excellent", "color": "green", "note": "Modern Laravel" },
+      { "min": "8", "label": "Good", "color": "green", "note": "Stable, widely deployed" },
+      { "min": "6", "label": "Review / Probe", "color": "yellow", "note": "Older LTS — still in production" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Laravel 5 or older" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Eloquent or query builder preference?",
+      "Livewire / Inertia / API-only?",
+      "Queue worker / Horizon experience?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Laravel version usually known."
+  },
+  {
+    "id": "go",
+    "name": "Go (Golang)",
+    "category": "Language",
+    "currentVersion": "1.23",
+    "versionTiers": [
+      { "min": "1.22", "label": "Excellent", "color": "green", "note": "Modern Go with iterators, generics mature" },
+      { "min": "1.21", "label": "Good", "color": "green", "note": "Generics stable" },
+      { "min": "1.18", "label": "Review / Probe", "color": "yellow", "note": "Pre-generics-mature era" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Pre-1.18 — no generics" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Goroutine / channel patterns?",
+      "Context propagation in services?",
+      "Module / workspace setup?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Go versions are usually current."
+  },
+  {
+    "id": "rust",
+    "name": "Rust",
+    "category": "Language",
+    "currentVersion": "1.83",
+    "versionTiers": [
+      { "min": "1.75", "label": "Excellent", "color": "green", "note": "Modern Rust — async fn in traits, etc." },
+      { "min": "1.65", "label": "Good", "color": "green", "note": "Mature ecosystem" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Older but probably fine" }
+    ],
+    "enterpriseStillUsed": false,
+    "suggestedProbes": [
+      "Async runtime — Tokio, async-std?",
+      "When have you reached for `unsafe`?",
+      "Production Rust or just hobby projects?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Rust users usually know their toolchain."
+  },
+  {
+    "id": "python",
+    "name": "Python",
+    "category": "Language",
+    "currentVersion": "3.13",
+    "versionTiers": [
+      { "min": "3.12", "label": "Excellent", "color": "green", "note": "Latest Python — performance gains" },
+      { "min": "3.10", "label": "Good", "color": "green", "note": "Pattern matching, modern syntax" },
+      { "min": "3.8", "label": "Review / Probe", "color": "yellow", "note": "Still in many production systems, end-of-life 2024" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Python 2 or 3.7 or older — unsupported" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Type hints / mypy / pyright?",
+      "Packaging — poetry, uv, pip-tools?",
+      "Async / await experience?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Python version matters for available syntax."
+  },
+  {
+    "id": "java",
+    "name": "Java",
+    "category": "Language",
+    "currentVersion": "25 LTS",
+    "versionTiers": [
+      { "min": "21", "label": "Excellent", "color": "green", "note": "Modern Java — virtual threads, pattern matching" },
+      { "min": "17", "label": "Good", "color": "green", "note": "LTS, mainstream enterprise" },
+      { "min": "11", "label": "Review / Probe", "color": "yellow", "note": "Still in many enterprise environments" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Java 8 or older as primary — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Virtual threads / Project Loom?",
+      "Records, sealed classes, pattern matching?",
+      "Module system or classpath?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — large gap between Java 8 and Java 21+ idioms."
+  },
+  {
+    "id": "csharp",
+    "name": "C#",
+    "category": "Language",
+    "currentVersion": "13",
+    "versionTiers": [
+      { "min": "12", "label": "Excellent", "color": "green", "note": "C# 12/13 — primary constructors, collection expressions" },
+      { "min": "10", "label": "Good", "color": "green", "note": "Records, file-scoped namespaces" },
+      { "min": "8", "label": "Review / Probe", "color": "yellow", "note": "Nullable refs, async streams — older but solid" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Pre-C# 8 — significantly behind" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "LINQ patterns?",
+      "Async / await pitfalls?",
+      "Source generators?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — C# version usually tracks .NET version."
+  },
+  {
+    "id": "php",
+    "name": "PHP",
+    "category": "Language",
+    "currentVersion": "8.4",
+    "versionTiers": [
+      { "min": "8.2", "label": "Excellent", "color": "green", "note": "Modern PHP — readonly, enums" },
+      { "min": "8.0", "label": "Good", "color": "green", "note": "Named args, attributes" },
+      { "min": "7.4", "label": "Review / Probe", "color": "yellow", "note": "End-of-life 2022 but still widely deployed" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "PHP 5 or 7.0–7.3 — unsupported" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Composer / PSR standards?",
+      "Static analysis — PHPStan, Psalm?",
+      "Type declarations everywhere?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — large gap between PHP 5/7 and 8."
+  },
+  {
+    "id": "react-native",
+    "name": "React Native",
+    "category": "Mobile",
+    "currentVersion": "0.76",
+    "versionTiers": [
+      { "min": "0.74", "label": "Excellent", "color": "green", "note": "New Architecture default" },
+      { "min": "0.70", "label": "Good", "color": "green", "note": "Modern RN" },
+      { "min": "0.63", "label": "Review / Probe", "color": "yellow", "note": "Pre-new-arch, large legacy footprint" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Very old RN" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Expo vs bare workflow?",
+      "New Architecture (Fabric/Turbo) experience?",
+      "Native module authoring?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — RN versions matter a lot for capability."
+  },
+  {
+    "id": "flutter",
+    "name": "Flutter",
+    "category": "Mobile",
+    "currentVersion": "3.27",
+    "versionTiers": [
+      { "min": "3.24", "label": "Excellent", "color": "green", "note": "Latest Dart 3 — records, patterns" },
+      { "min": "3.10", "label": "Good", "color": "green", "note": "Dart 3, sound null safety" },
+      { "min": "2.0", "label": "Review / Probe", "color": "yellow", "note": "Older Dart 2 era" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Pre-null-safety Flutter" }
+    ],
+    "enterpriseStillUsed": false,
+    "suggestedProbes": [
+      "State management — Riverpod, Bloc, Provider?",
+      "Platform channels for native?",
+      "Web/desktop targets shipped?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm null safety era."
+  },
+  {
+    "id": "swift",
+    "name": "Swift / iOS",
+    "category": "Mobile",
+    "currentVersion": "6",
+    "versionTiers": [
+      { "min": "5.9", "label": "Excellent", "color": "green", "note": "Macros, modern concurrency" },
+      { "min": "5.5", "label": "Good", "color": "green", "note": "async/await stable" },
+      { "min": "5.0", "label": "Review / Probe", "color": "yellow", "note": "Pre-concurrency Swift" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Objective-C only or very old Swift" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "SwiftUI vs UIKit?",
+      "Actor / Sendable concurrency?",
+      "App lifecycle and background tasks?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — clarify SwiftUI vs UIKit usage."
+  },
+  {
+    "id": "kotlin",
+    "name": "Kotlin / Android",
+    "category": "Mobile",
+    "currentVersion": "2.1",
+    "versionTiers": [
+      { "min": "2.0", "label": "Excellent", "color": "green", "note": "K2 compiler, modern" },
+      { "min": "1.8", "label": "Good", "color": "green", "note": "Coroutines mature" },
+      { "min": "1.4", "label": "Review / Probe", "color": "yellow", "note": "Older Kotlin" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Java-only Android — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Coroutines / Flow patterns?",
+      "Jetpack Compose or XML views?",
+      "KMP (multiplatform) experience?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — clarify Compose vs XML era."
+  },
+  {
+    "id": "aws-ec2",
+    "name": "AWS EC2",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Foundational AWS compute — probe depth" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Auto Scaling Groups configuration?",
+      "Spot vs On-Demand strategy?",
+      "Instance types you've sized for which workloads?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe depth and use cases."
+  },
+  {
+    "id": "aws-lambda",
+    "name": "AWS Lambda",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless service — probe depth" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Cold start mitigation strategies?",
+      "Lambda + SQS / EventBridge patterns?",
+      "Container image vs zip deployment?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe runtime version (Node 20, Python 3.12, etc.) and patterns."
+  },
+  {
+    "id": "aws-s3",
+    "name": "AWS S3",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe depth" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Lifecycle policies / storage classes?",
+      "Cross-region replication?",
+      "S3 Access Points or pre-signed URLs?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe depth."
+  },
+  {
+    "id": "aws-rds",
+    "name": "AWS RDS",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe engine versions" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Multi-AZ vs Read Replicas?",
+      "Aurora vs RDS Postgres trade-offs?",
+      "Backup and PITR strategy?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — confirm engine and version familiarity."
+  },
+  {
+    "id": "aws-eks",
+    "name": "AWS EKS",
+    "category": "Cloud-AWS",
+    "currentVersion": "1.31+",
+    "versionTiers": [
+      { "min": "1.30", "label": "Excellent", "color": "green", "note": "Current EKS supported versions" },
+      { "min": "1.27", "label": "Good", "color": "green", "note": "Still supported" },
+      { "min": "1.24", "label": "Review / Probe", "color": "yellow", "note": "Older — likely needs upgrade" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Unsupported K8s version" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "IRSA (IAM Roles for Service Accounts)?",
+      "Karpenter or Cluster Autoscaler?",
+      "Network policies / VPC CNI tuning?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — K8s version matters for security patches."
+  },
+  {
+    "id": "aws-ecs",
+    "name": "AWS ECS / Fargate",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe depth" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "ECS service auto scaling?",
+      "Fargate vs EC2 launch type trade-offs?",
+      "Service discovery — Cloud Map?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe depth."
+  },
+  {
+    "id": "aws-dynamodb",
+    "name": "AWS DynamoDB",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe modeling depth" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Single-table design principles?",
+      "GSI vs LSI trade-offs?",
+      "On-demand vs provisioned capacity?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — DynamoDB modeling is the real skill, probe deeply."
+  },
+  {
+    "id": "aws-apigw",
+    "name": "AWS API Gateway",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe REST vs HTTP API" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "REST API vs HTTP API choice?",
+      "Custom authorizers — JWT / Lambda?",
+      "Throttling and usage plans?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe API type."
+  },
+  {
+    "id": "aws-sqs",
+    "name": "AWS SQS / SNS / EventBridge",
+    "category": "Cloud-AWS",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe messaging patterns" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "FIFO vs Standard queue trade-offs?",
+      "DLQ patterns?",
+      "EventBridge rules and schemas?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "azure-functions",
+    "name": "Azure Functions",
+    "category": "Cloud-Azure",
+    "currentVersion": "v4",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Probe runtime and isolated worker model" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Isolated worker model?",
+      "Bindings — Service Bus, Cosmos?",
+      "Durable Functions experience?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe runtime and model."
+  },
+  {
+    "id": "aks",
+    "name": "Azure AKS",
+    "category": "Cloud-Azure",
+    "currentVersion": "1.31+",
+    "versionTiers": [
+      { "min": "1.30", "label": "Excellent", "color": "green", "note": "Current AKS-supported version" },
+      { "min": "1.27", "label": "Good", "color": "green", "note": "Still supported" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Likely needs upgrade" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Azure CNI vs Kubenet?",
+      "Workload Identity?",
+      "Cluster autoscaler tuning?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm K8s version."
+  },
+  {
+    "id": "azure-sql",
+    "name": "Azure SQL",
+    "category": "Cloud-Azure",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe depth" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "DTU vs vCore?",
+      "Geo-replication strategy?",
+      "Managed Instance vs single database?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "azure-blob",
+    "name": "Azure Blob Storage",
+    "category": "Cloud-Azure",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe tiers and lifecycle" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Hot / Cool / Archive tier policy?",
+      "Lifecycle management?",
+      "SAS tokens vs Managed Identity?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "azure-app-service",
+    "name": "Azure App Service",
+    "category": "Cloud-Azure",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe deployment slots and scaling" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Deployment slots / blue-green?",
+      "Premium plan v3 — autoscale?",
+      "App Service vs Container Apps?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "cosmos-db",
+    "name": "Azure Cosmos DB",
+    "category": "Cloud-Azure",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe API choice and partitioning" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "API choice — Core SQL, Mongo, Cassandra?",
+      "Partition key design?",
+      "Consistency level trade-offs?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "gke",
+    "name": "GKE (Google Kubernetes Engine)",
+    "category": "Cloud-GCP",
+    "currentVersion": "1.31+",
+    "versionTiers": [
+      { "min": "1.30", "label": "Excellent", "color": "green", "note": "Current supported versions" },
+      { "min": "1.27", "label": "Good", "color": "green", "note": "Still supported" },
+      { "min": "1.24", "label": "Review / Probe", "color": "yellow", "note": "Older — should be upgrading" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Unsupported K8s version" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Workload Identity?",
+      "Autopilot vs Standard?",
+      "Integration with Secret Manager?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — probe recent version and usage."
+  },
+  {
+    "id": "cloud-run",
+    "name": "GCP Cloud Run",
+    "category": "Cloud-GCP",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe usage patterns" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Cold start mitigation — min instances?",
+      "Cloud Run Jobs vs Services?",
+      "Traffic splitting / revisions?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "bigquery",
+    "name": "GCP BigQuery",
+    "category": "Cloud-GCP",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe modeling and cost discipline" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Partitioning and clustering?",
+      "Cost optimization — slots, on-demand?",
+      "Materialized views or scheduled queries?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "cloud-functions",
+    "name": "GCP Cloud Functions",
+    "category": "Cloud-GCP",
+    "currentVersion": "Gen 2",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Probe Gen 1 vs Gen 2 awareness" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Gen 1 vs Gen 2 trade-offs?",
+      "Eventarc triggers?",
+      "Concurrency tuning?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "pubsub",
+    "name": "GCP Pub/Sub",
+    "category": "Cloud-GCP",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe messaging patterns" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Push vs Pull subscriptions?",
+      "Dead-letter / retry policies?",
+      "Ordering keys?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "firestore",
+    "name": "GCP Firestore",
+    "category": "Cloud-GCP",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe data modeling and rules" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Document/collection modeling for scale?",
+      "Security rules?",
+      "Datastore mode vs Native?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "secret-manager",
+    "name": "GCP Secret Manager",
+    "category": "Cloud-GCP",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe rotation and access patterns" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Secret rotation strategy?",
+      "Integration with Workload Identity?",
+      "Versioning of secrets?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "postgresql",
+    "name": "PostgreSQL",
+    "category": "Database",
+    "currentVersion": "17",
+    "versionTiers": [
+      { "min": "16", "label": "Excellent", "color": "green", "note": "Current major versions" },
+      { "min": "14", "label": "Good", "color": "green", "note": "Still supported, widely deployed" },
+      { "min": "12", "label": "Review / Probe", "color": "yellow", "note": "End-of-life — should be upgrading" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Postgres 11 or older — unsupported" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "JSONB usage patterns?",
+      "Replication — logical vs streaming?",
+      "EXPLAIN ANALYZE — comfortable reading plans?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Postgres devs usually know their major version."
+  },
+  {
+    "id": "mysql",
+    "name": "MySQL",
+    "category": "Database",
+    "currentVersion": "8.4 LTS",
+    "versionTiers": [
+      { "min": "8.0", "label": "Excellent", "color": "green", "note": "MySQL 8 — modern, JSON, CTEs" },
+      { "min": "5.7", "label": "Review / Probe", "color": "yellow", "note": "End-of-life Oct 2023 — still very common" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "MySQL 5.6 or older — unsupported" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "InnoDB tuning?",
+      "Read replicas / failover?",
+      "Familiar with MySQL 8 features (window functions, CTEs)?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — MySQL 5.7 vs 8 is a meaningful gap."
+  },
+  {
+    "id": "mongodb",
+    "name": "MongoDB",
+    "category": "Database",
+    "currentVersion": "8",
+    "versionTiers": [
+      { "min": "7", "label": "Excellent", "color": "green", "note": "Modern Mongo — queryable encryption, time-series" },
+      { "min": "5", "label": "Good", "color": "green", "note": "ACID transactions, modern" },
+      { "min": "4", "label": "Review / Probe", "color": "yellow", "note": "Older but still in production" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Mongo 3 or older — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Aggregation pipeline depth?",
+      "Sharding strategy?",
+      "Schema design — embedding vs referencing?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm transaction-era familiarity."
+  },
+  {
+    "id": "redis",
+    "name": "Redis / Valkey",
+    "category": "Database",
+    "currentVersion": "7.4",
+    "versionTiers": [
+      { "min": "7", "label": "Excellent", "color": "green", "note": "Modern Redis or Valkey 8" },
+      { "min": "6", "label": "Good", "color": "green", "note": "ACL, modern" },
+      { "min": "5", "label": "Review / Probe", "color": "yellow", "note": "Older but functional" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Redis 3 or older — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Persistence — RDB vs AOF trade-offs?",
+      "Cluster mode?",
+      "Awareness of Valkey fork after license change?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — probe usage patterns."
+  },
+  {
+    "id": "elasticsearch",
+    "name": "Elasticsearch / OpenSearch",
+    "category": "Database",
+    "currentVersion": "8",
+    "versionTiers": [
+      { "min": "8", "label": "Excellent", "color": "green", "note": "Modern, security-on-by-default" },
+      { "min": "7", "label": "Good", "color": "green", "note": "Widely deployed" },
+      { "min": "6", "label": "Review / Probe", "color": "yellow", "note": "Older — should be upgrading" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "ES 5 or older — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Mappings / analyzers?",
+      "Index lifecycle management?",
+      "Aware of OpenSearch fork?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — version drives capabilities."
+  },
+  {
+    "id": "snowflake",
+    "name": "Snowflake",
+    "category": "Database",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless SaaS — probe modeling and cost" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Warehouse sizing / multi-cluster?",
+      "Snowpark vs SQL workflows?",
+      "Cost monitoring / resource monitors?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "docker",
+    "name": "Docker",
+    "category": "DevOps",
+    "currentVersion": "27",
+    "versionTiers": [
+      { "min": "20", "label": "Excellent", "color": "green", "note": "Buildx, modern Docker" },
+      { "min": "0", "label": "Good", "color": "green", "note": "Foundational skill — probe depth" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Multi-stage builds?",
+      "Image size optimization?",
+      "Docker Compose v2 / Buildx?"
+    ],
+    "guidanceForUnknownVersion": "Versionless in practice — probe usage."
+  },
+  {
+    "id": "kubernetes",
+    "name": "Kubernetes",
+    "category": "DevOps",
+    "currentVersion": "1.31",
+    "versionTiers": [
+      { "min": "1.30", "label": "Excellent", "color": "green", "note": "Current supported" },
+      { "min": "1.27", "label": "Good", "color": "green", "note": "Still supported" },
+      { "min": "1.24", "label": "Review / Probe", "color": "yellow", "note": "End-of-life — should be upgrading" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Unsupported version" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Operators / CRDs experience?",
+      "Network policies / service mesh?",
+      "Have you debugged a CrashLoopBackOff under production load?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — version matters for security and features."
+  },
+  {
+    "id": "terraform",
+    "name": "Terraform / OpenTofu",
+    "category": "DevOps",
+    "currentVersion": "1.10",
+    "versionTiers": [
+      { "min": "1.5", "label": "Excellent", "color": "green", "note": "Modern Terraform — or OpenTofu after license change" },
+      { "min": "1.0", "label": "Good", "color": "green", "note": "Stable major version" },
+      { "min": "0.13", "label": "Review / Probe", "color": "yellow", "note": "Older — should have upgraded" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Pre-0.12 — significantly outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Module structure and reuse?",
+      "State management — remote backends, locking?",
+      "Aware of OpenTofu fork after BUSL?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — Terraform users usually know major version."
+  },
+  {
+    "id": "ansible",
+    "name": "Ansible",
+    "category": "DevOps",
+    "currentVersion": "11",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Probe usage patterns and idempotency" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Role / Collection design?",
+      "Inventory management — dynamic?",
+      "Idempotency discipline?"
+    ],
+    "guidanceForUnknownVersion": "Versionless in practice — probe."
+  },
+  {
+    "id": "jenkins",
+    "name": "Jenkins",
+    "category": "DevOps",
+    "currentVersion": "2.452+",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Probe pipeline-as-code maturity" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Declarative or scripted pipelines?",
+      "Shared libraries?",
+      "Migration to GitHub Actions / GitLab CI considered?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "github-actions",
+    "name": "GitHub Actions",
+    "category": "DevOps",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe reusable workflows and matrix builds" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Reusable workflows / composite actions?",
+      "Self-hosted runners?",
+      "OIDC for cloud auth?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "gitlab-ci",
+    "name": "GitLab CI",
+    "category": "DevOps",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Versionless — probe pipeline patterns" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Multi-stage pipelines?",
+      "Auto DevOps experience?",
+      "DAG pipelines / needs keyword?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "argocd",
+    "name": "ArgoCD",
+    "category": "DevOps",
+    "currentVersion": "2.13",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "GitOps tool — probe ApplicationSets and sync waves" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "App-of-apps pattern?",
+      "Sync waves / hooks?",
+      "Multi-cluster topology?"
+    ],
+    "guidanceForUnknownVersion": "Versionless in practice — probe."
+  },
+  {
+    "id": "kafka",
+    "name": "Apache Kafka",
+    "category": "Data",
+    "currentVersion": "3.9",
+    "versionTiers": [
+      { "min": "3", "label": "Excellent", "color": "green", "note": "KRaft mode mainstream" },
+      { "min": "2", "label": "Good", "color": "green", "note": "Zookeeper era but still widely deployed" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Very old Kafka" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Consumer group rebalancing?",
+      "Exactly-once semantics?",
+      "Schema registry usage?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm KRaft awareness."
+  },
+  {
+    "id": "spark",
+    "name": "Apache Spark",
+    "category": "Data",
+    "currentVersion": "3.5",
+    "versionTiers": [
+      { "min": "3.4", "label": "Excellent", "color": "green", "note": "Modern Spark — Connect, ANSI mode" },
+      { "min": "3.0", "label": "Good", "color": "green", "note": "Adaptive Query Execution" },
+      { "min": "2", "label": "Review / Probe", "color": "yellow", "note": "Spark 2 — older but in production" },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Spark 1 — outdated" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "DataFrame vs RDD usage?",
+      "Spark on Databricks / EMR / k8s?",
+      "Partition skew handling?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — probe."
+  },
+  {
+    "id": "airflow",
+    "name": "Apache Airflow",
+    "category": "Data",
+    "currentVersion": "2.10",
+    "versionTiers": [
+      { "min": "2.5", "label": "Excellent", "color": "green", "note": "Modern Airflow — TaskFlow, dynamic mapping" },
+      { "min": "2.0", "label": "Good", "color": "green", "note": "Stable 2.x" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Airflow 1.x — should be upgrading" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "TaskFlow API or classic operators?",
+      "Executor choice — Celery, Kubernetes?",
+      "DAG versioning / CI for DAGs?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — major 1->2 gap."
+  },
+  {
+    "id": "pytorch",
+    "name": "PyTorch",
+    "category": "AI/ML",
+    "currentVersion": "2.5",
+    "versionTiers": [
+      { "min": "2.0", "label": "Excellent", "color": "green", "note": "torch.compile era" },
+      { "min": "1.10", "label": "Good", "color": "green", "note": "Stable, widely used" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "Older versions" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "torch.compile experience?",
+      "Distributed training — DDP, FSDP?",
+      "Mixed precision / quantization?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — probe."
+  },
+  {
+    "id": "tensorflow",
+    "name": "TensorFlow",
+    "category": "AI/ML",
+    "currentVersion": "2.18",
+    "versionTiers": [
+      { "min": "2.10", "label": "Excellent", "color": "green", "note": "Keras 3 era" },
+      { "min": "2.0", "label": "Good", "color": "green", "note": "Eager execution default" },
+      { "min": "0", "label": "Review / Probe", "color": "yellow", "note": "TF1 — significantly different API" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Keras 3 multi-backend?",
+      "TF Serving / TFLite?",
+      "Migration from TF1 experience?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — large TF1 vs TF2 gap."
+  },
+  {
+    "id": "langchain",
+    "name": "LangChain / LangGraph",
+    "category": "AI/ML",
+    "currentVersion": "0.3",
+    "versionTiers": [
+      { "min": "0.2", "label": "Excellent", "color": "green", "note": "Modern LangChain split, LangGraph for agents" },
+      { "min": "0", "label": "Good", "color": "green", "note": "Older monolith versions" }
+    ],
+    "enterpriseStillUsed": false,
+    "suggestedProbes": [
+      "LangGraph for agent workflows?",
+      "Retrieval (RAG) pipeline you've built?",
+      "Why LangChain over direct SDK calls?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ecosystem moves fast, probe recent usage."
+  },
+  {
+    "id": "graphql",
+    "name": "GraphQL",
+    "category": "Backend",
+    "currentVersion": "Spec October 2021",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Probe schema design and federation awareness" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Schema design — fragments, federation?",
+      "N+1 problem — DataLoader patterns?",
+      "Apollo / Relay / Hasura experience?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  },
+  {
+    "id": "grpc",
+    "name": "gRPC",
+    "category": "Backend",
+    "currentVersion": "Current",
+    "versionTiers": [
+      { "min": "0", "label": "Good", "color": "green", "note": "Probe Protobuf and streaming patterns" }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "Protobuf schema evolution?",
+      "Server / client / bidi streaming?",
+      "Interceptors / middleware?"
+    ],
+    "guidanceForUnknownVersion": "Versionless — probe."
+  }
+]

@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+.DS_Store
+*.local
+.vite
+.idea
+.claude/
+.playwright-mcp/
+*.tsbuildinfo
+
+# Test artifacts
+01-landing.png
+*.pdf
