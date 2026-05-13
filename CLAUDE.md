@@ -50,9 +50,10 @@ npm run build      # → dist/
 
 - `tsc -b && vite build` passes; bundle 1.18 MB (347 KB gzipped). Vite warns about chunk > 500 KB but acceptable.
 - Dev server boots cleanly in ~3 s, 0 errors.
-- Playwright (via `@playwright/mcp` MCP server, user-scope) reached landing + assessment screens, rendered all 5 frontend-role techs correctly. Test was interrupted before the React 16 case could be verified in-browser — see `RESUME.md`.
+- All 5 PRD verification cases passed in-browser via Playwright (2026-05-13): React 16 → Yellow + enterprise note; "I don't remember" forces Yellow; depth lifts tier by exactly 1 (non-cumulative); radar renders ≥ 3 categories; PDF export downloads a valid multi-page A4 file. See `RESUME.md` for the full table.
 
 ## Known issues / non-blockers
 
 - `npm audit` reports 4 vulns (3 moderate, 1 critical) in transitive deps (likely `jspdf` / `html2canvas`). Client-only internal tool — acceptable, but revisit before any wider distribution.
+- PDF export is ~21 MB (html2canvas rasterizes at default scale). Fine for internal sharing; lower the scale or move to vector output before bulk distribution.
 - The Playwright MCP browser session in this harness drops between calls when interleaved with non-playwright tool calls. Workaround: chain playwright calls back-to-back; re-navigate when context is closed.
