@@ -40,6 +40,9 @@ export interface AssessmentItem {
   lastUsed: string;
   notes: string;
   selectedServices?: string[];
+  /** True once the recruiter has interacted with the checklist at least once.
+   *  Distinguishes "haven't asked yet" (untouched) from "asked and the answer is zero". */
+  checklistTouched?: boolean;
 }
 
 export interface ResolvedTier {

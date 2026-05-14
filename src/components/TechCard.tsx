@@ -178,7 +178,10 @@ function ChecklistBody({ tech, item }: { tech: Technology; item: AssessmentItem 
     const next = new Set(selected);
     if (next.has(id)) next.delete(id);
     else next.add(id);
-    updateItem(tech.id, { selectedServices: Array.from(next) });
+    updateItem(tech.id, {
+      selectedServices: Array.from(next),
+      checklistTouched: true,
+    });
   }
 
   return (

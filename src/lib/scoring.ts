@@ -107,6 +107,22 @@ function resolveChecklistTier(
   const selected = (item.selectedServices ?? []).filter(id => validIds.has(id));
   const total = services.length || 1;
   const ratio = selected.length / total;
+  const coverage = { selected: selected.length, total: services.length };
+
+  // 0/N before any interaction = "not yet assessed" (yellow), not "concern" (red).
+  // Once the recruiter has ticked anything (even if later unticked back to 0),
+  // a genuine zero still surfaces as Concern.
+  if (selected.length === 0 && !item.checklistTouched) {
+    return {
+      color: 'yellow',
+      label: `Not yet assessed — 0/${coverage.total} services`,
+      note: `Walk the candidate through the curated ${tech.name} services and tick the ones they've used in production. The status updates as you go.`,
+      enterpriseNote: undefined,
+      unknownVersion: false,
+      depthAdjusted: false,
+      coverage,
+    };
+  }
 
   let baseColor: TierColor;
   if (ratio < 0.25) baseColor = 'red';
@@ -114,7 +130,6 @@ function resolveChecklistTier(
   else baseColor = 'green';
 
   const adjusted = adjustForDepth(baseColor, item.depth);
-  const coverage = { selected: selected.length, total: services.length };
   const ratioPct = Math.round(ratio * 100);
 
   const baseLabel = `${LABEL_MAP[baseColor]} — ${coverage.selected}/${coverage.total} services`;

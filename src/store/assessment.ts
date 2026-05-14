@@ -49,6 +49,7 @@ export const useAssessment = create<AssessmentState>()(
             lastUsed: '',
             notes: '',
             selectedServices: [],
+            checklistTouched: false,
           };
           return {
             items: [...state.items, newItem],
