@@ -83,7 +83,13 @@ export default function GuidancePanel({ tech, resolved }: Props) {
       </div>
 
       <div className="card p-4 text-xs text-slate-500 dark:text-slate-400">
-        <div className="font-semibold mb-1 text-slate-700 dark:text-slate-300">Current stable: {tech.currentVersion}</div>
+        {tech.vetMode === 'checklist' ? (
+          <div className="font-semibold mb-1 text-slate-700 dark:text-slate-300">
+            Coverage: {resolved.coverage?.selected ?? 0} of {resolved.coverage?.total ?? 0} services
+          </div>
+        ) : tech.currentVersion ? (
+          <div className="font-semibold mb-1 text-slate-700 dark:text-slate-300">Current stable: {tech.currentVersion}</div>
+        ) : null}
         Category: {tech.category}
       </div>
     </div>

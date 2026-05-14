@@ -66,7 +66,7 @@ export default function Assessment() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Candidate header */}
-      <div className="card p-5 mb-6">
+      <div className="card p-5 mb-6 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
@@ -104,6 +104,21 @@ export default function Assessment() {
               className="input"
             />
           </div>
+        </div>
+        <div>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+            Client mandate
+            <span className="ml-1.5 font-normal text-slate-400 dark:text-slate-500">
+              — what the client asked for (paste the JD bullets or short summary)
+            </span>
+          </label>
+          <textarea
+            value={meta.mandate}
+            onChange={e => setMeta({ mandate: e.target.value })}
+            placeholder="e.g. Senior backend on AWS (Lambda + RDS), React FE, 5+ yrs TypeScript, Postgres at scale"
+            rows={2}
+            className="input resize-y min-h-[64px]"
+          />
         </div>
       </div>
 

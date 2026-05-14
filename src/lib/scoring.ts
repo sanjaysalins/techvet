@@ -19,16 +19,6 @@ const SEVERITY: Record<TierColor, number> = {
 
 const COLOR_ORDER: TierColor[] = ['green', 'yellow', 'red'];
 
-function findTier(tech: Technology, version: string) {
-  const sorted = [...tech.versionTiers].sort((a, b) =>
-    compareVersions(b.min, a.min)
-  );
-  for (const tier of sorted) {
-    if (compareVersions(version, tier.min) >= 0) return tier;
-  }
-  return sorted[sorted.length - 1];
-}
-
 /** Depth adjustment moves severity down by at most one step. */
 function adjustForDepth(color: TierColor, depth: Depth): {
   color: TierColor;
@@ -43,7 +33,23 @@ function adjustForDepth(color: TierColor, depth: Depth): {
   return { color: improved, adjusted: true };
 }
 
+const LABEL_MAP: Record<TierColor, string> = {
+  green: 'Good',
+  yellow: 'Review / Probe',
+  red: 'Concern',
+};
+
 export function resolveTier(
+  tech: Technology,
+  item: AssessmentItem
+): ResolvedTier {
+  if (tech.vetMode === 'checklist') {
+    return resolveChecklistTier(tech, item);
+  }
+  return resolveVersionTier(tech, item);
+}
+
+function resolveVersionTier(
   tech: Technology,
   item: AssessmentItem
 ): ResolvedTier {
@@ -65,15 +71,9 @@ export function resolveTier(
   const tier = findTier(tech, item.version);
   const adjusted = adjustForDepth(tier.color, item.depth);
 
-  const labelMap: Record<TierColor, string> = {
-    green: 'Good',
-    yellow: 'Review / Probe',
-    red: 'Concern',
-  };
-
   let label = tier.label;
   if (adjusted.adjusted) {
-    label = `${labelMap[adjusted.color]} (depth-adjusted from ${tier.label})`;
+    label = `${LABEL_MAP[adjusted.color]} (depth-adjusted from ${tier.label})`;
   }
 
   return {
@@ -86,6 +86,56 @@ export function resolveTier(
         : undefined,
     unknownVersion: false,
     depthAdjusted: adjusted.adjusted,
+  };
+}
+
+function findTier(tech: Technology, version: string) {
+  const tiers = tech.versionTiers ?? [];
+  const sorted = [...tiers].sort((a, b) => compareVersions(b.min, a.min));
+  for (const tier of sorted) {
+    if (compareVersions(version, tier.min) >= 0) return tier;
+  }
+  return sorted[sorted.length - 1];
+}
+
+function resolveChecklistTier(
+  tech: Technology,
+  item: AssessmentItem
+): ResolvedTier {
+  const services = tech.services ?? [];
+  const validIds = new Set(services.map(s => s.id));
+  const selected = (item.selectedServices ?? []).filter(id => validIds.has(id));
+  const total = services.length || 1;
+  const ratio = selected.length / total;
+
+  let baseColor: TierColor;
+  if (ratio < 0.25) baseColor = 'red';
+  else if (ratio < 0.66) baseColor = 'yellow';
+  else baseColor = 'green';
+
+  const adjusted = adjustForDepth(baseColor, item.depth);
+  const coverage = { selected: selected.length, total: services.length };
+  const ratioPct = Math.round(ratio * 100);
+
+  const baseLabel = `${LABEL_MAP[baseColor]} — ${coverage.selected}/${coverage.total} services`;
+  const label = adjusted.adjusted
+    ? `${LABEL_MAP[adjusted.color]} (depth-adjusted from ${LABEL_MAP[baseColor]}) — ${coverage.selected}/${coverage.total} services`
+    : baseLabel;
+
+  const note =
+    coverage.selected === 0
+      ? `No services ticked yet. Ask the candidate which ${tech.name} services they've used in production and tick what they confirm.`
+      : tech.checklistGuidance ??
+        `Coverage: ${ratioPct}% of curated services. Depth and last-used context matter — verify production scope, not tutorial scope.`;
+
+  return {
+    color: adjusted.color,
+    label,
+    note,
+    enterpriseNote: undefined,
+    unknownVersion: false,
+    depthAdjusted: adjusted.adjusted,
+    coverage,
   };
 }
 

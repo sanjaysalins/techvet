@@ -22,6 +22,7 @@ const emptyMeta: AssessmentMeta = {
   candidateName: '',
   role: '',
   notes: '',
+  mandate: '',
   startedAt: '',
 };
 
@@ -47,6 +48,7 @@ export const useAssessment = create<AssessmentState>()(
             depth: 'working' as Depth,
             lastUsed: '',
             notes: '',
+            selectedServices: [],
           };
           return {
             items: [...state.items, newItem],
@@ -79,7 +81,7 @@ export const useAssessment = create<AssessmentState>()(
         try {
           const data = JSON.parse(raw);
           set({
-            meta: data.meta ?? emptyMeta,
+            meta: { ...emptyMeta, ...(data.meta ?? {}) },
             items: data.items ?? [],
             focusedTechId: null,
           });

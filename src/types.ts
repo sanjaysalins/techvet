@@ -1,6 +1,8 @@
 export type TierColor = 'green' | 'yellow' | 'red';
 export type TierLabel = 'Excellent' | 'Good' | 'Review / Probe' | 'Concern';
 
+export type VetMode = 'version' | 'checklist';
+
 export interface VersionTier {
   min: string;
   label: TierLabel | string;
@@ -8,15 +10,24 @@ export interface VersionTier {
   note?: string;
 }
 
+export interface ServiceItem {
+  id: string;
+  name: string;
+  hint?: string;
+}
+
 export interface Technology {
   id: string;
   name: string;
   category: string;
-  currentVersion: string;
-  versionTiers: VersionTier[];
-  enterpriseStillUsed: boolean;
+  vetMode?: VetMode;
+  currentVersion?: string;
+  versionTiers?: VersionTier[];
+  services?: ServiceItem[];
+  enterpriseStillUsed?: boolean;
   suggestedProbes: string[];
-  guidanceForUnknownVersion: string;
+  guidanceForUnknownVersion?: string;
+  checklistGuidance?: string;
 }
 
 export type Depth = 'unknown' | 'shallow' | 'working' | 'deep' | 'very-deep';
@@ -28,6 +39,7 @@ export interface AssessmentItem {
   depth: Depth;
   lastUsed: string;
   notes: string;
+  selectedServices?: string[];
 }
 
 export interface ResolvedTier {
@@ -37,11 +49,13 @@ export interface ResolvedTier {
   enterpriseNote?: string;
   unknownVersion: boolean;
   depthAdjusted: boolean;
+  coverage?: { selected: number; total: number };
 }
 
 export interface AssessmentMeta {
   candidateName: string;
   role: string;
   notes: string;
+  mandate: string;
   startedAt: string;
 }

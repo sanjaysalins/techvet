@@ -16,10 +16,17 @@ import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle } from 'l
 const TECHS = technologiesData as unknown as Technology[];
 const TECH_BY_ID = new Map(TECHS.map(t => [t.id, t]));
 
+type ExportStatus =
+  | { kind: 'idle' }
+  | { kind: 'busy'; message: string }
+  | { kind: 'success'; message: string }
+  | { kind: 'error'; message: string };
+
 export default function Summary() {
   const navigate = useNavigate();
   const { meta, items } = useAssessment();
   const [exporting, setExporting] = useState(false);
+  const [status, setStatus] = useState<ExportStatus>({ kind: 'idle' });
 
   const resolved = useMemo(() => {
     return items.flatMap(item => {
@@ -69,14 +76,20 @@ export default function Summary() {
 
   async function handleExport() {
     setExporting(true);
+    setStatus({ kind: 'busy', message: 'Preparing report…' });
     try {
       const name =
         meta.candidateName.replace(/[^a-zA-Z0-9]+/g, '_') || 'candidate';
       const date = new Date().toISOString().slice(0, 10);
-      await exportPdf('report-root', `TechVet_${name}_${date}.pdf`);
+      await exportPdf('report-root', `TechVet_${name}_${date}.pdf`, p => {
+        if (p.stage === 'capturing') setStatus({ kind: 'busy', message: 'Capturing report…' });
+        else if (p.stage === 'rendering') setStatus({ kind: 'busy', message: `Rendering page ${p.page}/${p.total}…` });
+        else if (p.stage === 'saving') setStatus({ kind: 'busy', message: 'Saving PDF…' });
+        else if (p.stage === 'done') setStatus({ kind: 'success', message: `Downloaded ${(p.bytes / 1024 / 1024).toFixed(1)} MB. Check your Downloads folder.` });
+      });
     } catch (err) {
-      console.error(err);
-      alert('PDF export failed: ' + (err as Error).message);
+      console.error('[TechVet] PDF export failed', err);
+      setStatus({ kind: 'error', message: (err as Error).message || 'Unknown error — see browser console.' });
     } finally {
       setExporting(false);
     }
@@ -88,14 +101,31 @@ export default function Summary() {
         <button onClick={() => navigate('/assess')} className="btn-ghost">
           <ArrowLeft className="w-4 h-4" /> Back to assessment
         </button>
-        <button
-          onClick={handleExport}
-          disabled={exporting}
-          className="btn-primary disabled:opacity-50"
-        >
-          <Download className="w-4 h-4" />
-          {exporting ? 'Generating PDF…' : 'Export PDF Report'}
-        </button>
+        <div className="flex items-center gap-3">
+          {status.kind !== 'idle' && (
+            <span
+              role="status"
+              className={
+                'text-sm px-3 py-1.5 rounded-md border ' +
+                (status.kind === 'busy'
+                  ? 'bg-navy-50 dark:bg-navy-800 border-navy-200 dark:border-navy-700 text-navy-700 dark:text-navy-100'
+                  : status.kind === 'success'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-200'
+                    : 'bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-700 text-rose-700 dark:text-rose-200')
+              }
+            >
+              {status.message}
+            </span>
+          )}
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="btn-primary disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            {exporting ? 'Generating PDF…' : 'Export PDF Report'}
+          </button>
+        </div>
       </div>
 
       <div id="report-root" className="bg-white text-slate-900 p-8 rounded-2xl border border-slate-200 shadow-soft">
@@ -122,6 +152,14 @@ export default function Summary() {
               )}
             </div>
           </div>
+          {meta.mandate && (
+            <div className="mt-4 p-3 rounded-md border border-slate-200 bg-slate-50">
+              <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                Client mandate
+              </div>
+              <p className="text-sm text-slate-700 whitespace-pre-line">{meta.mandate}</p>
+            </div>
+          )}
           {meta.notes && (
             <p className="text-sm text-slate-600 mt-3 italic">{meta.notes}</p>
           )}
@@ -259,12 +297,12 @@ function TierSection({
               <div className="flex items-center gap-2 flex-wrap">
                 <strong className="text-navy-900">{tech.name}</strong>
                 <span className={tierBadgeClass(color)}>{tier.label}</span>
-                {item.version && (
+                {tech.vetMode !== 'checklist' && item.version && (
                   <span className="text-xs text-slate-500">
                     v{item.version}
                   </span>
                 )}
-                {item.unknownVersion && (
+                {tech.vetMode !== 'checklist' && item.unknownVersion && (
                   <span className="text-xs italic text-amber-700">
                     version unknown
                   </span>
@@ -274,6 +312,9 @@ function TierSection({
                 Depth: {depthLabel(item.depth)}
                 {item.lastUsed ? ` · last used ${item.lastUsed}` : ''}
               </div>
+              {tech.vetMode === 'checklist' && (
+                <ServicesList tech={tech} item={item} />
+              )}
               {tier.note && (
                 <div className="text-xs text-slate-700 mt-1.5">{tier.note}</div>
               )}
@@ -292,5 +333,38 @@ function TierSection({
         ))}
       </div>
     </section>
+  );
+}
+
+function ServicesList({
+  tech,
+  item,
+}: {
+  tech: Technology;
+  item: { selectedServices?: string[] };
+}) {
+  const services = tech.services ?? [];
+  const selected = new Set(item.selectedServices ?? []);
+  if (services.length === 0) return null;
+  const picked = services.filter(s => selected.has(s.id));
+  return (
+    <div className="mt-2">
+      {picked.length === 0 ? (
+        <div className="text-xs italic text-amber-700">
+          No services confirmed yet — ask which {tech.name} services they've actually used.
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-1.5">
+          {picked.map(s => (
+            <span
+              key={s.id}
+              className="text-xs px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200"
+            >
+              {s.name}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
