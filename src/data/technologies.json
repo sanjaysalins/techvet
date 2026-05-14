@@ -3010,5 +3010,1031 @@
       "Have you migrated an app to the New Architecture (Fabric / TurboModules)?"
     ],
     "guidanceForUnknownVersion": "Yellow — ask which SDK they last shipped and whether they're on the new architecture."
+  },
+  {
+    "id": "pytest",
+    "name": "pytest",
+    "category": "Testing",
+    "currentVersion": "9.0",
+    "releasedYear": 2004,
+    "versionTiers": [
+      {
+        "min": "8.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "8.x / 9.x — current; modern fixtures, parametrize, asyncio."
+      },
+      {
+        "min": "7.0",
+        "label": "Good",
+        "color": "green",
+        "note": "7.x — stable, widely deployed."
+      },
+      {
+        "min": "6.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "6.x — still common in long-lived projects."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "5.x or earlier — predates several modern features."
+      }
+    ],
+    "suggestedProbes": [
+      "How do you structure pytest fixtures across a large project?",
+      "Walk me through your approach to parametrize vs separate tests.",
+      "How do you test async code with pytest?",
+      "How do you handle test isolation when hitting external services?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they author fixtures or only consume someone else's."
+  },
+  {
+    "id": "jest",
+    "name": "Jest",
+    "category": "Testing",
+    "currentVersion": "30.4",
+    "releasedYear": 2014,
+    "versionTiers": [
+      {
+        "min": "29.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "29+ / 30 — current; native ESM, modern matchers."
+      },
+      {
+        "min": "27.0",
+        "label": "Good",
+        "color": "green",
+        "note": "27–28 — widely used; solid feature surface."
+      },
+      {
+        "min": "24.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "24–26 — still common; verify ESM/TS handling."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-24 — predates many modern conventions."
+      }
+    ],
+    "suggestedProbes": [
+      "How do you organise mocks — manual, auto, or jest.mock factories?",
+      "Walk me through your approach to snapshot testing.",
+      "Jest vs Vitest — which would you reach for in a new project?",
+      "How do you handle ESM-only dependencies in Jest?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they wrote the Jest config or inherited it."
+  },
+  {
+    "id": "vitest",
+    "name": "Vitest",
+    "category": "Testing",
+    "currentVersion": "4.1",
+    "releasedYear": 2021,
+    "versionTiers": [
+      {
+        "min": "3.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "3.x / 4.x — current; browser mode, workspace, type testing."
+      },
+      {
+        "min": "1.0",
+        "label": "Good",
+        "color": "green",
+        "note": "1.x / 2.x — stable API."
+      },
+      {
+        "min": "0.30",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Pre-1.0 — verify they've migrated to stable API."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Very early 0.x — substantial API differences."
+      }
+    ],
+    "suggestedProbes": [
+      "When did you migrate from Jest to Vitest, and why?",
+      "How do you use Vitest's browser mode (if at all)?",
+      "How do you handle shared config across a monorepo?",
+      "Have you used in-source testing or type testing?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they configured Vitest themselves or just write tests."
+  },
+  {
+    "id": "playwright",
+    "name": "Playwright",
+    "category": "Testing",
+    "currentVersion": "1.60",
+    "releasedYear": 2020,
+    "versionTiers": [
+      {
+        "min": "1.50",
+        "label": "Excellent",
+        "color": "green",
+        "note": "1.50+ — current; trace viewer, UI mode, component testing."
+      },
+      {
+        "min": "1.40",
+        "label": "Good",
+        "color": "green",
+        "note": "1.40+ — modern feature set."
+      },
+      {
+        "min": "1.20",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Older 1.x — verify trace/debug fluency."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-1.20 — predates fixtures, trace viewer maturity."
+      }
+    ],
+    "suggestedProbes": [
+      "Walk me through your locator strategy — getByRole, getByTestId, CSS?",
+      "How do you handle authentication state across tests?",
+      "How do you run Playwright in CI — sharding, retries, traces?",
+      "Have you used Playwright component testing?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they wrote the framework setup or just author tests."
+  },
+  {
+    "id": "cypress",
+    "name": "Cypress",
+    "category": "Testing",
+    "currentVersion": "15.15",
+    "releasedYear": 2017,
+    "versionTiers": [
+      {
+        "min": "14.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "14+ / 15 — current; component testing, modern Node baseline."
+      },
+      {
+        "min": "12.0",
+        "label": "Good",
+        "color": "green",
+        "note": "12–13 — strong feature surface."
+      },
+      {
+        "min": "10.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "10–11 — common in older suites."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-10 — predates the modern test runner UI."
+      }
+    ],
+    "suggestedProbes": [
+      "Cypress vs Playwright — what tipped the choice?",
+      "How do you handle cross-domain or iframe testing in Cypress?",
+      "Walk me through your custom commands / Cypress.Commands.add usage.",
+      "How do you handle flakiness — retries, retries-on-failure, or fixes?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — verify they understand Cypress's command-queue model."
+  },
+  {
+    "id": "selenium",
+    "name": "Selenium",
+    "category": "Testing",
+    "currentVersion": "4.44",
+    "releasedYear": 2004,
+    "versionTiers": [
+      {
+        "min": "4.20",
+        "label": "Excellent",
+        "color": "green",
+        "note": "Selenium 4.20+ — modern; BiDi protocol, Grid 4."
+      },
+      {
+        "min": "4.0",
+        "label": "Good",
+        "color": "green",
+        "note": "Selenium 4 — W3C WebDriver standard."
+      },
+      {
+        "min": "3.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Selenium 3 — still common in legacy enterprise; verify they can move forward."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Selenium 2 or earlier — long EOL."
+      }
+    ],
+    "suggestedProbes": [
+      "What's your wait strategy — explicit, implicit, or fluent?",
+      "How do you handle Selenium Grid / parallel execution?",
+      "When would you pick Selenium over Playwright today?",
+      "How do you deal with shadow DOM and modern web frameworks?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they author the framework or write scripts only."
+  },
+  {
+    "id": "junit",
+    "name": "JUnit (Java)",
+    "category": "Testing",
+    "currentVersion": "5.13",
+    "releasedYear": 1997,
+    "versionTiers": [
+      {
+        "min": "5.10",
+        "label": "Excellent",
+        "color": "green",
+        "note": "JUnit 5.10+ — current Jupiter; modern lifecycle."
+      },
+      {
+        "min": "5.0",
+        "label": "Good",
+        "color": "green",
+        "note": "JUnit 5.x — Jupiter API."
+      },
+      {
+        "min": "4.12",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "JUnit 4 — extremely common in long-lived Java projects."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "JUnit 3 — legacy only."
+      }
+    ],
+    "suggestedProbes": [
+      "JUnit 4 vs Jupiter — have you migrated?",
+      "How do you organise parameterized tests in Jupiter?",
+      "How do you handle test slicing in Spring Boot tests?",
+      "Mockito alongside JUnit — version pinning ever bite you?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — common to be on JUnit 4; verify they know Jupiter at minimum."
+  },
+  {
+    "id": "k6",
+    "name": "k6 (load testing)",
+    "category": "Testing",
+    "currentVersion": "2.0",
+    "releasedYear": 2017,
+    "versionTiers": [
+      {
+        "min": "1.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "1.x / 2.x — current; stable scripting API."
+      },
+      {
+        "min": "0.50",
+        "label": "Good",
+        "color": "green",
+        "note": "0.50+ — close to stable surface."
+      },
+      {
+        "min": "0.40",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Older 0.4x — pre-stable; verify recent usage."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-0.40 — substantial API differences."
+      }
+    ],
+    "suggestedProbes": [
+      "What load model — RPS, VUs, arrival-rate — do you script for?",
+      "How do you decide thresholds and pass/fail?",
+      "How do you integrate k6 with CI and Grafana?",
+      "k6 vs JMeter vs Locust — what tipped the choice?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they own the load test plan or just run it."
+  },
+  {
+    "id": "oauth-identity",
+    "name": "OAuth / OIDC / Identity Concepts",
+    "category": "Auth / Identity",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "Walk me through an OAuth 2.0 authorization code flow with PKCE.",
+      "OIDC vs OAuth — when does the distinction matter?",
+      "How do you handle refresh tokens safely in a SPA?",
+      "When do you reach for SAML vs OIDC for enterprise SSO?",
+      "How would you implement step-up auth for sensitive actions?"
+    ],
+    "checklistGuidance": "Identity is concept-heavy. Coverage of flows, token handling, and MFA distinguishes someone who has shipped auth from someone who has only consumed an SDK.",
+    "services": [
+      {
+        "id": "oauth2",
+        "name": "OAuth 2.0 / 2.1 flows"
+      },
+      {
+        "id": "pkce",
+        "name": "PKCE for public clients"
+      },
+      {
+        "id": "oidc",
+        "name": "OpenID Connect (id_token, userinfo)"
+      },
+      {
+        "id": "jwt",
+        "name": "JWT — signing, validation, JWKS"
+      },
+      {
+        "id": "refresh-tokens",
+        "name": "Refresh tokens (rotation, revocation)"
+      },
+      {
+        "id": "saml",
+        "name": "SAML 2.0 (enterprise SSO)"
+      },
+      {
+        "id": "sso",
+        "name": "SSO / IdP-initiated flows"
+      },
+      {
+        "id": "mfa",
+        "name": "MFA (TOTP, WebAuthn, push)"
+      },
+      {
+        "id": "passkeys",
+        "name": "Passkeys / FIDO2 / WebAuthn"
+      },
+      {
+        "id": "magic-link",
+        "name": "Magic-link / passwordless email"
+      },
+      {
+        "id": "social-login",
+        "name": "Social login (Google / Apple / GitHub)"
+      },
+      {
+        "id": "rbac",
+        "name": "RBAC / ABAC authorisation models"
+      },
+      {
+        "id": "session-mgmt",
+        "name": "Session management & secure cookies"
+      },
+      {
+        "id": "step-up",
+        "name": "Step-up / risk-based auth"
+      }
+    ]
+  },
+  {
+    "id": "auth0",
+    "name": "Auth0",
+    "category": "Auth / Identity",
+    "currentVersion": "2.19",
+    "releasedYear": 2013,
+    "versionTiers": [
+      {
+        "min": "2.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "Auth0 SDK 2.x — current; modern API surface."
+      },
+      {
+        "min": "1.20",
+        "label": "Good",
+        "color": "green",
+        "note": "1.20+ — widely deployed."
+      },
+      {
+        "min": "1.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Older 1.x — verify they've kept up with platform changes."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-1.0 SDK — long EOL."
+      }
+    ],
+    "suggestedProbes": [
+      "Walk me through your Auth0 tenant setup — connections, apps, APIs.",
+      "How do you handle role and permission claims in tokens?",
+      "Rules vs Actions vs Hooks — which model are you on?",
+      "How do you manage Auth0 config in code (Terraform, Auth0 CLI)?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they configured the tenant or just integrated."
+  },
+  {
+    "id": "clerk",
+    "name": "Clerk",
+    "category": "Auth / Identity",
+    "currentVersion": "6.11",
+    "releasedYear": 2020,
+    "versionTiers": [
+      {
+        "min": "5.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "5.x / 6.x — current; modern hooks, organisations, B2B."
+      },
+      {
+        "min": "4.0",
+        "label": "Good",
+        "color": "green",
+        "note": "4.x — broad component surface."
+      },
+      {
+        "min": "3.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "3.x — pre-organisations era."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-3.x — substantial API differences."
+      }
+    ],
+    "suggestedProbes": [
+      "Have you used Clerk Organisations / B2B features?",
+      "How do you handle session management server-side with Clerk?",
+      "How do you customise the prebuilt components?",
+      "Clerk vs Auth0 — what drove your choice?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they shipped Clerk in production or just on a side project."
+  },
+  {
+    "id": "keycloak",
+    "name": "Keycloak",
+    "category": "Auth / Identity",
+    "currentVersion": "26.6",
+    "releasedYear": 2014,
+    "versionTiers": [
+      {
+        "min": "25",
+        "label": "Excellent",
+        "color": "green",
+        "note": "25 / 26 — current; modern Quarkus distribution."
+      },
+      {
+        "min": "22",
+        "label": "Good",
+        "color": "green",
+        "note": "22–24 — post-WildFly era; widely deployed."
+      },
+      {
+        "min": "18",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "18–21 — common in long-lived enterprise installs."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-18 — WildFly-era; long EOL."
+      }
+    ],
+    "suggestedProbes": [
+      "How is your Keycloak deployment topology — single, clustered, federated?",
+      "Walk me through realm + client setup for a new application.",
+      "How do you manage Keycloak config as code (Keycloak Config CLI, Terraform)?",
+      "Have you written custom authenticators or SPIs?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — verify they've operated Keycloak in production, not just demo."
+  },
+  {
+    "id": "okta",
+    "name": "Okta",
+    "category": "Auth / Identity",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "Which Okta features have you implemented for the customer?",
+      "How do you handle Universal Directory + multi-IdP federation?",
+      "Walk me through an Okta Workflows automation you built.",
+      "How do you manage Okta config / SCIM integrations as code?"
+    ],
+    "checklistGuidance": "Okta is broad and enterprise-leaning. Coverage of directory, SSO, MFA, and Workflows distinguishes admins who have shipped policy work from app developers who just SAML'd into it.",
+    "services": [
+      {
+        "id": "universal-directory",
+        "name": "Universal Directory"
+      },
+      {
+        "id": "sso-okta",
+        "name": "SSO (SAML / OIDC apps)"
+      },
+      {
+        "id": "mfa-okta",
+        "name": "MFA (Okta Verify, FIDO2)"
+      },
+      {
+        "id": "lifecycle-mgmt",
+        "name": "Lifecycle Management"
+      },
+      {
+        "id": "workflows",
+        "name": "Okta Workflows (no-code automation)"
+      },
+      {
+        "id": "identity-engine",
+        "name": "Okta Identity Engine"
+      },
+      {
+        "id": "adaptive-mfa",
+        "name": "Adaptive / Risk-based MFA"
+      },
+      {
+        "id": "api-access",
+        "name": "API Access Management (OAuth as a Service)"
+      },
+      {
+        "id": "scim",
+        "name": "SCIM provisioning"
+      },
+      {
+        "id": "b2b-portal",
+        "name": "B2B / Customer Identity (CIAM)"
+      },
+      {
+        "id": "okta-cli",
+        "name": "Okta CLI / Terraform provider"
+      },
+      {
+        "id": "advanced-server-access",
+        "name": "Advanced Server Access / device assurance"
+      }
+    ]
+  },
+  {
+    "id": "pandas",
+    "name": "pandas",
+    "category": "AI/ML",
+    "currentVersion": "3.0",
+    "releasedYear": 2008,
+    "versionTiers": [
+      {
+        "min": "2.2",
+        "label": "Excellent",
+        "color": "green",
+        "note": "2.2 / 3.0 — current; Copy-on-Write default, PyArrow backend."
+      },
+      {
+        "min": "2.0",
+        "label": "Good",
+        "color": "green",
+        "note": "2.x — Arrow-backed data types, modern API."
+      },
+      {
+        "min": "1.5",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "1.5+ — common in long-lived projects; verify modern dtype awareness."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-1.5 — substantial pre-Arrow design."
+      }
+    ],
+    "suggestedProbes": [
+      "How do you handle pandas + large datasets — chunking, Dask, Polars?",
+      "Walk me through your typical groupby/agg pipeline.",
+      "When do you reach for Arrow-backed dtypes?",
+      "How do you avoid SettingWithCopyWarning in real code?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they're aware of Copy-on-Write and Arrow backends."
+  },
+  {
+    "id": "numpy",
+    "name": "NumPy",
+    "category": "AI/ML",
+    "currentVersion": "2.4",
+    "releasedYear": 2005,
+    "versionTiers": [
+      {
+        "min": "2.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "NumPy 2.x — current; cleaner type system, no breaking int defaults."
+      },
+      {
+        "min": "1.24",
+        "label": "Good",
+        "color": "green",
+        "note": "1.24+ — broadly compatible, modern API."
+      },
+      {
+        "min": "1.20",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "1.20–1.23 — still common; verify they're 2.0-ready."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-1.20 — predates several stability improvements."
+      }
+    ],
+    "suggestedProbes": [
+      "When do you reach for NumPy vs straight Python lists?",
+      "How comfortable are you reasoning about broadcasting?",
+      "How do you debug a slow vectorised operation?",
+      "Have you used NumPy 2.x's stricter type rules?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — confirm they understand broadcasting and views vs copies."
+  },
+  {
+    "id": "jupyter",
+    "name": "JupyterLab / Notebooks",
+    "category": "AI/ML",
+    "currentVersion": "4.5",
+    "releasedYear": 2014,
+    "versionTiers": [
+      {
+        "min": "4.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "JupyterLab 4.x — current; modular extensions, Real-Time Collaboration."
+      },
+      {
+        "min": "3.0",
+        "label": "Good",
+        "color": "green",
+        "note": "3.x — common production deployment."
+      },
+      {
+        "min": "2.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "2.x — older but still used."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-2.0 / classic Notebook only."
+      }
+    ],
+    "suggestedProbes": [
+      "How do you keep notebooks reproducible — papermill, parameterised, nbdev?",
+      "How do you handle notebooks under version control?",
+      "Have you deployed JupyterHub for a team?",
+      "When do you graduate code out of a notebook into a package?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they treat notebooks as throwaway exploration or production artefacts."
+  },
+  {
+    "id": "astro",
+    "name": "Astro",
+    "category": "Frontend",
+    "currentVersion": "6.3",
+    "releasedYear": 2021,
+    "versionTiers": [
+      {
+        "min": "5.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "5.x / 6.x — current; Server Islands, view transitions, container API."
+      },
+      {
+        "min": "4.0",
+        "label": "Good",
+        "color": "green",
+        "note": "4.x — production-ready; broad integrations."
+      },
+      {
+        "min": "2.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "2–3 — pre-islands maturity."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-2.0 — substantial API differences."
+      }
+    ],
+    "suggestedProbes": [
+      "What kinds of sites do you choose Astro for vs Next.js?",
+      "How do you decide between an island and a static component?",
+      "Walk me through a content collection setup.",
+      "How do you handle interactivity that needs SSR?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask which framework integrations they've shipped (React/Vue/Svelte islands)."
+  },
+  {
+    "id": "storybook",
+    "name": "Storybook",
+    "category": "Frontend",
+    "currentVersion": "10.4",
+    "releasedYear": 2016,
+    "versionTiers": [
+      {
+        "min": "9",
+        "label": "Excellent",
+        "color": "green",
+        "note": "9 / 10 — current; Vite-first, CSF3, modern addons."
+      },
+      {
+        "min": "7",
+        "label": "Good",
+        "color": "green",
+        "note": "7–8 — widely deployed."
+      },
+      {
+        "min": "6",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "6.x — still common; verify they've migrated past."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-6 — long-deprecated APIs."
+      }
+    ],
+    "suggestedProbes": [
+      "How do you structure stories — co-located or central?",
+      "Have you used Storybook for visual regression (Chromatic, Loki)?",
+      "How do you make Storybook part of the design hand-off?",
+      "Storybook in CI — how do you keep it fast?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they configured Storybook or just write stories."
+  },
+  {
+    "id": "sqlite",
+    "name": "SQLite",
+    "category": "Database",
+    "currentVersion": "3.53",
+    "releasedYear": 2000,
+    "versionTiers": [
+      {
+        "min": "3.45",
+        "label": "Excellent",
+        "color": "green",
+        "note": "3.45+ — current; JSON improvements, math functions."
+      },
+      {
+        "min": "3.35",
+        "label": "Good",
+        "color": "green",
+        "note": "3.35+ — modern feature set (RETURNING, math)."
+      },
+      {
+        "min": "3.25",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Older 3.x — still ubiquitous; verify they know window functions."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-3.25 — predates window functions."
+      }
+    ],
+    "suggestedProbes": [
+      "When do you reach for SQLite over Postgres / MySQL?",
+      "How do you handle concurrency limits — WAL mode, busy-timeout?",
+      "Have you used SQLite as a primary production DB (Litestream, rqlite)?",
+      "What's your story for backups and migrations?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they treat it as a real DB or just a dev/test tool."
+  },
+  {
+    "id": "supabase",
+    "name": "Supabase",
+    "category": "Database",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "Which Supabase features have you shipped in production?",
+      "Walk me through your RLS policy strategy.",
+      "How do you handle migrations and environments (CLI, branches)?",
+      "Supabase vs Firebase — what drove the choice?",
+      "Have you self-hosted Supabase or only used the cloud?"
+    ],
+    "checklistGuidance": "Supabase is Postgres + a suite. Coverage shows whether the candidate uses it as a polished BaaS or has actually written RLS and edge functions.",
+    "services": [
+      {
+        "id": "supabase-postgres",
+        "name": "Postgres (core DB)"
+      },
+      {
+        "id": "supabase-auth-svc",
+        "name": "Auth (GoTrue)"
+      },
+      {
+        "id": "supabase-realtime",
+        "name": "Realtime (subscriptions / broadcast)"
+      },
+      {
+        "id": "supabase-storage",
+        "name": "Storage (S3-compatible)"
+      },
+      {
+        "id": "edge-functions",
+        "name": "Edge Functions (Deno)"
+      },
+      {
+        "id": "rls",
+        "name": "Row Level Security (RLS) policies"
+      },
+      {
+        "id": "supabase-vector",
+        "name": "pgvector / Vector embeddings"
+      },
+      {
+        "id": "branching",
+        "name": "Branching / preview environments"
+      },
+      {
+        "id": "migrations-cli",
+        "name": "Supabase CLI / migrations"
+      },
+      {
+        "id": "supabase-studio",
+        "name": "Studio dashboard / SQL editor"
+      }
+    ]
+  },
+  {
+    "id": "firebase",
+    "name": "Firebase",
+    "category": "Database",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "Which Firebase products have you shipped in production?",
+      "Firestore data model — how do you keep queries efficient and bounded?",
+      "How do you write secure Firestore / Storage rules?",
+      "How do you handle Cloud Functions cold-starts?",
+      "Firebase vs Supabase / DIY — what drove the choice?"
+    ],
+    "checklistGuidance": "Firebase is a suite, not a database. Coverage of rules, functions, and crash/perf tooling separates app builders from auth-only users.",
+    "services": [
+      {
+        "id": "firebase-auth",
+        "name": "Authentication"
+      },
+      {
+        "id": "firestore",
+        "name": "Cloud Firestore"
+      },
+      {
+        "id": "rtdb",
+        "name": "Realtime Database"
+      },
+      {
+        "id": "cloud-functions",
+        "name": "Cloud Functions"
+      },
+      {
+        "id": "firebase-hosting",
+        "name": "Hosting"
+      },
+      {
+        "id": "firebase-storage",
+        "name": "Cloud Storage"
+      },
+      {
+        "id": "fcm",
+        "name": "FCM (push notifications)"
+      },
+      {
+        "id": "crashlytics",
+        "name": "Crashlytics"
+      },
+      {
+        "id": "firebase-analytics",
+        "name": "Analytics / Events"
+      },
+      {
+        "id": "remote-config",
+        "name": "Remote Config / A/B testing"
+      },
+      {
+        "id": "app-check",
+        "name": "App Check (abuse prevention)"
+      },
+      {
+        "id": "firebase-rules",
+        "name": "Security Rules (Firestore / Storage)"
+      }
+    ]
+  },
+  {
+    "id": "flink",
+    "name": "Apache Flink",
+    "category": "Data",
+    "currentVersion": "2.2",
+    "releasedYear": 2011,
+    "versionTiers": [
+      {
+        "min": "2.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "Flink 2.x — current; disaggregated state, modern SQL."
+      },
+      {
+        "min": "1.18",
+        "label": "Good",
+        "color": "green",
+        "note": "1.18+ — broadly used in production streaming."
+      },
+      {
+        "min": "1.13",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Older 1.x — common in long-lived pipelines."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-1.13 — predates several state/checkpoint improvements."
+      }
+    ],
+    "suggestedProbes": [
+      "Walk me through state management and checkpointing.",
+      "How do you handle watermarks and late events?",
+      "Flink SQL vs DataStream — which do you reach for?",
+      "How do you size and tune a Flink job for throughput?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they own the streaming infra or just author jobs."
+  },
+  {
+    "id": "hono",
+    "name": "Hono",
+    "category": "Backend",
+    "currentVersion": "4.12",
+    "releasedYear": 2022,
+    "versionTiers": [
+      {
+        "min": "4.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "Hono 4.x — current; modern routing, RPC, broad runtime support."
+      },
+      {
+        "min": "3.0",
+        "label": "Good",
+        "color": "green",
+        "note": "3.x — stable surface."
+      },
+      {
+        "min": "2.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "2.x — pre-4.x router."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-2.0 — substantial API differences."
+      }
+    ],
+    "suggestedProbes": [
+      "Which runtime do you target with Hono — Cloudflare, Bun, Deno, Node?",
+      "Walk me through your middleware pipeline.",
+      "How do you handle validation and types — Zod, hono/zod-validator?",
+      "Hono vs Express vs Fastify — what tipped the choice?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask which deployment target they shipped to."
   }
 ]
