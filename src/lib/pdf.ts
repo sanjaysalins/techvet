@@ -20,13 +20,16 @@ export async function exportPdf(
   await new Promise(r => requestAnimationFrame(() => r(null)));
 
   onProgress?.({ stage: 'capturing' });
+  // scale 1.5 + JPEG@0.92 keeps text legible while cutting bytes ~10x vs scale 2 + PNG.
   const canvas = await html2canvas(el, {
-    scale: 2,
+    scale: 1.5,
     backgroundColor: '#ffffff',
     useCORS: true,
     logging: false,
   });
   if (wasDark) document.documentElement.classList.add('dark');
+
+  const JPEG_QUALITY = 0.92;
 
   const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -39,7 +42,7 @@ export async function exportPdf(
 
   if (fits) {
     onProgress?.({ stage: 'rendering', page: 1, total: 1 });
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, imgHeight);
+    pdf.addImage(canvas.toDataURL('image/jpeg', JPEG_QUALITY), 'JPEG', margin, margin, imgWidth, imgHeight);
   } else {
     const pageCanvasHeight = ((pageHeight - margin * 2) / imgWidth) * canvas.width;
     const total = Math.ceil(canvas.height / pageCanvasHeight);
@@ -57,7 +60,7 @@ export async function exportPdf(
       ctx.drawImage(canvas, 0, sY, canvas.width, sliceCanvas.height, 0, 0, canvas.width, sliceCanvas.height);
       const sliceHeightPt = (sliceCanvas.height * imgWidth) / canvas.width;
       if (sY > 0) pdf.addPage();
-      pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, sliceHeightPt);
+      pdf.addImage(sliceCanvas.toDataURL('image/jpeg', JPEG_QUALITY), 'JPEG', margin, margin, imgWidth, sliceHeightPt);
       sY += sliceCanvas.height;
     }
   }
