@@ -23,8 +23,8 @@ npm run build      # → dist/
 
 ## Key files
 
-- `src/data/technologies.json` — 73 tech definitions across 9 categories. Each entry is either **version-mode** (has `versionTiers`, sorted high→low at runtime, first match wins) or **checklist-mode** (has `vetMode: "checklist"` + a `services: [{id, name}]` array). `enterpriseStillUsed` flag injects the "still widely used" reassurance note on Yellow tiers.
-- `src/data/roles.ts` — 8 role templates that preload tech lists.
+- `src/data/technologies.json` — 96 tech definitions across 11 categories (AI/ML, Auth/Identity, Backend, Cloud, Data, Database, DevOps, Frontend, Language, Mobile, Testing). Each entry is either **version-mode** (has `versionTiers`, sorted high→low at runtime, first match wins) or **checklist-mode** (has `vetMode: "checklist"` + a `services: [{id, name}]` array). `enterpriseStillUsed` flag injects the "still widely used" reassurance note on Yellow tiers.
+- `src/data/roles.ts` — 12 role templates + Custom that preload tech lists (Full-Stack, Frontend, Backend, Solution Architect, DevOps, SRE, Data Engineer, Data Scientist, AI/ML Engineer, Mobile, Security AppSec, QA, Custom).
 - `src/lib/version.ts` — loose version comparator; strips "LTS" / non-numerics, pads missing parts with 0.
 - `src/lib/scoring.ts` — tier resolver, dispatches by `vetMode`. **Rules to remember:**
   1. **Version-mode: unknown / empty / unparseable** → forces Yellow.
@@ -52,14 +52,15 @@ npm run build      # → dist/
 
 ## What's verified
 
-- `tsc -b && vite build` passes; bundle 1.20 MB (356 KB gzipped). Vite warns about chunk > 500 KB but acceptable.
+- `tsc -b && vite build` passes; bundle 1.23 MB (361 KB gzipped after catalog 2.0). Vite warns about chunk > 500 KB but acceptable.
 - Dev server boots cleanly in ~3 s, 0 errors.
 - All 5 PRD verification cases passed in-browser via Playwright (2026-05-13): React 16 → Yellow + enterprise note; "I don't remember" forces Yellow; depth lifts tier by exactly 1 (non-cumulative); radar renders ≥ 3 categories; PDF export downloads a valid multi-page A4 file. See `RESUME.md` for the full table.
-- New behaviors verified 2026-05-14: SQL checklist transitions (0 untouched → Yellow "Not yet assessed" → 3/12 Yellow → 8/12 Green → ticked-then-cleared → Red); Bun version-mode green at `1.3`; full-stack PDF export 312 KB.
+- New behaviors verified 2026-05-14: SQL checklist transitions (0 untouched → Yellow "Not yet assessed" → 3/12 Yellow → 8/12 Green → ticked-then-cleared → Red); Bun version-mode green at `1.3`; full-stack PDF export 312 KB; all 12 role templates render on landing; AI/ML Engineer preloads its 8 expected techs; `oauth-identity` is searchable.
 
 ## Known issues / non-blockers
 
 - `npm audit` reports 4 vulns (3 moderate, 1 critical) in transitive deps (likely `jspdf` / `html2canvas`). Client-only internal tool — acceptable, but revisit before any wider distribution.
 - PDF export is ~300 KB on a 6-tech report after the 2026-05-14 scale-1.5 + JPEG@0.92 switch (down from ~24 MB). Text stays crisp; if a finer pass is ever needed, move to vector via `jsPDF.html()` — but that path is fragile with Recharts SVG and Tailwind v3 colors.
+- Catalog refresh 2.0 was scoped as "Focused" (recruiter agencies on software roles). **Out of scope by design**: enterprise platforms (Salesforce/SAP/Workday), CMS (WordPress/Contentful/Sanity), game engines (Unity/Unreal/Godot), embedded (Arduino/ESP32/FreeRTOS), blockchain (Solidity/Web3). RESUME.md lists the full deferred set. Promote any if a recruiter asks.
 - The Playwright MCP browser session in this harness drops between calls when interleaved with non-playwright tool calls. Workaround: chain playwright calls back-to-back; re-navigate when context is closed.
 - Cosmetic: on the Summary screen, the sticky site header briefly overlaps the "Strengths" section heading on scroll. Not present in the PDF (header is sticky-only on the live page).

@@ -1,10 +1,13 @@
 # Resume point — TechVet (2026-05-14 EOD)
 
-**Status:** clean working tree. All of yesterday's uncommitted work, plus today's three additions, are committed to `main`. RESUME.md's previous TODO list is now empty.
+**Status:** clean working tree. Yesterday's uncommitted work plus today's five additions are all committed to `main`. RESUME.md's previous TODO list is empty.
 
 ## Today's commits
 
 ```
+ddb31e7  Catalog refresh 2.0 — 73 → 96 techs, +5 role templates
+21024a5  Update CLAUDE.md for the 2026-05-14 catalog and scoring changes
+5b20d50  Update RESUME.md for 2026-05-14 EOD
 0ad38e7  Shrink PDF export ~77x by switching to JPEG@0.92 + scale 1.5
 5b00172  Show "Not yet assessed" for untouched checklist techs
 5db5d44  Add 18 Tier-1 technologies for 2026 hiring coverage
@@ -36,38 +39,62 @@ Implementation: new `checklistTouched?: boolean` on `AssessmentItem`, flipped tr
 ### 0ad38e7 — PDF size optimization
 Two-line change in `src/lib/pdf.ts`: html2canvas `scale: 2 → 1.5` plus `pdf.addImage('PNG') → ('JPEG')` at quality 0.92. A 6-tech Full-Stack report dropped **24 MB → 312 KB (77×)** with no visible quality loss. Status pill now reports "Downloaded 0.3 MB".
 
+### ddb31e7 — Catalog refresh 2.0 (73 → 96 techs, +5 role templates)
+Recruiter-driven expansion to cover whole job categories that were missing.
+
+**New role templates (5):** AI / ML Engineer, Data Scientist, SRE / Platform Engineer, Security Engineer (AppSec), QA / Test Engineer.
+
+**New tech categories (2):**
+- **Testing (+8):** pytest, jest, vitest, playwright, cypress, selenium, junit, k6 — all version-mode at 2026 versions.
+- **Auth / Identity (+5):** `oauth-identity` (checklist on concepts: OAuth 2.0/2.1, OIDC, SAML, JWT, PKCE, passkeys, RBAC…), auth0, clerk, keycloak (version), okta (checklist on features).
+
+**Filled gaps in existing categories (+10):**
+- AI/ML: pandas, numpy, jupyter
+- Frontend: astro, storybook
+- Database: sqlite, supabase (checklist), firebase (checklist)
+- Data: flink
+- Backend: hono
+
+**Existing role templates modernized:** DevOps now includes `helm` + `observability` (in place of `gcp`/`argocd` that already appeared elsewhere); Data Engineer adds `sql`/`dbt`/`databricks`; Mobile adds `expo`.
+
 ## What's verified today (Playwright)
 
 1. SQL checklist: 0/12 untouched → Yellow "Not yet assessed"; 3/12 → Yellow "Review / Probe"; 8/12 → Green "Good"; ticked-then-unticked back to 0 → Red "Concern" (touched flag persists).
 2. Bun version-mode: empty version → Yellow (unknown rule); `1.3` → Green "Excellent".
 3. Full-Stack template + PDF export: 312 KB, multi-page A4, radar + tier chips render cleanly. "Not yet assessed" badge renders correctly in PDF.
+4. 12 role templates + Custom render on landing; AI / ML Engineer template preloads its 8 expected techs; `oauth-identity` is searchable.
 
 ## Catalog state (2026-05-14)
 
 ```
-AI/ML        ( 7)  huggingface-transformers, langchain, llm-api-sdk, pytorch,
-                   scikit-learn, tensorflow, vector-db
-Backend      (15)  bun, django, dotnet, express, fastapi, fastify, flask, graphql,
-                   grpc, laravel, nestjs, nodejs, rails, spring-boot, trpc
-Cloud        ( 3)  aws, azure, gcp
-Data         ( 5)  airflow, databricks, dbt, kafka, spark
-Database     ( 8)  clickhouse, duckdb, elasticsearch, mongodb, mysql, postgresql,
-                   redis, snowflake
-DevOps       (11)  ansible, argocd, docker, github-actions, gitlab-ci, helm, jenkins,
-                   kubernetes, observability, pulumi, terraform
-Frontend     ( 9)  angular, nextjs, react, svelte, tailwind, typescript, vite, vue,
-                   webpack
-Language     (10)  c, cpp, csharp, go, java, javascript, php, python, rust, sql
-Mobile       ( 5)  expo, flutter, kotlin, react-native, swift
-TOTAL        73
+AI/ML            (10)  huggingface-transformers, jupyter, langchain, llm-api-sdk,
+                       numpy, pandas, pytorch, scikit-learn, tensorflow, vector-db
+Auth / Identity  ( 5)  auth0, clerk, keycloak, oauth-identity, okta
+Backend          (16)  bun, django, dotnet, express, fastapi, fastify, flask,
+                       graphql, grpc, hono, laravel, nestjs, nodejs, rails,
+                       spring-boot, trpc
+Cloud            ( 3)  aws, azure, gcp
+Data             ( 6)  airflow, databricks, dbt, flink, kafka, spark
+Database         (11)  clickhouse, duckdb, elasticsearch, firebase, mongodb,
+                       mysql, postgresql, redis, snowflake, sqlite, supabase
+DevOps           (11)  ansible, argocd, docker, github-actions, gitlab-ci, helm,
+                       jenkins, kubernetes, observability, pulumi, terraform
+Frontend         (11)  angular, astro, nextjs, react, storybook, svelte, tailwind,
+                       typescript, vite, vue, webpack
+Language         (10)  c, cpp, csharp, go, java, javascript, php, python, rust, sql
+Mobile           ( 5)  expo, flutter, kotlin, react-native, swift
+Testing          ( 8)  cypress, jest, junit, k6, playwright, pytest, selenium, vitest
+TOTAL            96
 ```
+
+**Role templates (12 + Custom):** Full-Stack, Frontend, Backend, Solution Architect, DevOps, SRE, Data Engineer, Data Scientist, AI/ML Engineer, Mobile, Security (AppSec), QA, Custom.
 
 ## Known non-blockers
 
 - `npm audit` still reports 4 vulns (3 moderate, 1 critical) in transitive deps (likely `jspdf` / `html2canvas`). Client-only internal tool — acceptable; revisit before any wider distribution.
-- Vite build warns chunk > 500 KB (bundle 1.20 MB / 356 KB gzipped). Acceptable for an internal tool; code-splitting deferred.
+- Vite build warns chunk > 500 KB (bundle 1.23 MB / 361 KB gzipped after catalog 2.0). Acceptable for an internal tool; code-splitting deferred.
 - Cosmetic: on the Summary screen, the sticky site header briefly overlaps the "Strengths" section title on scroll. Pre-existing, not from any 2026-05-14 change.
-- CLAUDE.md's "Key files" section is mostly accurate but doesn't mention `vetMode`, `checklistTouched`, or the mandate field. Worth one editing pass when something else brings you back into the file.
+- **Tier 2 / Tier 3 catalog candidates left out of scope** by design (Focused refresh, not Comprehensive): Astro and Storybook are in but missing Solid, Remix, Qwik, Bun-as-runtime alternatives like Deno, Phoenix/Elixir, message brokers beyond Kafka (RabbitMQ, NATS), Cassandra/DynamoDB/Neo4j, Vault/Crossplane, edge/PaaS (Vercel/Netlify/Cloudflare Workers/Fly.io), CMS (WordPress/Contentful/Sanity), Enterprise (Salesforce/SAP/Workday), Game engines (Unity/Unreal/Godot), Embedded (Arduino/ESP32/FreeRTOS), Blockchain (Solidity). Promote if recruiters ask.
 
 ## How to resume
 
