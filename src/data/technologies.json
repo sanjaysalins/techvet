@@ -1344,18 +1344,54 @@
     "category": "DevOps",
     "vetMode": "checklist",
     "services": [
-      { "id": "playbooks", "name": "Playbooks (task YAML)" },
-      { "id": "roles", "name": "Roles (reusable bundles)" },
-      { "id": "collections", "name": "Collections / Galaxy" },
-      { "id": "inventory-dynamic", "name": "Dynamic inventory (cloud / scripts)" },
-      { "id": "inventory-static", "name": "Static inventory" },
-      { "id": "jinja-templates", "name": "Jinja2 templates" },
-      { "id": "vault", "name": "Ansible Vault (secrets)" },
-      { "id": "custom-modules", "name": "Custom modules / plugins" },
-      { "id": "awx-aap", "name": "AWX / Ansible Automation Platform" },
-      { "id": "molecule", "name": "Molecule (testing roles)" },
-      { "id": "idempotency", "name": "Idempotency / handlers / tags discipline" },
-      { "id": "network-automation", "name": "Network device automation" }
+      {
+        "id": "playbooks",
+        "name": "Playbooks (task YAML)"
+      },
+      {
+        "id": "roles",
+        "name": "Roles (reusable bundles)"
+      },
+      {
+        "id": "collections",
+        "name": "Collections / Galaxy"
+      },
+      {
+        "id": "inventory-dynamic",
+        "name": "Dynamic inventory (cloud / scripts)"
+      },
+      {
+        "id": "inventory-static",
+        "name": "Static inventory"
+      },
+      {
+        "id": "jinja-templates",
+        "name": "Jinja2 templates"
+      },
+      {
+        "id": "vault",
+        "name": "Ansible Vault (secrets)"
+      },
+      {
+        "id": "custom-modules",
+        "name": "Custom modules / plugins"
+      },
+      {
+        "id": "awx-aap",
+        "name": "AWX / Ansible Automation Platform"
+      },
+      {
+        "id": "molecule",
+        "name": "Molecule (testing roles)"
+      },
+      {
+        "id": "idempotency",
+        "name": "Idempotency / handlers / tags discipline"
+      },
+      {
+        "id": "network-automation",
+        "name": "Network device automation"
+      }
     ],
     "suggestedProbes": [
       "Walk me through your largest role or collection — what does it manage?",
@@ -1371,18 +1407,54 @@
     "category": "DevOps",
     "vetMode": "checklist",
     "services": [
-      { "id": "declarative-pipelines", "name": "Declarative pipelines" },
-      { "id": "scripted-pipelines", "name": "Scripted pipelines (Groovy)" },
-      { "id": "multibranch", "name": "Multi-branch pipelines" },
-      { "id": "shared-libraries", "name": "Shared libraries" },
-      { "id": "jcasc", "name": "Configuration-as-Code (JCasC)" },
-      { "id": "job-dsl", "name": "Job DSL" },
-      { "id": "agents", "name": "Agent / node management" },
-      { "id": "credentials", "name": "Credentials & secrets binding" },
-      { "id": "plugins", "name": "Plugin ecosystem management" },
-      { "id": "matrix-parallel", "name": "Matrix / parallel stages" },
-      { "id": "artifacts", "name": "Artifact handling / Artifactory" },
-      { "id": "blue-ocean", "name": "Blue Ocean UI" }
+      {
+        "id": "declarative-pipelines",
+        "name": "Declarative pipelines"
+      },
+      {
+        "id": "scripted-pipelines",
+        "name": "Scripted pipelines (Groovy)"
+      },
+      {
+        "id": "multibranch",
+        "name": "Multi-branch pipelines"
+      },
+      {
+        "id": "shared-libraries",
+        "name": "Shared libraries"
+      },
+      {
+        "id": "jcasc",
+        "name": "Configuration-as-Code (JCasC)"
+      },
+      {
+        "id": "job-dsl",
+        "name": "Job DSL"
+      },
+      {
+        "id": "agents",
+        "name": "Agent / node management"
+      },
+      {
+        "id": "credentials",
+        "name": "Credentials & secrets binding"
+      },
+      {
+        "id": "plugins",
+        "name": "Plugin ecosystem management"
+      },
+      {
+        "id": "matrix-parallel",
+        "name": "Matrix / parallel stages"
+      },
+      {
+        "id": "artifacts",
+        "name": "Artifact handling / Artifactory"
+      },
+      {
+        "id": "blue-ocean",
+        "name": "Blue Ocean UI"
+      }
     ],
     "suggestedProbes": [
       "Declarative or scripted — and why that choice for your team?",
@@ -1398,18 +1470,54 @@
     "category": "DevOps",
     "vetMode": "checklist",
     "services": [
-      { "id": "workflows-basics", "name": "Workflow YAML / triggers" },
-      { "id": "reusable-workflows", "name": "Reusable workflows" },
-      { "id": "composite-actions", "name": "Composite actions" },
-      { "id": "custom-actions", "name": "Custom actions (JS / Docker)" },
-      { "id": "matrix-builds", "name": "Matrix builds" },
-      { "id": "self-hosted-runners", "name": "Self-hosted runners" },
-      { "id": "oidc-cloud", "name": "OIDC auth to cloud (AWS / Azure / GCP)" },
-      { "id": "secrets-environments", "name": "Secrets & environments" },
-      { "id": "caching", "name": "Caching (actions/cache)" },
-      { "id": "artifacts", "name": "Artifact upload / download" },
-      { "id": "permissions-scoping", "name": "GITHUB_TOKEN permission scoping" },
-      { "id": "release-automation", "name": "Release automation / semver tagging" }
+      {
+        "id": "workflows-basics",
+        "name": "Workflow YAML / triggers"
+      },
+      {
+        "id": "reusable-workflows",
+        "name": "Reusable workflows"
+      },
+      {
+        "id": "composite-actions",
+        "name": "Composite actions"
+      },
+      {
+        "id": "custom-actions",
+        "name": "Custom actions (JS / Docker)"
+      },
+      {
+        "id": "matrix-builds",
+        "name": "Matrix builds"
+      },
+      {
+        "id": "self-hosted-runners",
+        "name": "Self-hosted runners"
+      },
+      {
+        "id": "oidc-cloud",
+        "name": "OIDC auth to cloud (AWS / Azure / GCP)"
+      },
+      {
+        "id": "secrets-environments",
+        "name": "Secrets & environments"
+      },
+      {
+        "id": "caching",
+        "name": "Caching (actions/cache)"
+      },
+      {
+        "id": "artifacts",
+        "name": "Artifact upload / download"
+      },
+      {
+        "id": "permissions-scoping",
+        "name": "GITHUB_TOKEN permission scoping"
+      },
+      {
+        "id": "release-automation",
+        "name": "Release automation / semver tagging"
+      }
     ],
     "suggestedProbes": [
       "When do you reach for a reusable workflow vs a composite action?",
@@ -1425,18 +1533,54 @@
     "category": "DevOps",
     "vetMode": "checklist",
     "services": [
-      { "id": "pipelines-basics", "name": ".gitlab-ci.yml / stages & jobs" },
-      { "id": "includes-templates", "name": "Includes / extends / templates" },
-      { "id": "dag-needs", "name": "DAG pipelines (needs keyword)" },
-      { "id": "auto-devops", "name": "Auto DevOps" },
-      { "id": "review-apps", "name": "Review apps / dynamic environments" },
-      { "id": "runners", "name": "Runners (shared / group / project)" },
-      { "id": "variables-secrets", "name": "Variables / masked secrets" },
-      { "id": "oidc-cloud", "name": "OIDC auth to cloud" },
-      { "id": "cache-artifacts", "name": "Cache vs artifacts strategy" },
-      { "id": "multi-project", "name": "Multi-project pipelines" },
-      { "id": "parent-child", "name": "Parent-child pipelines" },
-      { "id": "container-registry", "name": "Container registry integration" }
+      {
+        "id": "pipelines-basics",
+        "name": ".gitlab-ci.yml / stages & jobs"
+      },
+      {
+        "id": "includes-templates",
+        "name": "Includes / extends / templates"
+      },
+      {
+        "id": "dag-needs",
+        "name": "DAG pipelines (needs keyword)"
+      },
+      {
+        "id": "auto-devops",
+        "name": "Auto DevOps"
+      },
+      {
+        "id": "review-apps",
+        "name": "Review apps / dynamic environments"
+      },
+      {
+        "id": "runners",
+        "name": "Runners (shared / group / project)"
+      },
+      {
+        "id": "variables-secrets",
+        "name": "Variables / masked secrets"
+      },
+      {
+        "id": "oidc-cloud",
+        "name": "OIDC auth to cloud"
+      },
+      {
+        "id": "cache-artifacts",
+        "name": "Cache vs artifacts strategy"
+      },
+      {
+        "id": "multi-project",
+        "name": "Multi-project pipelines"
+      },
+      {
+        "id": "parent-child",
+        "name": "Parent-child pipelines"
+      },
+      {
+        "id": "container-registry",
+        "name": "Container registry integration"
+      }
     ],
     "suggestedProbes": [
       "How do you keep pipelines DRY — includes, extends, or copy-paste?",
@@ -1452,18 +1596,54 @@
     "category": "DevOps",
     "vetMode": "checklist",
     "services": [
-      { "id": "applications", "name": "Application CRD" },
-      { "id": "applicationsets", "name": "ApplicationSet" },
-      { "id": "app-of-apps", "name": "App-of-apps pattern" },
-      { "id": "sync-waves", "name": "Sync waves" },
-      { "id": "sync-hooks", "name": "Sync hooks (PreSync / PostSync)" },
-      { "id": "helm", "name": "Helm chart support" },
-      { "id": "kustomize", "name": "Kustomize support" },
-      { "id": "multi-cluster", "name": "Multi-cluster management" },
-      { "id": "rbac-sso", "name": "RBAC / SSO" },
-      { "id": "projects", "name": "Projects (multi-tenancy)" },
-      { "id": "self-healing", "name": "Self-healing / auto-pruning" },
-      { "id": "image-updater", "name": "Argo Image Updater" }
+      {
+        "id": "applications",
+        "name": "Application CRD"
+      },
+      {
+        "id": "applicationsets",
+        "name": "ApplicationSet"
+      },
+      {
+        "id": "app-of-apps",
+        "name": "App-of-apps pattern"
+      },
+      {
+        "id": "sync-waves",
+        "name": "Sync waves"
+      },
+      {
+        "id": "sync-hooks",
+        "name": "Sync hooks (PreSync / PostSync)"
+      },
+      {
+        "id": "helm",
+        "name": "Helm chart support"
+      },
+      {
+        "id": "kustomize",
+        "name": "Kustomize support"
+      },
+      {
+        "id": "multi-cluster",
+        "name": "Multi-cluster management"
+      },
+      {
+        "id": "rbac-sso",
+        "name": "RBAC / SSO"
+      },
+      {
+        "id": "projects",
+        "name": "Projects (multi-tenancy)"
+      },
+      {
+        "id": "self-healing",
+        "name": "Self-healing / auto-pruning"
+      },
+      {
+        "id": "image-updater",
+        "name": "Argo Image Updater"
+      }
     ],
     "suggestedProbes": [
       "Walk me through your repo layout — app-of-apps, ApplicationSets, or flat?",
@@ -1926,5 +2106,909 @@
       "How do you handle secrets and service-account keys?"
     ],
     "checklistGuidance": "GCP usage often skews to a few services (BigQuery, GKE, Cloud Run). Look for breadth beyond just data warehousing."
+  },
+  {
+    "id": "sql",
+    "name": "SQL",
+    "category": "Language",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "When did you last write SQL more complex than a simple JOIN?",
+      "How do you read and act on an EXPLAIN plan?",
+      "Walk me through a query you optimized — what changed and why?",
+      "How do you decide between an index, a materialized view, and a denormalized column?",
+      "What's the difference between transaction isolation levels in your dialect of choice?"
+    ],
+    "checklistGuidance": "SQL is dialect-agnostic on paper but candidate depth varies wildly. Coverage of joins, window functions, indexes, and query plans separates real practitioners from copy-paste consumers.",
+    "services": [
+      {
+        "id": "joins",
+        "name": "Joins (INNER / LEFT / RIGHT / FULL / CROSS)"
+      },
+      {
+        "id": "subqueries-cte",
+        "name": "Subqueries & CTEs (WITH / recursive)"
+      },
+      {
+        "id": "window-functions",
+        "name": "Window functions (OVER / PARTITION BY)"
+      },
+      {
+        "id": "aggregations",
+        "name": "GROUP BY / HAVING / aggregations"
+      },
+      {
+        "id": "indexes",
+        "name": "Indexes (B-tree, hash, partial, covering)"
+      },
+      {
+        "id": "query-plans",
+        "name": "EXPLAIN / query plan analysis"
+      },
+      {
+        "id": "transactions",
+        "name": "Transactions & isolation levels"
+      },
+      {
+        "id": "normalization",
+        "name": "Normalization & schema design"
+      },
+      {
+        "id": "views",
+        "name": "Views & materialized views"
+      },
+      {
+        "id": "stored-procs",
+        "name": "Stored procedures / functions / triggers"
+      },
+      {
+        "id": "json-cols",
+        "name": "JSON / JSONB columns"
+      },
+      {
+        "id": "partitioning",
+        "name": "Table partitioning"
+      }
+    ]
+  },
+  {
+    "id": "c",
+    "name": "C",
+    "category": "Language",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "What domain do you use C in — embedded, kernel, library, performance code?",
+      "How do you manage memory ownership and lifetimes without RAII?",
+      "Walk me through a memory bug you've debugged — what tools did you use?",
+      "Which C standard does your codebase target, and why?",
+      "How do you handle undefined behaviour and strict-aliasing in practice?"
+    ],
+    "checklistGuidance": "C skill is less about which standard year and more about which concepts and tooling the candidate has internalised. Coverage of memory, pointers, build system, and tooling separates practitioners from CS-class-only knowledge.",
+    "services": [
+      {
+        "id": "pointers",
+        "name": "Pointer arithmetic & double pointers"
+      },
+      {
+        "id": "memory-mgmt",
+        "name": "Manual memory management (malloc/free, ownership)"
+      },
+      {
+        "id": "structs-unions",
+        "name": "Structs, unions, bitfields"
+      },
+      {
+        "id": "preprocessor",
+        "name": "Preprocessor & macros (incl. variadic)"
+      },
+      {
+        "id": "function-pointers",
+        "name": "Function pointers & callbacks"
+      },
+      {
+        "id": "build-systems",
+        "name": "Make / CMake / Meson / autotools"
+      },
+      {
+        "id": "debugging",
+        "name": "gdb / lldb debugging"
+      },
+      {
+        "id": "valgrind-asan",
+        "name": "Valgrind / AddressSanitizer / UBSan"
+      },
+      {
+        "id": "concurrency",
+        "name": "Threads / atomics / memory model (C11+)"
+      },
+      {
+        "id": "c-modern",
+        "name": "Modern C features (C11 / C17 / C23)"
+      },
+      {
+        "id": "ffi",
+        "name": "FFI / interop with other languages"
+      },
+      {
+        "id": "embedded",
+        "name": "Embedded / freestanding / no libc"
+      }
+    ]
+  },
+  {
+    "id": "cpp",
+    "name": "C++",
+    "category": "Language",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "What's the newest C++ standard you've shipped production code in?",
+      "How do you decide between unique_ptr, shared_ptr, and a raw pointer?",
+      "Walk me through your use of move semantics — when does it actually help?",
+      "Have you used coroutines, modules, or ranges in production yet?",
+      "How do you approach template-heavy code — concepts, SFINAE, or avoid?"
+    ],
+    "checklistGuidance": "C++ is huge; depth on modern features (C++17 and beyond) signals whether someone has kept up or is still writing C++98-with-classes. Coverage of memory, templates, and tooling matters more than knowing every keyword.",
+    "services": [
+      {
+        "id": "smart-pointers",
+        "name": "Smart pointers (unique_ptr, shared_ptr, weak_ptr)"
+      },
+      {
+        "id": "move-semantics",
+        "name": "Move semantics & rvalue references"
+      },
+      {
+        "id": "lambdas",
+        "name": "Lambdas & functional utilities"
+      },
+      {
+        "id": "templates",
+        "name": "Templates & template metaprogramming"
+      },
+      {
+        "id": "concepts",
+        "name": "Concepts & constraints (C++20)"
+      },
+      {
+        "id": "ranges",
+        "name": "Ranges & views (C++20/23)"
+      },
+      {
+        "id": "modules",
+        "name": "Modules (C++20)"
+      },
+      {
+        "id": "coroutines",
+        "name": "Coroutines (C++20)"
+      },
+      {
+        "id": "stl",
+        "name": "STL containers & algorithms"
+      },
+      {
+        "id": "raii",
+        "name": "RAII & exception safety"
+      },
+      {
+        "id": "concurrency-cpp",
+        "name": "std::thread / atomics / memory order"
+      },
+      {
+        "id": "build",
+        "name": "CMake / Conan / vcpkg"
+      },
+      {
+        "id": "tooling-cpp",
+        "name": "clang-tidy / sanitizers / static analysis"
+      },
+      {
+        "id": "cpp23",
+        "name": "Modern features (C++17 / 20 / 23)"
+      }
+    ]
+  },
+  {
+    "id": "javascript",
+    "name": "JavaScript (ECMAScript)",
+    "category": "Language",
+    "currentVersion": "ES2025",
+    "releasedYear": 1995,
+    "versionTiers": [
+      {
+        "min": "2024",
+        "label": "Excellent",
+        "color": "green",
+        "note": "ES2024/2025 — modern syntax (await import, decorators, immutable arrays, Iterator helpers)."
+      },
+      {
+        "min": "2020",
+        "label": "Good",
+        "color": "green",
+        "note": "ES2020–2023 — optional chaining, nullish coalescing, top-level await, Array.at."
+      },
+      {
+        "min": "2017",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "ES2017–2019 — async/await era; verify async/Promise fluency, not just syntax."
+      },
+      {
+        "min": "2015",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "ES6/ES2015 baseline — arrow functions, let/const, classes, modules."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-ES6 — relies on var/IIFE patterns; modern toolchains expect ES2015+."
+      }
+    ],
+    "enterpriseStillUsed": true,
+    "suggestedProbes": [
+      "When you reach for JavaScript over TypeScript, what drives that choice?",
+      "Explain the event loop, microtasks, and macrotasks.",
+      "How do closures and the prototype chain affect your debugging approach?",
+      "When have async/await bitten you, and how did you work around it?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask which ES features they reach for routinely (optional chaining, async iterators, modules)."
+  },
+  {
+    "id": "huggingface-transformers",
+    "name": "Hugging Face Transformers",
+    "category": "AI/ML",
+    "currentVersion": "5.8",
+    "releasedYear": 2018,
+    "versionTiers": [
+      {
+        "min": "5.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "v5 — current major; latest model architectures, optimized inference."
+      },
+      {
+        "min": "4.40",
+        "label": "Good",
+        "color": "green",
+        "note": "v4.40+ — recent major with broad model coverage."
+      },
+      {
+        "min": "4.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Older v4 — still common; verify familiarity with newer model classes (Llama, Mistral, etc.)."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "v3 or earlier — pre-modern-LLM era."
+      }
+    ],
+    "suggestedProbes": [
+      "Which model families have you fine-tuned or served with Transformers?",
+      "How do you handle tokenisation differences across model families?",
+      "PEFT / LoRA / quantisation — have you used any in production?",
+      "When have you reached for vLLM / TGI / Optimum instead of vanilla Transformers?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask which models they've actually worked with and whether they fine-tune or just use pre-trained."
+  },
+  {
+    "id": "llm-api-sdk",
+    "name": "LLM API Integration (OpenAI / Anthropic / etc.)",
+    "category": "AI/ML",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "Which LLM provider's SDK have you shipped against in production?",
+      "How do you handle latency, retries, and partial outputs from an LLM?",
+      "Talk me through your prompt-engineering and evaluation loop.",
+      "Have you implemented tool use / function calling end-to-end?",
+      "What's your strategy for prompt caching and cost control?"
+    ],
+    "checklistGuidance": "LLM API skill is now table-stakes for many product teams. Coverage of caching, tool use, structured outputs, and streaming separates 'called the chat endpoint once' from 'built an agentic feature in production'.",
+    "services": [
+      {
+        "id": "openai-sdk",
+        "name": "OpenAI SDK / API"
+      },
+      {
+        "id": "anthropic-sdk",
+        "name": "Anthropic SDK / Claude API"
+      },
+      {
+        "id": "google-genai",
+        "name": "Google Gemini / Vertex AI SDK"
+      },
+      {
+        "id": "azure-openai",
+        "name": "Azure OpenAI Service"
+      },
+      {
+        "id": "streaming",
+        "name": "Streaming responses (SSE)"
+      },
+      {
+        "id": "tool-use",
+        "name": "Tool use / function calling"
+      },
+      {
+        "id": "structured-outputs",
+        "name": "Structured outputs / JSON mode"
+      },
+      {
+        "id": "vision",
+        "name": "Vision / multimodal inputs"
+      },
+      {
+        "id": "prompt-caching",
+        "name": "Prompt caching for cost reduction"
+      },
+      {
+        "id": "embeddings",
+        "name": "Embeddings API"
+      },
+      {
+        "id": "fine-tuning",
+        "name": "Fine-tuning via API"
+      },
+      {
+        "id": "batch-api",
+        "name": "Batch API for bulk inference"
+      },
+      {
+        "id": "eval-harness",
+        "name": "Evaluation / regression harness"
+      },
+      {
+        "id": "agents",
+        "name": "Agentic / multi-turn tool workflows"
+      }
+    ]
+  },
+  {
+    "id": "vector-db",
+    "name": "Vector Databases (RAG)",
+    "category": "AI/ML",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "Which vector store did you choose for your last RAG system, and why?",
+      "How do you decide chunking strategy for retrieval?",
+      "Walk me through your hybrid (sparse + dense) retrieval setup.",
+      "How do you evaluate retrieval quality — recall@k, MRR, something else?",
+      "What's your refresh / re-indexing cadence for changing source documents?"
+    ],
+    "checklistGuidance": "Vector search is the backbone of modern RAG. Provider choice matters less than fluency with embeddings, chunking, and retrieval evaluation.",
+    "services": [
+      {
+        "id": "pgvector",
+        "name": "pgvector (Postgres extension)"
+      },
+      {
+        "id": "pinecone",
+        "name": "Pinecone"
+      },
+      {
+        "id": "weaviate",
+        "name": "Weaviate"
+      },
+      {
+        "id": "chroma",
+        "name": "Chroma"
+      },
+      {
+        "id": "qdrant",
+        "name": "Qdrant"
+      },
+      {
+        "id": "milvus",
+        "name": "Milvus / Zilliz"
+      },
+      {
+        "id": "lancedb",
+        "name": "LanceDB"
+      },
+      {
+        "id": "faiss",
+        "name": "FAISS (in-process)"
+      },
+      {
+        "id": "elastic-vector",
+        "name": "Elasticsearch / OpenSearch vector"
+      },
+      {
+        "id": "redis-vector",
+        "name": "Redis Vector"
+      },
+      {
+        "id": "hybrid-search",
+        "name": "Hybrid (BM25 + dense) retrieval"
+      },
+      {
+        "id": "reranking",
+        "name": "Re-ranking (cross-encoder / Cohere)"
+      }
+    ]
+  },
+  {
+    "id": "scikit-learn",
+    "name": "scikit-learn",
+    "category": "AI/ML",
+    "currentVersion": "1.8",
+    "releasedYear": 2007,
+    "versionTiers": [
+      {
+        "min": "1.5",
+        "label": "Excellent",
+        "color": "green",
+        "note": "1.5+ — modern API, pandas output, metadata routing."
+      },
+      {
+        "min": "1.0",
+        "label": "Good",
+        "color": "green",
+        "note": "1.x — stable API, broadly compatible."
+      },
+      {
+        "min": "0.24",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Pre-1.0 0.24 era — common in long-lived notebooks; verify modern Pipeline usage."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "0.23 or earlier — predates many current API conventions."
+      }
+    ],
+    "suggestedProbes": [
+      "When do you reach for scikit-learn vs deep learning?",
+      "Walk me through your Pipeline / ColumnTransformer usage.",
+      "How do you handle imbalanced classes and target leakage?",
+      "Which metric do you optimise for, and how do you sanity-check the score?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they routinely use Pipeline and ColumnTransformer or stick to raw fit/predict."
+  },
+  {
+    "id": "databricks",
+    "name": "Databricks",
+    "category": "Data",
+    "currentVersion": "17.3",
+    "releasedYear": 2013,
+    "versionTiers": [
+      {
+        "min": "16",
+        "label": "Excellent",
+        "color": "green",
+        "note": "DBR 16+/17+ — Unity Catalog standard, Photon, modern Delta features."
+      },
+      {
+        "min": "13",
+        "label": "Good",
+        "color": "green",
+        "note": "DBR 13–15 — recent enough for Delta Lake 3.x, structured streaming."
+      },
+      {
+        "min": "10",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Older LTS DBR — verify Unity Catalog and Delta Lake fluency."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-DBR 10 — likely missing Delta + Unity Catalog era."
+      }
+    ],
+    "suggestedProbes": [
+      "Walk me through your Delta Lake / lakehouse architecture.",
+      "How do you organise Unity Catalog — schemas, governance, lineage?",
+      "Photon vs vanilla Spark — when and why?",
+      "How do you handle CI/CD for notebooks and jobs (DAB, Repos)?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they've shipped Delta Lake + Unity Catalog or just used the notebook UI."
+  },
+  {
+    "id": "dbt",
+    "name": "dbt (data build tool)",
+    "category": "Data",
+    "currentVersion": "1.11",
+    "releasedYear": 2016,
+    "versionTiers": [
+      {
+        "min": "1.8",
+        "label": "Excellent",
+        "color": "green",
+        "note": "1.8+ — unit tests, model versions, modern ref()/source() patterns."
+      },
+      {
+        "min": "1.5",
+        "label": "Good",
+        "color": "green",
+        "note": "1.5–1.7 — generic tests, contracts, semantic layer."
+      },
+      {
+        "min": "1.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Older 1.x — verify Jinja and test fluency."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-1.0 — predates many current conventions."
+      }
+    ],
+    "suggestedProbes": [
+      "How is your dbt project structured — staging, intermediate, marts?",
+      "Walk me through your testing strategy (generic + unit + custom).",
+      "How do you handle incremental models for large fact tables?",
+      "dbt Core vs Cloud — what's your team's setup?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they own dbt project layout decisions or just write models in someone else's."
+  },
+  {
+    "id": "clickhouse",
+    "name": "ClickHouse",
+    "category": "Database",
+    "currentVersion": "26.1",
+    "releasedYear": 2016,
+    "versionTiers": [
+      {
+        "min": "25",
+        "label": "Excellent",
+        "color": "green",
+        "note": "25+/26+ — modern engine, JSON type, parallel replicas."
+      },
+      {
+        "min": "23",
+        "label": "Good",
+        "color": "green",
+        "note": "23–24 — strong feature set, widely deployed."
+      },
+      {
+        "min": "21",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "21–22 LTS — still common in production; verify modern engine choices."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-21 — predates many production-critical features."
+      }
+    ],
+    "suggestedProbes": [
+      "Which table engine do you reach for first — MergeTree variants?",
+      "How do you design primary key / ORDER BY for write-heavy ingest?",
+      "Walk me through your materialized view strategy.",
+      "How do you handle GDPR-style deletes in a column store?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask which engines they've used and whether they've tuned ORDER BY / partition keys."
+  },
+  {
+    "id": "duckdb",
+    "name": "DuckDB",
+    "category": "Database",
+    "currentVersion": "1.5",
+    "releasedYear": 2019,
+    "versionTiers": [
+      {
+        "min": "1.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "1.x — stable API, production-ready, broad format support."
+      },
+      {
+        "min": "0.9",
+        "label": "Good",
+        "color": "green",
+        "note": "0.9+ — close to 1.0 surface area."
+      },
+      {
+        "min": "0.5",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Older 0.x — pre-stable; verify they've moved with the API churn."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Very early 0.x — substantial API differences from current."
+      }
+    ],
+    "suggestedProbes": [
+      "When do you choose DuckDB over Postgres / a warehouse?",
+      "How do you use DuckDB with Parquet / Iceberg / external sources?",
+      "Have you used the Python or Node bindings in production?",
+      "What's your story for concurrency and write workloads?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they treat DuckDB as a query engine over files or a persistent store."
+  },
+  {
+    "id": "helm",
+    "name": "Helm",
+    "category": "DevOps",
+    "currentVersion": "4.2",
+    "releasedYear": 2015,
+    "versionTiers": [
+      {
+        "min": "4.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "Helm 4 — current; improved schema handling, OCI-first."
+      },
+      {
+        "min": "3.10",
+        "label": "Good",
+        "color": "green",
+        "note": "Helm 3.10+ — widely deployed, stable."
+      },
+      {
+        "min": "3.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Older Helm 3 — still common; verify chart-writing fluency."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Helm 2 — Tiller-era; long EOL."
+      }
+    ],
+    "suggestedProbes": [
+      "Walk me through a non-trivial chart you've authored.",
+      "How do you handle secrets in Helm — SOPS, sealed-secrets, external?",
+      "Helm vs Kustomize vs raw manifests — when do you reach for which?",
+      "How do you version and promote charts across environments?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they author charts or just `helm install` someone else's."
+  },
+  {
+    "id": "pulumi",
+    "name": "Pulumi",
+    "category": "DevOps",
+    "currentVersion": "3.239",
+    "releasedYear": 2018,
+    "versionTiers": [
+      {
+        "min": "3.100",
+        "label": "Excellent",
+        "color": "green",
+        "note": "Modern 3.x — broad provider coverage, ESC, current SDK."
+      },
+      {
+        "min": "3.0",
+        "label": "Good",
+        "color": "green",
+        "note": "Early 3.x — stable surface; verify they're on a recent enough release."
+      },
+      {
+        "min": "2.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Pulumi 2.x — predates several modern features."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pulumi 1.x — long EOL."
+      }
+    ],
+    "suggestedProbes": [
+      "Which language do you write Pulumi in, and why?",
+      "How do you organise stacks across environments?",
+      "How do you handle secrets — Pulumi ESC, KMS, vault?",
+      "Pulumi vs Terraform / CDK — what was the deciding factor?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they own the IaC repo or consume modules someone else writes."
+  },
+  {
+    "id": "observability",
+    "name": "Observability (Prometheus / Grafana / OTel)",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "suggestedProbes": [
+      "Walk me through your last incident — how did observability help (or fail) you?",
+      "Metrics vs logs vs traces — when do you reach for which?",
+      "What's your sampling strategy for traces in high-volume services?",
+      "How do you set SLOs / error budgets, and what alerts come off them?",
+      "Have you migrated a service to OpenTelemetry from a legacy agent?"
+    ],
+    "checklistGuidance": "Real observability skill is using the three pillars together, not just installing the agents. Coverage of metrics, traces, logs, and SLO-driven alerting separates pager-holders from dashboard-tourists.",
+    "services": [
+      {
+        "id": "prometheus",
+        "name": "Prometheus (metrics)"
+      },
+      {
+        "id": "grafana",
+        "name": "Grafana (dashboards)"
+      },
+      {
+        "id": "loki",
+        "name": "Loki (logs)"
+      },
+      {
+        "id": "tempo",
+        "name": "Tempo / Jaeger (traces)"
+      },
+      {
+        "id": "alertmanager",
+        "name": "Alertmanager / PagerDuty integration"
+      },
+      {
+        "id": "opentelemetry",
+        "name": "OpenTelemetry SDK / Collector"
+      },
+      {
+        "id": "otlp",
+        "name": "OTLP exporters & semantic conventions"
+      },
+      {
+        "id": "datadog",
+        "name": "Datadog"
+      },
+      {
+        "id": "new-relic",
+        "name": "New Relic"
+      },
+      {
+        "id": "splunk",
+        "name": "Splunk"
+      },
+      {
+        "id": "honeycomb",
+        "name": "Honeycomb"
+      },
+      {
+        "id": "sentry",
+        "name": "Sentry (errors / perf)"
+      },
+      {
+        "id": "slos",
+        "name": "SLOs / SLIs / error budgets"
+      },
+      {
+        "id": "rum",
+        "name": "RUM / frontend telemetry"
+      }
+    ]
+  },
+  {
+    "id": "bun",
+    "name": "Bun",
+    "category": "Backend",
+    "currentVersion": "1.3",
+    "releasedYear": 2022,
+    "versionTiers": [
+      {
+        "min": "1.2",
+        "label": "Excellent",
+        "color": "green",
+        "note": "1.2+ — current; broad Node compat, native test runner, bundler."
+      },
+      {
+        "min": "1.0",
+        "label": "Good",
+        "color": "green",
+        "note": "1.0+ — stable; production-ready for most workloads."
+      },
+      {
+        "min": "0.6",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Pre-1.0 — fast-moving API; verify they've kept up."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Very early 0.x — substantial gaps vs current."
+      }
+    ],
+    "suggestedProbes": [
+      "Where do you use Bun in production — runtime, bundler, package manager, all?",
+      "What Node-compat issues have you hit, and how did you work around them?",
+      "How do you handle workspaces / monorepos with Bun?",
+      "Bun.serve vs Hono vs Express — what's your preference?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they've replaced Node with Bun in production or just experiment locally."
+  },
+  {
+    "id": "trpc",
+    "name": "tRPC",
+    "category": "Backend",
+    "currentVersion": "11.17",
+    "releasedYear": 2020,
+    "versionTiers": [
+      {
+        "min": "11.0",
+        "label": "Excellent",
+        "color": "green",
+        "note": "v11 — current; React Query v5 alignment, improved subscriptions."
+      },
+      {
+        "min": "10.0",
+        "label": "Good",
+        "color": "green",
+        "note": "v10 — widely deployed; modern router API."
+      },
+      {
+        "min": "9.0",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "v9 — pre-v10 router; verify they've migrated."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-v9 — substantially different API."
+      }
+    ],
+    "suggestedProbes": [
+      "How do you structure routers for a multi-package monorepo?",
+      "Walk me through your error and validation strategy (Zod, etc.).",
+      "How do you handle auth context propagation through procedures?",
+      "tRPC vs GraphQL vs REST — what tips the choice for you?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask whether they wrote the server side or only consumed from the client."
+  },
+  {
+    "id": "expo",
+    "name": "Expo (React Native)",
+    "category": "Mobile",
+    "currentVersion": "55",
+    "releasedYear": 2015,
+    "versionTiers": [
+      {
+        "min": "54",
+        "label": "Excellent",
+        "color": "green",
+        "note": "SDK 54+ — current; new architecture default, EAS-first."
+      },
+      {
+        "min": "50",
+        "label": "Good",
+        "color": "green",
+        "note": "SDK 50–53 — modern enough for new-architecture work."
+      },
+      {
+        "min": "46",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "SDK 46–49 — still common in older apps; verify they've moved past expo-cli."
+      },
+      {
+        "min": "0",
+        "label": "Concern",
+        "color": "red",
+        "note": "SDK 45 or earlier — Expo Go-era; predates EAS Build."
+      }
+    ],
+    "suggestedProbes": [
+      "Managed workflow vs bare / prebuild — which do you run in production?",
+      "How do you handle native modules that Expo doesn't ship out of the box?",
+      "Walk me through your EAS Build / Submit / Update pipeline.",
+      "Have you migrated an app to the New Architecture (Fabric / TurboModules)?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — ask which SDK they last shipped and whether they're on the new architecture."
   }
 ]
