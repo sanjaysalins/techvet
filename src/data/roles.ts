@@ -34,7 +34,7 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'devops',
     name: 'DevOps / Platform',
     description: 'CI/CD, infra-as-code, container orchestration.',
-    techIds: ['kubernetes', 'terraform', 'docker', 'github-actions', 'helm', 'observability'],
+    techIds: ['kubernetes', 'terraform', 'docker', 'github-actions', 'argocd', 'helm', 'observability'],
   },
   {
     id: 'sre',
@@ -46,7 +46,7 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'data',
     name: 'Data Engineer',
     description: 'Pipelines, warehousing, streaming.',
-    techIds: ['python', 'sql', 'dbt', 'databricks', 'kafka', 'airflow', 'postgresql'],
+    techIds: ['python', 'sql', 'spark', 'dbt', 'databricks', 'kafka', 'airflow', 'postgresql'],
   },
   {
     id: 'data-scientist',

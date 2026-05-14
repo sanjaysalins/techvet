@@ -2786,28 +2786,28 @@
     "releasedYear": 2018,
     "versionTiers": [
       {
-        "min": "3.100",
+        "min": "3.150",
         "label": "Excellent",
         "color": "green",
         "note": "Modern 3.x — broad provider coverage, ESC, current SDK."
       },
       {
-        "min": "3.0",
+        "min": "3.50",
         "label": "Good",
         "color": "green",
-        "note": "Early 3.x — stable surface; verify they're on a recent enough release."
+        "note": "3.50+ — stable surface, modern providers."
       },
       {
-        "min": "2.0",
+        "min": "3.0",
         "label": "Review / Probe",
         "color": "yellow",
-        "note": "Pulumi 2.x — predates several modern features."
+        "note": "Early 3.x — verify they've kept up with provider upgrades."
       },
       {
         "min": "0",
         "label": "Concern",
         "color": "red",
-        "note": "Pulumi 1.x — long EOL."
+        "note": "Pulumi 2.x or earlier — long EOL."
       }
     ],
     "suggestedProbes": [
@@ -2907,19 +2907,19 @@
         "min": "1.0",
         "label": "Good",
         "color": "green",
-        "note": "1.0+ — stable; production-ready for most workloads."
+        "note": "1.0+ — stable; production-ready."
       },
       {
-        "min": "0.6",
+        "min": "0.8",
         "label": "Review / Probe",
         "color": "yellow",
-        "note": "Pre-1.0 — fast-moving API; verify they've kept up."
+        "note": "Late 0.x — close to 1.0 but predates several modern APIs."
       },
       {
         "min": "0",
         "label": "Concern",
         "color": "red",
-        "note": "Very early 0.x — substantial gaps vs current."
+        "note": "Early 0.x — substantial pre-stable differences."
       }
     ],
     "suggestedProbes": [
@@ -3107,22 +3107,22 @@
         "note": "3.x / 4.x — current; browser mode, workspace, type testing."
       },
       {
-        "min": "1.0",
+        "min": "2.0",
         "label": "Good",
         "color": "green",
-        "note": "1.x / 2.x — stable API."
+        "note": "2.x — broadly used in production."
       },
       {
-        "min": "0.30",
+        "min": "1.0",
         "label": "Review / Probe",
         "color": "yellow",
-        "note": "Pre-1.0 — verify they've migrated to stable API."
+        "note": "1.x — pre-2.0 conventions; verify they've migrated."
       },
       {
         "min": "0",
         "label": "Concern",
         "color": "red",
-        "note": "Very early 0.x — substantial API differences."
+        "note": "0.x — substantial API differences from current."
       }
     ],
     "suggestedProbes": [
@@ -3310,22 +3310,22 @@
         "note": "1.x / 2.x — current; stable scripting API."
       },
       {
-        "min": "0.50",
+        "min": "0.55",
         "label": "Good",
         "color": "green",
-        "note": "0.50+ — close to stable surface."
+        "note": "0.55+ — close to stable surface."
       },
       {
-        "min": "0.40",
+        "min": "0.45",
         "label": "Review / Probe",
         "color": "yellow",
-        "note": "Older 0.4x — pre-stable; verify recent usage."
+        "note": "0.45-0.54 — predates several API stabilisations."
       },
       {
         "min": "0",
         "label": "Concern",
         "color": "red",
-        "note": "Pre-0.40 — substantial API differences."
+        "note": "Pre-0.45 — substantial API differences."
       }
     ],
     "suggestedProbes": [
@@ -3731,19 +3731,19 @@
         "min": "4.0",
         "label": "Good",
         "color": "green",
-        "note": "4.x — production-ready; broad integrations."
+        "note": "4.x — still production-ready in mature projects."
       },
       {
-        "min": "2.0",
+        "min": "3.0",
         "label": "Review / Probe",
         "color": "yellow",
-        "note": "2–3 — pre-islands maturity."
+        "note": "3.x — pre-islands maturity; verify upgrade path."
       },
       {
         "min": "0",
         "label": "Concern",
         "color": "red",
-        "note": "Pre-2.0 — substantial API differences."
+        "note": "Pre-3.0 — substantial API differences."
       }
     ],
     "suggestedProbes": [
@@ -4014,19 +4014,19 @@
         "min": "3.0",
         "label": "Good",
         "color": "green",
-        "note": "3.x — stable surface."
+        "note": "3.x — still common, close to 4.x surface."
       },
       {
         "min": "2.0",
         "label": "Review / Probe",
         "color": "yellow",
-        "note": "2.x — pre-4.x router."
+        "note": "2.x — rare in 2026 production; verify migration plan."
       },
       {
         "min": "0",
         "label": "Concern",
         "color": "red",
-        "note": "Pre-2.0 — substantial API differences."
+        "note": "Pre-2.0 — essentially extinct."
       }
     ],
     "suggestedProbes": [
