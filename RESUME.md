@@ -1,10 +1,12 @@
-# Resume point — TechVet (2026-05-14 EOD)
+# Resume point — TechVet (2026-05-14 EOD, paused mid-red-team-fixes)
 
-**Status:** clean working tree. Yesterday's uncommitted work plus today's five additions are all committed to `main`. RESUME.md's previous TODO list is empty.
+**Status:** clean working tree. Stopped partway through fixing the high-severity items from today's red-team pass — see "Where I stopped" below. Build passes (`tsc -b` clean).
 
 ## Today's commits
 
 ```
+c115ea0  Restore dropped templates and recalibrate fast-mover tier mins
+b4e4a8d  Refresh RESUME.md and CLAUDE.md for catalog 2.0
 ddb31e7  Catalog refresh 2.0 — 73 → 96 techs, +5 role templates
 21024a5  Update CLAUDE.md for the 2026-05-14 catalog and scoring changes
 5b20d50  Update RESUME.md for 2026-05-14 EOD
@@ -56,6 +58,42 @@ Recruiter-driven expansion to cover whole job categories that were missing.
 - Backend: hono
 
 **Existing role templates modernized:** DevOps now includes `helm` + `observability` (in place of `gcp`/`argocd` that already appeared elsewhere); Data Engineer adds `sql`/`dbt`/`databricks`; Mobile adds `expo`.
+
+## Where I stopped (mid-red-team-fixes)
+
+I was working through the 5 high-severity items from a red-team review of today's work. Status as of pause:
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Silently dropped `argocd`/`spark` from role templates | ✓ Fixed in `c115ea0` |
+| 2 | Degenerate tier mins for fast-movers (Hono, Astro, Vitest, Bun, k6, Pulumi) | ✓ Fixed in `c115ea0` |
+| 3 | Asymmetric "I don't remember" — checklist has no equivalent | ⏳ Not started |
+| 4 | Unverified version-mode entries (~45 from yesterday's batch agent) | 🟡 Sample-verified 29 via GitHub releases — all matched current JSON (Node v26.1, Express v5.2, Vue v3.5.34, NestJS v11.1, Fastify v5.8, Tailwind v4.3.0, etc.). No corrections needed for the sample. **~16 still unsampled** — full pass deferred. |
+| 5 | Zero automated tests on scoring logic | ⏳ Not started |
+
+### To pick up tomorrow
+
+**Item 3 — add `checklistUnsure` toggle:**
+- Add `checklistUnsure?: boolean` to `AssessmentItem` (mirrors `unknownVersion`).
+- `scoring.ts → resolveChecklistTier`: if `checklistUnsure`, return Yellow regardless of coverage. Note still reads "candidate is unsure — verify or move on."
+- `TechCard.tsx → ChecklistBody`: add a small button next to the `X / Y` count, label "Candidate unsure", parallel to the existing "I don't remember" affordance for version mode.
+- Add to `store/assessment.ts` `addTech` defaults (`checklistUnsure: false`).
+- About 15-20 lines across 4 files. Mirror the `checklistTouched` change as a template.
+
+**Item 5 — install Vitest + ~30 unit tests:**
+- `npm i -D vitest @vitest/coverage-v8` (Vitest is already in our own catalog at v4.1).
+- Add `"test": "vitest"` script to `package.json`.
+- Test files to create:
+  - `src/lib/__tests__/version.test.ts` — `compareVersions`, `parseVersion`, `looksLikeVersion`. ~8 cases including the C99 > C23 letter-strip behavior, LTS suffix handling, bare-major padding (`"3"` vs `"3.2"`).
+  - `src/lib/__tests__/scoring.test.ts` — `resolveTier` for both modes. ~15 cases: empty version → Yellow, `unknownVersion` → Yellow, exact tier match, between tiers (matches the lower band), above max → Excellent, depth working → no change, depth deep → severity-1, depth deep on green → still green (non-cumulative), checklist 0 untouched → Yellow "Not yet assessed", checklist 0 touched → Red, checklist 25%/26% → Yellow boundary, checklist 66%/67% → Green boundary, enterprise note on yellow, new `checklistUnsure` → Yellow.
+  - `src/data/__tests__/integrity.test.ts` — load JSON + roles.ts, assert:
+    - all tech IDs unique
+    - every `ROLE_TEMPLATES[*].techIds` resolves to an existing tech
+    - every checklist tech has unique service IDs within itself
+    - every version-mode tech has at least one tier and a parseable `currentVersion`
+- Vitest auto-watches in dev; `npm test` runs once. ~30 mins to write all tests once Vitest is installed.
+
+**Item 4 (cleanup) — finish version sample:** the unsampled ~16 techs are mostly the AI/ML newcomers (HF Transformers, scikit-learn, pandas, numpy, jupyter, dbt, databricks, clickhouse, duckdb) which were verified at the time of addition, plus the LangChain split (1.3 vs core 1.4) and Elasticsearch precision (9 vs 9.4.1). Low priority — no version was off by more than a minor.
 
 ## What's verified today (Playwright)
 
@@ -114,4 +152,7 @@ npm run dev                    # then verify in browser:
                                #   - Tick 8/12 → Green "Good"
                                #   - Bun "1.3" → Green "Excellent"
                                #   - Export PDF → "Downloaded 0.3 MB"
+                               #   - 12 role templates + Custom on landing
+                               #   - AI/ML Engineer preloads 8 techs
+                               #   - Hono with version "2.5" → Yellow (re-calibrated)
 ```
