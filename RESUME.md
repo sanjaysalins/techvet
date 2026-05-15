@@ -1,10 +1,12 @@
-# Resume point — TechVet (2026-05-15 EOD, red-team items 3 & 5 landed)
+# Resume point — TechVet (2026-05-15 EOD, red-team punch list cleared)
 
-**Status:** clean working tree. Two of yesterday's three queued items shipped today (checklist "Candidate unsure" toggle + Vitest with 41 unit tests). Build passes (`tsc -b` clean); `npm test` passes (41/41). Only Item 4 (finish version sample on the unsampled ~16 techs) is left from the red-team punch list.
+**Status:** clean working tree. All five red-team items from yesterday now closed. Build passes (`tsc -b` clean); `npm test` passes (41/41). Production build still 1.23 MB / 361 KB gzipped.
 
 ## Today's commits (2026-05-15)
 
 ```
+f287768  Refresh version display for Elasticsearch, ClickHouse, Databricks
+dd194a4  Update RESUME.md for 2026-05-15 EOD — items 3 & 5 landed
 dd86cd2  Add Vitest + 41 unit tests for version, scoring, catalog integrity
 20eb852  Add "Candidate unsure" toggle to checklist mode
 ```
@@ -67,14 +69,14 @@ Recruiter-driven expansion to cover whole job categories that were missing.
 
 **Existing role templates modernized:** DevOps now includes `helm` + `observability` (in place of `gcp`/`argocd` that already appeared elsewhere); Data Engineer adds `sql`/`dbt`/`databricks`; Mobile adds `expo`.
 
-## Red-team punch list — final state
+## Red-team punch list — final state (all five closed)
 
 | # | Item | Status |
 |---|------|--------|
 | 1 | Silently dropped `argocd`/`spark` from role templates | ✓ Fixed in `c115ea0` |
 | 2 | Degenerate tier mins for fast-movers (Hono, Astro, Vitest, Bun, k6, Pulumi) | ✓ Fixed in `c115ea0` |
 | 3 | Asymmetric "I don't remember" — checklist has no equivalent | ✓ Fixed in `20eb852` |
-| 4 | Unverified version-mode entries (~45 from yesterday's batch agent) | 🟡 29/45 sample-verified via GitHub releases — all matched. ~16 still unsampled (mostly AI/ML, LangChain split, Elasticsearch precision). Low priority — no version was off by more than a minor in the sample. |
+| 4 | Unverified version-mode entries (~45 from yesterday's batch agent) | ✓ Closed in `f287768` — full 45/45 sample verified; 3 precision bumps applied. |
 | 5 | Zero automated tests on scoring logic | ✓ Fixed in `dd86cd2` — 41 tests across 3 files |
 
 ### What landed today (2026-05-15)
@@ -87,9 +89,16 @@ Recruiter-driven expansion to cover whole job categories that were missing.
 - **`parseVersion` was made `export`** in `lib/version.ts` to test it directly.
 - **Integrity test caught one catalog quirk:** Snowflake's `currentVersion: "Current (rolling)"` (intentional — managed service, no user-facing version). Since `currentVersion` is display-only and never fed to `compareVersions`, the test was relaxed to drop the parseability check on that field. Tier `min` parseability — which IS used in scoring — still asserted.
 
-### To pick up next time (optional cleanup)
+### Item 4 — what the full version sweep found (commit `f287768`)
 
-**Item 4 — finish the version sample:** the unsampled ~16 techs are mostly the AI/ML newcomers (HF Transformers, scikit-learn, pandas, numpy, jupyter, dbt, databricks, clickhouse, duckdb) which were verified at the time of addition, plus the LangChain split (1.3 vs core 1.4) and Elasticsearch precision (9 vs 9.4.1). Low priority — no version was off by more than a minor.
+Cross-checked the remaining 16 unsampled techs in a single parallel `gh api` pass plus three WebFetch lookups for Apache + Databricks (which don't publish to GitHub releases).
+
+- **13/16 matched current upstream within a patch** (cosmetic drift, no change): PyTorch 2.12.0, TensorFlow 2.21.0, pandas 3.0.3, numpy 2.4.4, scikit-learn 1.8.0, JupyterLab 4.5.7, dbt-core 1.11.10, DuckDB 1.5.2, Airflow 3.2.1, HF Transformers 5.8.1, LangChain 1.3.1, Spark 4.1.0, Flink 2.2.1.
+- **3 precision bumps applied**:
+  - `elasticsearch` "9" → **"9.4.1"** (RESUME called this out)
+  - `clickhouse` "26.1" → **"26.4"** (was 3 minors stale; 26.4 is current stable, 26.3 is the LTS line)
+  - `databricks` "17.3" → **"18.2 (17.3 LTS)"** (DBR 17.3 is now the LTS line as of Oct 2025; DBR 18.2 is the May 4 2026 standard release; tier note refreshed)
+- **No tier mins changed** — the existing bands are conservative enough that the observed drift doesn't push any candidate into the wrong tier. Cosmetic display precision was the only actionable gap.
 
 ## What's verified today (2026-05-15)
 
@@ -100,6 +109,7 @@ Recruiter-driven expansion to cover whole job categories that were missing.
    - Tick 3 services → Yellow "Review / Probe — 3/12 services".
    - Click "Candidate unsure" → button turns amber, badge → Yellow "Review / Probe — candidate unsure", all 12 checkboxes disabled, grid dimmed (`opacity-50 pointer-events-none`).
    - Click "Candidate unsure" again → restores Yellow "Review / Probe — 3/12 services" with the same 3 ticks intact (non-destructive toggle).
+4. **Catalog version pass (16 techs):** all matched upstream within a patch except the 3 precision bumps committed in `f287768`. Tier mins unchanged.
 
 ### Previously verified (still holds — 2026-05-14)
 
