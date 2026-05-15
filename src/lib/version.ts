@@ -15,7 +15,7 @@ export function compareVersions(a: string, b: string): number {
   return 0;
 }
 
-function parseVersion(v: string): number[] {
+export function parseVersion(v: string): number[] {
   if (!v) return [0];
   const cleaned = v.toString().toLowerCase().trim()
     .replace(/lts/g, '')
