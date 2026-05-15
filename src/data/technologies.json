@@ -1189,7 +1189,7 @@
     "id": "elasticsearch",
     "name": "Elasticsearch / OpenSearch",
     "category": "Database",
-    "currentVersion": "9",
+    "currentVersion": "9.4.1",
     "versionTiers": [
       {
         "min": "9",
@@ -2578,14 +2578,14 @@
     "id": "databricks",
     "name": "Databricks",
     "category": "Data",
-    "currentVersion": "17.3",
+    "currentVersion": "18.2 (17.3 LTS)",
     "releasedYear": 2013,
     "versionTiers": [
       {
         "min": "16",
         "label": "Excellent",
         "color": "green",
-        "note": "DBR 16+/17+ — Unity Catalog standard, Photon, modern Delta features."
+        "note": "DBR 16+/17+/18+ — Unity Catalog standard, Photon, modern Delta features. DBR 17.3 LTS / 18.2 standard are current."
       },
       {
         "min": "13",
@@ -2660,7 +2660,7 @@
     "id": "clickhouse",
     "name": "ClickHouse",
     "category": "Database",
-    "currentVersion": "26.1",
+    "currentVersion": "26.4",
     "releasedYear": 2016,
     "versionTiers": [
       {
