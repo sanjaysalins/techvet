@@ -43,6 +43,22 @@ export function resolveTier(
   tech: Technology,
   item: AssessmentItem
 ): ResolvedTier {
+  // Candidate explicitly does not work with this tech. Excluded from
+  // scoring entirely — buckets and radar must filter on `skipped`.
+  // The `color` field is a sentinel; consumers should branch on `skipped`
+  // before rendering a tier badge.
+  if (item.notUsed) {
+    return {
+      color: 'yellow',
+      label: `Not in candidate's stack`,
+      note: `Candidate confirmed they don't work with ${tech.name}. Excluded from the score and radar.`,
+      enterpriseNote: undefined,
+      unknownVersion: false,
+      depthAdjusted: false,
+      skipped: true,
+    };
+  }
+
   if (tech.vetMode === 'checklist') {
     return resolveChecklistTier(tech, item);
   }

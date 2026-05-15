@@ -36,15 +36,20 @@ export default function Summary() {
     });
   }, [items]);
 
+  // Skipped items (notUsed=true) are excluded from scoring buckets and radar.
+  // They get their own neutral section at the bottom of the report.
+  const scored = useMemo(() => resolved.filter(r => !r.tier.skipped), [resolved]);
+  const skipped = useMemo(() => resolved.filter(r => r.tier.skipped), [resolved]);
+
   const buckets = useMemo(() => {
     const b: Record<TierColor, typeof resolved> = { green: [], yellow: [], red: [] };
-    resolved.forEach(r => b[r.tier.color].push(r));
+    scored.forEach(r => b[r.tier.color].push(r));
     return b;
-  }, [resolved]);
+  }, [scored]);
 
   const radarData = useMemo(() => {
     const byCat = new Map<string, { total: number; count: number }>();
-    resolved.forEach(r => {
+    scored.forEach(r => {
       const cat = r.tech.category;
       const prev = byCat.get(cat) ?? { total: 0, count: 0 };
       prev.total += colorScore(r.tier.color);
@@ -56,7 +61,7 @@ export default function Summary() {
       score: +(total / count).toFixed(2),
       count,
     }));
-  }, [resolved]);
+  }, [scored]);
 
   if (items.length === 0) {
     return (
@@ -166,7 +171,7 @@ export default function Summary() {
         </header>
 
         {/* Headline stats */}
-        <section className="grid grid-cols-3 gap-4 mb-8">
+        <section className="grid grid-cols-3 gap-4 mb-2">
           <StatCard
             color="green"
             count={buckets.green.length}
@@ -186,6 +191,14 @@ export default function Summary() {
             icon={<AlertCircle className="w-5 h-5" />}
           />
         </section>
+        {skipped.length > 0 && (
+          <p className="text-xs text-slate-500 mb-8">
+            {skipped.length} additional tech{skipped.length === 1 ? '' : 's'}{' '}
+            flagged &ldquo;not in candidate&rsquo;s stack&rdquo; — excluded from the
+            headline stats and radar; see section below.
+          </p>
+        )}
+        {skipped.length === 0 && <div className="mb-8" />}
 
         {/* Radar */}
         <section className="mb-8">
@@ -225,6 +238,47 @@ export default function Summary() {
             items={buckets.red}
             color="red"
           />
+        )}
+
+        {/* Not in candidate's stack — neutral, excluded from scoring */}
+        {skipped.length > 0 && (
+          <section className="mb-6">
+            <div className="mb-3">
+              <h2 className="text-lg font-semibold text-navy-900">
+                Not in candidate&rsquo;s stack
+              </h2>
+              <p className="text-sm text-slate-500">
+                Confirmed not part of the candidate&rsquo;s working set. Listed
+                for completeness; excluded from the score and radar.
+              </p>
+            </div>
+            <div className="space-y-2">
+              {skipped.map(({ tech, item }) => (
+                <div
+                  key={tech.id}
+                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <strong className="text-navy-900">{tech.name}</strong>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">
+                        Not in stack
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-600 mt-1">
+                      Category: {tech.category}
+                      {item.lastUsed ? ` · last touched ${item.lastUsed}` : ''}
+                    </div>
+                    {item.notes && (
+                      <div className="text-xs text-slate-500 mt-1 italic">
+                        Note: {item.notes}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Disclaimer */}

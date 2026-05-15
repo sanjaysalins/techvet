@@ -51,6 +51,14 @@ export interface AssessmentItem {
   /** Checklist-mode mirror of `unknownVersion`: candidate can't recall which
    *  services they've used. Forces Yellow regardless of selectedServices. */
   checklistUnsure?: boolean;
+  /** Third state in the version-knowledge tri-state, alongside the default
+   *  (knows version) and `unknownVersion` (forgot). Set true when the
+   *  candidate explicitly does NOT use this tech (Alex/Kotlin: iOS engineer
+   *  who doesn't write Android; Mei/Databricks: Colab+SageMaker shop;
+   *  Priya/TensorFlow: deliberate pure-PyTorch). The item is excluded from
+   *  scoring buckets and the radar; the report renders it in a separate
+   *  "Not in candidate's stack" section. */
+  notUsed?: boolean;
 }
 
 export interface ResolvedTier {
@@ -61,6 +69,11 @@ export interface ResolvedTier {
   unknownVersion: boolean;
   depthAdjusted: boolean;
   coverage?: { selected: number; total: number };
+  /** When true, this tech is excluded from headline buckets and the
+   *  category radar — Summary renders it in a separate "Not in candidate's
+   *  stack" section. The `color` field on a skipped tier is a sentinel
+   *  ('yellow') and should not be displayed via the normal tier badge. */
+  skipped?: boolean;
 }
 
 export interface AssessmentMeta {

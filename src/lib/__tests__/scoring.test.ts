@@ -341,4 +341,47 @@ describe('resolveTier — adversarial regressions (5-bug fix)', () => {
       expect(r.enterpriseNote).toMatch(/widely used/);
     });
   });
+
+  describe('Bug 6: tri-state notUsed (excluded from scoring)', () => {
+    it('notUsed=true on version-mode tech → skipped=true with neutral label', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', notUsed: true }));
+      expect(r.skipped).toBe(true);
+      expect(r.label).toMatch(/Not in candidate.*stack/);
+      expect(r.note).toMatch(/don't work with/);
+    });
+
+    it('notUsed=true on checklist-mode tech → skipped=true (works for either mode)', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({ selectedServices: ['svc-1', 'svc-2'], checklistTouched: true, notUsed: true })
+      );
+      expect(r.skipped).toBe(true);
+      expect(r.label).toMatch(/Not in candidate.*stack/);
+    });
+
+    it('notUsed=true SUPPRESSES the enterprise-still-used reassurance note', () => {
+      // The very thing the Alex/Kotlin + Sam/Docker + Hiroshi/Node sessions
+      // surfaced — a non-fit candidate must not get flattering legacy-tech
+      // text. notUsed precedes all other scoring; no enterpriseNote ever fires.
+      const tech: Technology = {
+        ...versionTech(),
+        enterpriseStillUsed: true,
+      };
+      const r = resolveTier(tech, item({ version: '19', notUsed: true, depth: 'very-deep' }));
+      expect(r.skipped).toBe(true);
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+
+    it('notUsed=true overrides depth: very-deep + notUsed does NOT promote', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', notUsed: true, depth: 'very-deep' }));
+      expect(r.skipped).toBe(true);
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('notUsed=false (the default) leaves scoring untouched', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', notUsed: false }));
+      expect(r.skipped).toBeFalsy();
+      expect(r.color).toBe('green');
+    });
+  });
 });
