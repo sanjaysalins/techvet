@@ -5,6 +5,7 @@ import technologiesData from '../data/technologies.json';
 import type { Technology } from '../types';
 import TechCard from '../components/TechCard';
 import TechSearch from '../components/TechSearch';
+import CategoryPrompt from '../components/CategoryPrompt';
 import GuidancePanel from '../components/GuidancePanel';
 import { resolveTier } from '../lib/scoring';
 import { Save, FileBarChart, Sparkles } from 'lucide-react';
@@ -165,6 +166,12 @@ export default function Assessment() {
                   </div>
                 </section>
               ))}
+
+              <CategoryPrompt
+                technologies={TECHS}
+                items={items}
+                onAdd={addTech}
+              />
             </div>
           )}
 
