@@ -85,3 +85,100 @@ describe('roles.ts — integrity', () => {
     }
   });
 });
+
+/**
+ * Regression test for red-team item 1 (commit fd8935d / c115ea0).
+ *
+ * A prior catalog-refresh agent silently dropped `argocd` from the
+ * DevOps template and `spark` from the Data Engineer template. The
+ * existing "every techId resolves" test couldn't catch this because
+ * the dropped IDs simply weren't there to validate.
+ *
+ * This snapshot pins each role's exact contents (sorted). If a future
+ * edit drops, adds, or renames a tech in a role, this test will fail
+ * with a clear diff. To intentionally change a template, update the
+ * map below and the integrity layer is enforced again.
+ */
+describe('roles.ts — content snapshots (regression for red-team item 1)', () => {
+  const EXPECTED_ROLE_TECHS: Record<string, string[]> = {
+    fullstack: ['aws', 'docker', 'nodejs', 'postgresql', 'react', 'typescript'],
+    frontend: ['nextjs', 'react', 'tailwind', 'typescript', 'vite'],
+    backend: ['docker', 'kubernetes', 'nodejs', 'postgresql', 'python', 'redis'],
+    'solution-architect': ['aws', 'kafka', 'kubernetes', 'postgresql', 'terraform'],
+    devops: ['argocd', 'docker', 'github-actions', 'helm', 'kubernetes', 'observability', 'terraform'],
+    sre: ['aws', 'go', 'helm', 'kubernetes', 'observability', 'python', 'terraform'],
+    data: ['airflow', 'databricks', 'dbt', 'kafka', 'postgresql', 'python', 'spark', 'sql'],
+    'data-scientist': ['databricks', 'jupyter', 'numpy', 'pandas', 'python', 'scikit-learn', 'sql'],
+    'ai-ml': ['aws', 'docker', 'fastapi', 'huggingface-transformers', 'llm-api-sdk', 'pytorch', 'python', 'vector-db'],
+    mobile: ['expo', 'flutter', 'kotlin', 'react-native', 'swift'],
+    security: ['aws', 'docker', 'kubernetes', 'oauth-identity', 'observability', 'python', 'sql', 'terraform'],
+    qa: ['cypress', 'github-actions', 'playwright', 'pytest', 'python', 'selenium', 'typescript', 'vitest'],
+    custom: [],
+  };
+
+  it('every non-custom role still includes its expected techs', () => {
+    for (const role of ROLE_TEMPLATES) {
+      const expected = EXPECTED_ROLE_TECHS[role.id];
+      expect(expected, `Role "${role.id}" is missing from EXPECTED_ROLE_TECHS — add it intentionally`).toBeDefined();
+      const actual = [...role.techIds].sort();
+      const expectedSorted = [...expected].sort();
+      expect(
+        actual,
+        `Role "${role.id}" contents drifted — if intentional, update EXPECTED_ROLE_TECHS in this test`
+      ).toEqual(expectedSorted);
+    }
+  });
+
+  it('the set of role ids matches the expected snapshot', () => {
+    const actualIds = ROLE_TEMPLATES.map(r => r.id).sort();
+    const expectedIds = Object.keys(EXPECTED_ROLE_TECHS).sort();
+    expect(actualIds).toEqual(expectedIds);
+  });
+});
+
+/**
+ * Regression test for red-team item 2 (commit c115ea0).
+ *
+ * A prior tier-recalibration agent set degenerate tier mins on
+ * fast-moving projects (Hono, Astro, Vitest, Bun, k6, Pulumi) —
+ * for example, Bun's Green tier-min was 1.0 when 1.3 was current
+ * and 1.0 was already two majors old. The pre-existing "tier min
+ * is parseable" check passed because 1.0 IS a parseable version.
+ *
+ * This pins the calibrated tier mins by color. If a future edit
+ * drifts these (e.g. an agent "simplifies" the bands), the test
+ * fails with a clear diff. Calibration is a deliberate act — to
+ * change, update both this snapshot and the catalog entry.
+ *
+ * Reviewed against upstream releases on 2026-05-15:
+ *   Hono v4.12, Astro v6.3, Vitest v4.1, Bun v1.3, k6 v2.0, Pulumi v3.239.
+ */
+describe('technologies.json — fast-mover tier snapshots (regression for red-team item 2)', () => {
+  // [techId, expected mins by color in tier order]
+  const EXPECTED_FAST_MOVER_TIERS: Array<[string, { green: string[]; yellow: string; red: string }]> = [
+    ['hono',   { green: ['4.0', '3.0'],   yellow: '2.0',   red: '0' }],
+    ['astro',  { green: ['5.0', '4.0'],   yellow: '3.0',   red: '0' }],
+    ['vitest', { green: ['3.0', '2.0'],   yellow: '1.0',   red: '0' }],
+    ['bun',    { green: ['1.2', '1.0'],   yellow: '0.8',   red: '0' }],
+    ['k6',     { green: ['1.0', '0.55'],  yellow: '0.45',  red: '0' }],
+    ['pulumi', { green: ['3.150', '3.50'], yellow: '3.0',  red: '0' }],
+  ];
+
+  for (const [techId, expected] of EXPECTED_FAST_MOVER_TIERS) {
+    it(`${techId} has calibrated tier mins (Excellent ${expected.green[0]} / Good ${expected.green[1]} / Yellow ${expected.yellow})`, () => {
+      const tech = TECH_BY_ID.get(techId);
+      expect(tech, `${techId} missing from catalog`).toBeDefined();
+      const tiers = tech!.versionTiers ?? [];
+      const greens = tiers.filter(t => t.color === 'green').map(t => t.min);
+      const yellows = tiers.filter(t => t.color === 'yellow').map(t => t.min);
+      const reds = tiers.filter(t => t.color === 'red').map(t => t.min);
+
+      expect(
+        greens,
+        `${techId} green tier mins drifted — if intentional, update this test`
+      ).toEqual(expected.green);
+      expect(yellows).toEqual([expected.yellow]);
+      expect(reds).toEqual([expected.red]);
+    });
+  }
+});
