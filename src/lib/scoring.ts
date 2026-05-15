@@ -109,6 +109,21 @@ function resolveChecklistTier(
   const ratio = selected.length / total;
   const coverage = { selected: selected.length, total: services.length };
 
+  // Candidate explicitly couldn't recall services — checklist mirror of
+  // `unknownVersion`. Skip depth adjustment so the verdict stays parked at
+  // Yellow until the recruiter actually probes.
+  if (item.checklistUnsure) {
+    return {
+      color: 'yellow',
+      label: `Review / Probe — candidate unsure`,
+      note: `Candidate couldn't recall which ${tech.name} services they've used in production. Probe with a couple of pointed examples or move on and revisit.`,
+      enterpriseNote: undefined,
+      unknownVersion: false,
+      depthAdjusted: false,
+      coverage,
+    };
+  }
+
   // 0/N before any interaction = "not yet assessed" (yellow), not "concern" (red).
   // Once the recruiter has ticked anything (even if later unticked back to 0),
   // a genuine zero still surfaces as Concern.

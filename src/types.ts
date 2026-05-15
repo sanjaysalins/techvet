@@ -43,6 +43,9 @@ export interface AssessmentItem {
   /** True once the recruiter has interacted with the checklist at least once.
    *  Distinguishes "haven't asked yet" (untouched) from "asked and the answer is zero". */
   checklistTouched?: boolean;
+  /** Checklist-mode mirror of `unknownVersion`: candidate can't recall which
+   *  services they've used. Forces Yellow regardless of selectedServices. */
+  checklistUnsure?: boolean;
 }
 
 export interface ResolvedTier {

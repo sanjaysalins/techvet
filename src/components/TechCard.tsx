@@ -173,8 +173,10 @@ function ChecklistBody({ tech, item }: { tech: Technology; item: AssessmentItem 
   const { updateItem } = useAssessment();
   const services = tech.services ?? [];
   const selected = new Set(item.selectedServices ?? []);
+  const unsure = item.checklistUnsure ?? false;
 
   function toggle(id: string) {
+    if (unsure) return;
     const next = new Set(selected);
     if (next.has(id)) next.delete(id);
     else next.add(id);
@@ -186,21 +188,45 @@ function ChecklistBody({ tech, item }: { tech: Technology; item: AssessmentItem 
 
   return (
     <div className="mt-4">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between gap-2 mb-2">
         <label className="text-xs font-semibold text-slate-600 dark:text-slate-300">
           Services the candidate has used
         </label>
-        <span className="text-xs text-slate-500 dark:text-slate-400">
-          {selected.size} / {services.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            {selected.size} / {services.length}
+          </span>
+          <button
+            onClick={e => {
+              e.stopPropagation();
+              updateItem(tech.id, { checklistUnsure: !unsure });
+            }}
+            className={cn(
+              'btn px-2.5 py-1 text-xs whitespace-nowrap',
+              unsure
+                ? 'bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-900/40 dark:text-amber-200'
+                : 'btn-secondary'
+            )}
+            title="Mark candidate as unsure"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            Candidate unsure
+          </button>
+        </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+      <div
+        className={cn(
+          'grid grid-cols-1 sm:grid-cols-2 gap-1.5',
+          unsure && 'opacity-50 pointer-events-none'
+        )}
+      >
         {services.map(svc => (
           <label
             key={svc.id}
             onClick={e => e.stopPropagation()}
             className={cn(
-              'flex items-center gap-2 text-sm px-2.5 py-1.5 rounded-md border cursor-pointer transition',
+              'flex items-center gap-2 text-sm px-2.5 py-1.5 rounded-md border transition',
+              unsure ? 'cursor-not-allowed' : 'cursor-pointer',
               selected.has(svc.id)
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-100'
                 : 'bg-slate-50 dark:bg-navy-800/50 border-slate-200 dark:border-navy-700 text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:hover:border-navy-600'
@@ -209,6 +235,7 @@ function ChecklistBody({ tech, item }: { tech: Technology; item: AssessmentItem 
             <input
               type="checkbox"
               checked={selected.has(svc.id)}
+              disabled={unsure}
               onChange={() => toggle(svc.id)}
               className="accent-emerald-600"
             />
