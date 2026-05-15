@@ -27,6 +27,41 @@ describe('parseVersion', () => {
   it('handles rc / pre-release suffixes by stripping them', () => {
     expect(parseVersion('1.10-rc1')).toEqual([1, 10]);
   });
+
+  /**
+   * Regression for "fleet hedge" bug surfaced by 12-session adversarial sim.
+   * Senior engineers in real production systems answer with a fleet ("21 / 17 / 11"
+   * — current edge, prod fleet, legacy). Previously parseVersion silently kept
+   * the FIRST token and scored the candidate on their cutting edge while hiding
+   * their legacy floor — the opposite of what a hiring manager needs. With an
+   * explicit list separator we now score the MINIMUM.
+   */
+  describe('fleet-version hedges (regression)', () => {
+    it('slash-separated list → scores the minimum', () => {
+      expect(parseVersion('21/17/11')).toEqual([11]);
+      expect(parseVersion('21 / 17 / 11')).toEqual([11]);
+    });
+
+    it('comma-separated list → scores the minimum', () => {
+      expect(parseVersion('1.5, 1.3, 1.0')).toEqual([1, 0]);
+    });
+
+    it('"X or Y" phrasing → scores the minimum', () => {
+      expect(parseVersion('21 or 17')).toEqual([17]);
+      expect(parseVersion('5 or 6')).toEqual([5]);
+    });
+
+    it('"X and Y" phrasing → scores the minimum', () => {
+      expect(parseVersion('3.3 and 2.7')).toEqual([2, 7]);
+    });
+
+    it('does NOT trigger on internal punctuation like rc / dash / LTS', () => {
+      // Single-version strings with internal punctuation must keep prior behavior.
+      expect(parseVersion('1.10-rc1')).toEqual([1, 10]);
+      expect(parseVersion('8.4 LTS')).toEqual([8, 4]);
+      expect(parseVersion('C# 14')).toEqual([14]);
+    });
+  });
 });
 
 describe('compareVersions', () => {

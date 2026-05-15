@@ -219,3 +219,126 @@ describe('resolveTier — checklist mode', () => {
     expect(r.coverage).toEqual({ selected: 3, total: 10 });
   });
 });
+
+/**
+ * Regression tests for the 5 code bugs surfaced by the 12-session adversarial
+ * simulation. Each test pins a specific behavioral fix; do not change without
+ * the matching scoring.ts / version.ts / catalog edit.
+ */
+describe('resolveTier — adversarial regressions (5-bug fix)', () => {
+  describe('Bug 1: tier-level enterpriseStillUsed flag', () => {
+    it('fires the enterprise note when a Yellow tier carries the flag, even with root flag absent', () => {
+      const tech: Technology = {
+        id: 'legacy-yellow-only',
+        name: 'LegacyYellowOnly',
+        category: 'Testing',
+        vetMode: 'version',
+        versionTiers: [
+          { min: '4', label: 'Excellent', color: 'green' },
+          // Tier-level flag — root flag deliberately absent.
+          { min: '3', label: 'Review / Probe', color: 'yellow', enterpriseStillUsed: true },
+          { min: '0', label: 'Concern', color: 'red' },
+        ],
+        suggestedProbes: [],
+      };
+      const r = resolveTier(tech, item({ techId: 'legacy-yellow-only', version: '3' }));
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toMatch(/widely used/);
+    });
+
+    it('does NOT fire enterprise note on a Green tier even if root flag is true', () => {
+      const tech: Technology = {
+        id: 'never-fires-on-green',
+        name: 'NeverFiresOnGreen',
+        category: 'Testing',
+        vetMode: 'version',
+        versionTiers: [
+          { min: '4', label: 'Excellent', color: 'green' },
+          { min: '0', label: 'Concern', color: 'red' },
+        ],
+        enterpriseStillUsed: true,
+        suggestedProbes: [],
+      };
+      const r = resolveTier(tech, item({ techId: 'never-fires-on-green', version: '5' }));
+      expect(r.color).toBe('green');
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+
+    it('tier-level flag overrides root: tier=false suppresses note even when root=true', () => {
+      const tech: Technology = {
+        id: 'tier-suppresses-root',
+        name: 'TierSuppressesRoot',
+        category: 'Testing',
+        vetMode: 'version',
+        versionTiers: [
+          { min: '4', label: 'Excellent', color: 'green' },
+          { min: '2', label: 'Review / Probe', color: 'yellow', enterpriseStillUsed: false },
+          { min: '0', label: 'Concern', color: 'red' },
+        ],
+        enterpriseStillUsed: true,
+        suggestedProbes: [],
+      };
+      const r = resolveTier(tech, item({ techId: 'tier-suppresses-root', version: '2' }));
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+  });
+
+  describe('Bug 3: depth-adjusted label reads as upward', () => {
+    it('version-mode tier-match label uses "lifted from X by depth" phrasing', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep' }));
+      expect(r.depthAdjusted).toBe(true);
+      expect(r.label).toMatch(/lifted from .* by depth/);
+      expect(r.label).not.toMatch(/depth-adjusted from/);
+    });
+
+    it('unknown-version + meaningful depth label uses "lifted from Review / Probe by depth"', () => {
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'deep' }));
+      expect(r.depthAdjusted).toBe(true);
+      expect(r.label).toMatch(/lifted from Review \/ Probe by depth/);
+    });
+
+    it('checklist depth-lift label uses "lifted from X by depth" phrasing', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({ selectedServices: ['svc-1'], checklistTouched: true, depth: 'deep' })
+      );
+      expect(r.depthAdjusted).toBe(true);
+      expect(r.label).toMatch(/lifted from .* by depth/);
+    });
+  });
+
+  describe('Bug 5: enterprise note misfires on empty-version + non-skill', () => {
+    it('SUPPRESSES the note when unknownVersion=true AND depth is unknown/shallow', () => {
+      // This is the Alex/Kotlin and Sam/Docker case: "candidate doesn't use this"
+      // gets falsely flattered with "Still widely used in many enterprise applications."
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'shallow' }));
+      expect(r.color).toBe('yellow');
+      expect(r.unknownVersion).toBe(true);
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+
+    it('SUPPRESSES the note when depth is "unknown" (default for never-touched)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'unknown' }));
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+
+    it('STILL fires the note when unknownVersion=true AND depth is working+', () => {
+      // The "candidate uses it but doesn't track the version" case (Sam's Docker on GHA,
+      // Priya's PyTorch on Modal). The reassurance is valid here.
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'working' }));
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toMatch(/widely used/);
+    });
+
+    it('STILL fires the note when unknownVersion=true AND depth=deep (lifts to Green-via-depth, no note since not Yellow)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'deep' }));
+      // Depth lifted Yellow → Green; the note only fires when result is Yellow.
+      // But under our new rule the meaningful-depth guard already passed, and
+      // since the color is now Green, the enterprise note is gated by `tier.color === yellow`
+      // in the version-tier path — but unknown-version uses a different gate.
+      // Concretely: for unknown-version with meaningful depth, we DO want the note.
+      expect(r.enterpriseNote).toMatch(/widely used/);
+    });
+  });
+});

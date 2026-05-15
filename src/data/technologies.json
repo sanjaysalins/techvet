@@ -1250,13 +1250,27 @@
       {
         "min": "24",
         "label": "Excellent",
-        "color": "green"
+        "color": "green",
+        "note": "Docker 24+ — BuildKit default, Compose v2 native."
+      },
+      {
+        "min": "20",
+        "label": "Good",
+        "color": "green",
+        "note": "Docker 20–23 — modern BuildKit support, Compose v2 available."
+      },
+      {
+        "min": "18",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "enterpriseStillUsed": true,
+        "note": "Docker 18–19 — predates BuildKit-by-default; probe whether they use modern build features."
       },
       {
         "min": "0",
-        "label": "Good",
-        "color": "green",
-        "note": "Probe Compose v2 + BuildKit familiarity."
+        "label": "Concern",
+        "color": "red",
+        "note": "Pre-18 Docker — long EOL; supply-chain risk."
       }
     ],
     "enterpriseStillUsed": true,

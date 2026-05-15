@@ -17,16 +17,46 @@ export function compareVersions(a: string, b: string): number {
 
 export function parseVersion(v: string): number[] {
   if (!v) return [0];
-  const cleaned = v.toString().toLowerCase().trim()
+  const raw = v.toString().toLowerCase().trim();
+
+  // Detect explicit multi-version hedges. Senior engineers in real production
+  // fleets answer "21 / 17 / 11" or "21 in new services, 17 in most, 11 still
+  // on legacy". The previous behavior silently kept the FIRST token, which
+  // scored the candidate on their cutting edge while hiding their legacy
+  // burden — exactly the wrong signal for a hiring manager. When a list
+  // separator is present we score the MINIMUM token (the legacy floor).
+  // Single-version strings with internal punctuation ("1.10-rc1", "8.4 LTS")
+  // do NOT trigger this path.
+  const isHedge = /[/,]|\bor\b|\band\b/.test(raw);
+
+  const cleaned = raw
     .replace(/lts/g, '')
     .replace(/[^0-9.]/g, ' ')
-    .trim()
-    .split(/\s+/)[0] || '';
+    .trim();
   if (!cleaned) return [0];
-  return cleaned.split('.').map(p => {
+
+  const tokens = cleaned.split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return [0];
+
+  const parseOne = (t: string): number[] => t.split('.').map(p => {
     const n = parseInt(p, 10);
     return isNaN(n) ? 0 : n;
   });
+
+  if (!isHedge || tokens.length === 1) return parseOne(tokens[0]);
+
+  const parsed = tokens.map(parseOne);
+  return parsed.reduce((lo, cur) => (compareArrays(cur, lo) < 0 ? cur : lo));
+}
+
+function compareArrays(a: number[], b: number[]): number {
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    const av = a[i] ?? 0;
+    const bv = b[i] ?? 0;
+    if (av !== bv) return av - bv;
+  }
+  return 0;
 }
 
 /** Loose validation — true if the string contains any digits. */

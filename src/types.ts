@@ -8,6 +8,11 @@ export interface VersionTier {
   label: TierLabel | string;
   color: TierColor;
   note?: string;
+  /** Tier-level override of the root flag — fires the "still widely used in
+   *  enterprise" reassurance only on this specific tier. Useful when only the
+   *  Yellow-band version (e.g. Selenium 3, Cypress 10–11) is the legacy-but-valid
+   *  one and the current versions don't deserve the reassurance note. */
+  enterpriseStillUsed?: boolean;
 }
 
 export interface ServiceItem {

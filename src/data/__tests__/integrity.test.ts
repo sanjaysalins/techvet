@@ -182,3 +182,33 @@ describe('technologies.json — fast-mover tier snapshots (regression for red-te
     });
   }
 });
+
+/**
+ * Regression test for red-team Bug 4 (Docker tier degeneracy, surfaced by
+ * Sam/DevOps + Tomas/Full-Stack sessions).
+ *
+ * The original Docker entry had only two Green tiers (`min:24` Excellent +
+ * `min:0` Good) and no Yellow/Red — so any modern Docker version trivially
+ * scored Excellent and the tool could not represent an outdated Docker setup.
+ * The pre-existing "tier min is parseable" check passed because the tier
+ * mins were valid; the tier *shape* was the bug.
+ *
+ * This test asserts the four-color shape. If the catalog re-collapses,
+ * this fails with a clear diff. Also serves as a general "version-mode tech
+ * should have all four colors" template (NOT enforced globally because some
+ * techs deliberately omit Red for managed services).
+ */
+describe('technologies.json — Docker tier shape (regression for red-team Bug 4)', () => {
+  it('Docker has a proper four-color tier shape (Green / Green / Yellow / Red)', () => {
+    const docker = TECH_BY_ID.get('docker');
+    expect(docker, 'docker missing from catalog').toBeDefined();
+    const tiers = docker!.versionTiers ?? [];
+    const colors = tiers.map(t => t.color);
+    expect(colors).toContain('yellow');
+    expect(colors).toContain('red');
+    // Two Green bands (Excellent + Good) — drop down to Yellow before Red.
+    expect(colors.filter(c => c === 'green').length).toBe(2);
+    expect(colors.filter(c => c === 'yellow').length).toBe(1);
+    expect(colors.filter(c => c === 'red').length).toBe(1);
+  });
+});

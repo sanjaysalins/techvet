@@ -56,13 +56,24 @@ function resolveVersionTier(
   if (item.unknownVersion || !item.version || !looksLikeVersion(item.version)) {
     const baseColor: TierColor = 'yellow';
     const adjusted = adjustForDepth(baseColor, item.depth);
+    // Suppress the "still widely used in enterprise" reassurance when the
+    // candidate has neither a version NOR meaningful depth. The note is
+    // designed for "they're on Cypress 10 because the org won't migrate" —
+    // not for "they've literally never used Kotlin" / "Docker version doesn't
+    // exist for them because GHA runners manage it". Firing it on a non-skill
+    // misleads the hiring manager into reading the Yellow as legacy-competence.
+    const candidateHasMeaningfulDepth =
+      item.depth === 'working' || item.depth === 'deep' || item.depth === 'very-deep';
     return {
       color: adjusted.color,
-      label: adjusted.adjusted ? 'Good (depth-adjusted)' : 'Review / Probe',
+      label: adjusted.adjusted
+        ? 'Good (lifted from Review / Probe by depth)'
+        : 'Review / Probe',
       note: tech.guidanceForUnknownVersion,
-      enterpriseNote: tech.enterpriseStillUsed
-        ? 'Still widely used in many enterprise applications.'
-        : undefined,
+      enterpriseNote:
+        tech.enterpriseStillUsed && candidateHasMeaningfulDepth
+          ? 'Still widely used in many enterprise applications.'
+          : undefined,
       unknownVersion: true,
       depthAdjusted: adjusted.adjusted,
     };
@@ -73,15 +84,20 @@ function resolveVersionTier(
 
   let label = tier.label;
   if (adjusted.adjusted) {
-    label = `${LABEL_MAP[adjusted.color]} (depth-adjusted from ${tier.label})`;
+    label = `${LABEL_MAP[adjusted.color]} (lifted from ${tier.label} by depth)`;
   }
+
+  // Tier-level flag overrides root. ~20 catalog entries declare the flag at
+  // tier level (e.g. Selenium 3, Cypress 10–11) — those want the reassurance
+  // note ONLY on that tier, not whenever the candidate hits any Yellow band.
+  const enterpriseFlag = tier.enterpriseStillUsed ?? tech.enterpriseStillUsed;
 
   return {
     color: adjusted.color,
     label,
     note: tier.note,
     enterpriseNote:
-      tier.color === 'yellow' && tech.enterpriseStillUsed
+      tier.color === 'yellow' && enterpriseFlag
         ? 'Still widely used in many enterprise applications.'
         : undefined,
     unknownVersion: false,
@@ -149,7 +165,7 @@ function resolveChecklistTier(
 
   const baseLabel = `${LABEL_MAP[baseColor]} — ${coverage.selected}/${coverage.total} services`;
   const label = adjusted.adjusted
-    ? `${LABEL_MAP[adjusted.color]} (depth-adjusted from ${LABEL_MAP[baseColor]}) — ${coverage.selected}/${coverage.total} services`
+    ? `${LABEL_MAP[adjusted.color]} (lifted from ${LABEL_MAP[baseColor]} by depth) — ${coverage.selected}/${coverage.total} services`
     : baseLabel;
 
   const note =
