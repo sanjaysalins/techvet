@@ -95,6 +95,11 @@ export interface ResolvedTier {
   enterpriseNote?: string;
   unknownVersion: boolean;
   depthAdjusted: boolean;
+  /** Round-7 7D (J1, Mei + Eitan): direction of the depth adjustment, so
+   *  composeLabel can render "(lowered from Good by shallow depth)" for
+   *  junior-shallow cases vs the existing "(lifted from X by depth)" for
+   *  deep/very-deep cases. Undefined when depthAdjusted is false. */
+  depthDirection?: 'lifted' | 'lowered';
   coverage?: { selected: number; total: number };
   /** When true, this tech is excluded from headline buckets and the
    *  category radar — Summary renders it in a separate "Not in candidate's

@@ -933,7 +933,6 @@
         "color": "red"
       }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Expo vs bare workflow?",
       "New Architecture (Fabric/Turbo) experience?",
@@ -1004,7 +1003,6 @@
         "color": "red"
       }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "SwiftUI vs UIKit?",
       "Actor / Sendable concurrency?",
@@ -1040,7 +1038,6 @@
         "color": "red"
       }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Coroutines / Flow patterns?",
       "Jetpack Compose or XML views?",
@@ -1278,7 +1275,6 @@
         "note": "Pre-18 Docker — long EOL; supply-chain risk."
       }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Multi-stage builds?",
       "Image size optimization?",
@@ -1313,7 +1309,6 @@
         "color": "red"
       }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Operators / CRDs experience?",
       "Network policies / service mesh?",
@@ -1349,7 +1344,6 @@
         "color": "red"
       }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Module structure and reuse?",
       "State management — remote backends, locking?",

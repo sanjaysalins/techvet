@@ -110,9 +110,12 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
     data: ['airflow', 'databricks', 'dbt', 'kafka', 'postgresql', 'python', 'spark', 'sql'],
     'data-scientist': ['databricks', 'jupyter', 'numpy', 'pandas', 'python', 'scikit-learn', 'sql'],
     'ai-ml': ['aws', 'docker', 'fastapi', 'huggingface-transformers', 'llm-api-sdk', 'pytorch', 'python', 'vector-db'],
-    // Round-6 6F (Priya): Compose + SwiftUI promoted to checklist-mode
-    // catalog entries and added to Mobile template preload.
-    mobile: ['expo', 'flutter', 'jetpack-compose', 'kotlin', 'react-native', 'swift', 'swiftui'],
+    // Round-7 7F (Priya R3 + Kenji): single Mobile template split into 3
+    // sub-templates so single-platform candidates don't dispatch 5
+    // not-in-stack clicks.
+    'mobile-android': ['jetpack-compose', 'kotlin'],
+    'mobile-ios': ['swift', 'swiftui'],
+    'mobile-cross-platform': ['expo', 'flutter', 'react-native'],
     security: [
       // Fix U (round-4): Security template now preloads actual security
       // tools alongside the infra reviewer-cap stack. If a future agent
@@ -654,7 +657,7 @@ describe('roles.ts — techScopes integrity (Fix K2)', () => {
   it('templates without techScopes (full-stack, frontend, etc.) preserve pre-K2 behavior', () => {
     // Pin which templates intentionally don't have techScopes so future drift
     // is visible. If a template gains one, update this list.
-    const noScopesYet = ['fullstack', 'frontend', 'backend', 'devops', 'data', 'data-scientist', 'ai-ml', 'mobile', 'qa', 'custom'];
+    const noScopesYet = ['fullstack', 'frontend', 'backend', 'devops', 'data', 'data-scientist', 'ai-ml', 'mobile-android', 'mobile-ios', 'mobile-cross-platform', 'qa', 'custom', 'database-dba'];
     for (const id of noScopesYet) {
       const role = ROLE_TEMPLATES.find(r => r.id === id);
       expect(role, `${id} template missing`).toBeDefined();
@@ -711,15 +714,31 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(t!.category).toBe('Mobile');
   });
 
-  it('Mobile template preloads Jetpack Compose AND SwiftUI', () => {
-    const mobile = ROLE_TEMPLATES.find(r => r.id === 'mobile');
-    expect(mobile?.techIds).toContain('jetpack-compose');
-    expect(mobile?.techIds).toContain('swiftui');
+  it('Round-7 7F: Mobile-Android sub-template preloads Jetpack Compose + Kotlin (closes Priya stack-chooser finding)', () => {
+    const android = ROLE_TEMPLATES.find(r => r.id === 'mobile-android');
+    expect(android?.techIds).toContain('jetpack-compose');
+    expect(android?.techIds).toContain('kotlin');
+    expect(android?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
   });
 
-  it('Mobile template carries ≥4 methodologyChips (closes Priya methodology-absent finding)', () => {
-    const mobile = ROLE_TEMPLATES.find(r => r.id === 'mobile');
-    expect(mobile?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
+  it('Round-7 7F: Mobile-iOS sub-template preloads SwiftUI + Swift + iOS-shaped chips (closes Kenji finding)', () => {
+    const ios = ROLE_TEMPLATES.find(r => r.id === 'mobile-ios');
+    expect(ios?.techIds).toContain('swift');
+    expect(ios?.techIds).toContain('swiftui');
+    // Load-bearing iOS-canonical chips Kenji named (MVVM-C / snapshot
+    // testing / VoiceOver) that the old generic Mobile chip-set missed.
+    const ids = new Set((ios?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('mvvm-c-coordinator')).toBe(true);
+    expect(ids.has('snapshot-testing-ios')).toBe(true);
+    expect(ids.has('voiceover-dynamic-type')).toBe(true);
+  });
+
+  it('Round-7 7F: Mobile-Cross-Platform sub-template preloads RN + Expo + Flutter', () => {
+    const xplat = ROLE_TEMPLATES.find(r => r.id === 'mobile-cross-platform');
+    expect(xplat?.techIds).toContain('react-native');
+    expect(xplat?.techIds).toContain('expo');
+    expect(xplat?.techIds).toContain('flutter');
+    expect(xplat?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
   });
 
   it('Frontend template carries ≥4 methodologyChips (closes Maya/Mei chip-absent finding)', () => {
@@ -745,5 +764,22 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(dba!.techIds).toContain('plsql');
     expect(dba!.techIds).toContain('sql');
     expect(dba!.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
+  });
+
+  it('Round-7 7E: modern-default entries do NOT carry root-level enterpriseStillUsed', () => {
+    // Sven's round-7 bonus: the flag fires the "Still widely used in
+    // enterprise" reassurance, which mis-frames K8s 1.30 / Kotlin 2.x /
+    // Swift 6.x / RN 0.85 / Terraform 1.15 / Docker 29 as legacy when
+    // they're the modern default. If a future agent re-adds the flag,
+    // the wrong reassurance returns.
+    const modernDefaults = ['kubernetes', 'kotlin', 'swift', 'react-native', 'terraform', 'docker'];
+    for (const id of modernDefaults) {
+      const tech = TECH_BY_ID.get(id);
+      expect(tech, `${id} missing from catalog`).toBeDefined();
+      expect(
+        tech!.enterpriseStillUsed,
+        `${id} re-added enterpriseStillUsed root flag — re-introduces Sven's 7E misfire`
+      ).toBeFalsy();
+    }
   });
 });

@@ -240,22 +240,53 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     ],
   },
   {
-    id: 'mobile',
-    name: 'Mobile Engineer',
-    description: 'iOS / Android / cross-platform.',
-    // Round-6 6F (Priya): Compose + SwiftUI promoted to first-class
-    // checklist-mode catalog entries. Mobile-2026 signal lives there.
-    techIds: ['swift', 'kotlin', 'jetpack-compose', 'swiftui', 'react-native', 'expo', 'flutter'],
-    // Round-6 6F: Mobile differentiators are heavily methodology — store
-    // submission discipline, crash-triage workflows, MVVM/MVI patterns,
-    // ABI/screen-density management. Chips capture this in ~30s on phone.
+    // Round-7 7F (Priya R3 + Kenji 2nd confirmation): the single Mobile
+    // template preloading 7 techs (swift / kotlin / compose / swiftui /
+    // react-native / expo / flutter) forced every single-platform
+    // candidate to dispatch ~5 not-in-stack clicks. Split into 3
+    // sub-templates — recruiter picks the platform shape on Landing and
+    // gets a 2-3 tech preload sized for the candidate. Each carries
+    // platform-specific methodology chips (Kenji's iOS MVVM-C + snapshot
+    // testing belongs nowhere on the Android chip-set, and vice versa).
+    id: 'mobile-android',
+    name: 'Mobile — Android',
+    description: 'Native Android (Kotlin + Jetpack Compose).',
+    techIds: ['kotlin', 'jetpack-compose'],
     methodologyChips: [
-      { id: 'release-automation', label: 'Release automation (Fastlane / GitHub Actions)' },
-      { id: 'mvvm-mvi', label: 'MVVM / MVI architecture' },
-      { id: 'ab-feature-flags', label: 'A/B testing + feature flags' },
-      { id: 'crashlytics-triage', label: 'Crashlytics / triage workflow' },
-      { id: 'abi-splits', label: 'ABI / screen-density / size optimization' },
-      { id: 'offline-first', label: 'Offline-first / sync patterns' },
+      { id: 'release-automation-android', label: 'Release automation (Fastlane / GitHub Actions / Gradle)' },
+      { id: 'mvvm-mvi-android', label: 'MVVM / MVI architecture' },
+      { id: 'ab-feature-flags-android', label: 'A/B testing + feature flags' },
+      { id: 'crashlytics-firebase', label: 'Crashlytics + Firebase triage workflow' },
+      { id: 'abi-screen-density', label: 'ABI / screen-density / app-size optimization' },
+      { id: 'offline-first-android', label: 'Offline-first / WorkManager sync patterns' },
+    ],
+  },
+  {
+    id: 'mobile-ios',
+    name: 'Mobile — iOS',
+    description: 'Native iOS (Swift + SwiftUI).',
+    techIds: ['swift', 'swiftui'],
+    methodologyChips: [
+      { id: 'release-automation-ios', label: 'Release automation (Fastlane / Xcode Cloud)' },
+      { id: 'mvvm-c-coordinator', label: 'MVVM-C / Coordinator pattern' },
+      { id: 'snapshot-testing-ios', label: 'Snapshot testing (Point-Free / iOSSnapshotTestCase)' },
+      { id: 'voiceover-dynamic-type', label: 'VoiceOver / Dynamic Type accessibility' },
+      { id: 'ab-feature-flags-ios', label: 'A/B testing + feature flags' },
+      { id: 'app-store-review', label: 'App Store Review automation + binary delivery' },
+    ],
+  },
+  {
+    id: 'mobile-cross-platform',
+    name: 'Mobile — Cross-Platform',
+    description: 'React Native / Flutter / Expo.',
+    techIds: ['react-native', 'expo', 'flutter'],
+    methodologyChips: [
+      { id: 'release-automation-xplat', label: 'Release automation (Fastlane / EAS Build / Codemagic)' },
+      { id: 'code-sharing-strategy', label: 'Code-sharing strategy (JS bridge / KMP / shared business logic)' },
+      { id: 'feature-flag-sdk', label: 'Feature flag SDK choice + rollout discipline' },
+      { id: 'offline-first-xplat', label: 'Offline-first / sync patterns' },
+      { id: 'native-bridge-perf', label: 'Native bridge / perf tuning + JS thread budget' },
+      { id: 'platform-overrides', label: 'Platform-specific overrides + parity testing' },
     ],
   },
   {

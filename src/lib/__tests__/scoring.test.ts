@@ -1401,3 +1401,75 @@ describe('resolveTier — 7C cappedFromColor (5ξ)', () => {
     expect(r.recencyAdjusted).toBe(true);
   });
 });
+
+/**
+ * Round-7 7D (J1, Mei + Eitan): depth=shallow + seniority=junior LOWERS
+ * tier by one (Green → Yellow, Yellow → Red). Pre-7D, depth never lowered;
+ * a junior who barely uses TypeScript (shallow) read identical to a senior
+ * library author on a Green version. Junior gate prevents over-correcting
+ * mid/senior cases where shallow is the default. Direction is reflected in
+ * the label ("lowered from Good by shallow depth").
+ */
+describe('resolveTier — 7D junior shallow lowers tier (J1)', () => {
+  it('junior + shallow + Green version → Yellow (lowered)', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', depth: 'shallow' }), { seniority: 'junior' });
+    expect(r.color).toBe('yellow');
+    expect(r.depthAdjusted).toBe(true);
+    expect(r.depthDirection).toBe('lowered');
+    expect(r.label).toMatch(/lowered from .* by shallow depth/);
+  });
+
+  it('junior + shallow + Yellow → Red (lowered)', () => {
+    const r = resolveTier(versionTech(), item({ version: '17', depth: 'shallow' }), { seniority: 'junior' });
+    expect(r.color).toBe('red');
+    expect(r.depthAdjusted).toBe(true);
+    expect(r.depthDirection).toBe('lowered');
+  });
+
+  it('junior + shallow + Red → stays Red (Red is the floor — no double-lower)', () => {
+    const r = resolveTier(versionTech(), item({ version: '12', depth: 'shallow' }), { seniority: 'junior' });
+    expect(r.color).toBe('red');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('mid + shallow → no lower (gate only on junior)', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', depth: 'shallow' }), { seniority: 'mid' });
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('seniority undefined + shallow → no lower (back-compat preserved)', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', depth: 'shallow' }));
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('junior + working → no lower (only shallow triggers)', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', depth: 'working' }), { seniority: 'junior' });
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('junior + deep still LIFTS (deep/very-deep semantics unchanged for junior)', () => {
+    const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep' }), { seniority: 'junior' });
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(true);
+    expect(r.depthDirection).toBe('lifted');
+  });
+
+  it('checklist mode unaffected by 7D (Fix A still holds — coverage IS the signal)', () => {
+    // Junior + shallow + Green coverage should stay Green because checklist
+    // mode doesn't call adjustForDepth (Fix A round-2). 7D doesn't reach it.
+    const r = resolveTier(
+      checklistTech(),
+      item({
+        selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5', 'svc-6', 'svc-7'],
+        checklistTouched: true,
+        depth: 'shallow',
+      }),
+      { seniority: 'junior' }
+    );
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(false);
+  });
+});

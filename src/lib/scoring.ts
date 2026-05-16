@@ -22,18 +22,33 @@ const SEVERITY: Record<TierColor, number> = {
 
 const COLOR_ORDER: TierColor[] = ['green', 'yellow', 'red'];
 
-/** Depth adjustment moves severity down by at most one step. */
-function adjustForDepth(color: TierColor, depth: Depth): {
+/** Depth adjustment moves severity by at most one step.
+ *  - deep / very-deep → lift severity down by one (Yellow→Green, Red→Yellow).
+ *  - Round-7 7D (J1, Mei + Eitan): shallow + seniority=junior → LOWER severity
+ *    by one (Green→Yellow, Yellow→Red). Pre-7D, depth never lowered, so a
+ *    junior who barely uses TypeScript (shallow) read identical to a senior
+ *    library author at the same Green tier. Junior gate prevents the lower
+ *    from over-correcting mid/senior unspecified-shallow cases (those default
+ *    to working). The `direction` field tells composeLabel which framing to
+ *    render. */
+function adjustForDepth(color: TierColor, depth: Depth, seniority?: Seniority): {
   color: TierColor;
   adjusted: boolean;
+  direction?: 'lifted' | 'lowered';
 } {
-  if (depth !== 'deep' && depth !== 'very-deep') {
-    return { color, adjusted: false };
+  if (depth === 'deep' || depth === 'very-deep') {
+    const sev = SEVERITY[color];
+    if (sev === 0) return { color, adjusted: false };
+    const improved = COLOR_ORDER[sev - 1];
+    return { color: improved, adjusted: true, direction: 'lifted' };
   }
-  const sev = SEVERITY[color];
-  if (sev === 0) return { color, adjusted: false };
-  const improved = COLOR_ORDER[sev - 1];
-  return { color: improved, adjusted: true };
+  if (depth === 'shallow' && seniority === 'junior') {
+    const sev = SEVERITY[color];
+    if (sev === SEVERITY.red) return { color, adjusted: false };
+    const worsened = COLOR_ORDER[sev + 1];
+    return { color: worsened, adjusted: true, direction: 'lowered' };
+  }
+  return { color, adjusted: false };
 }
 
 /**
@@ -50,13 +65,14 @@ function adjustForDepth(color: TierColor, depth: Depth): {
  */
 function applyScope(
   baseColor: TierColor,
-  adjusted: { color: TierColor; adjusted: boolean },
+  adjusted: { color: TierColor; adjusted: boolean; direction?: 'lifted' | 'lowered' },
   scope: Scope | undefined
-): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; cappedFromColor?: TierColor } {
+): { color: TierColor; depthAdjusted: boolean; depthDirection?: 'lifted' | 'lowered'; scopeCapped: boolean; cappedFromColor?: TierColor } {
   if (!scope || scope === 'operator') {
     return {
       color: adjusted.color,
       depthAdjusted: adjusted.adjusted,
+      depthDirection: adjusted.direction,
       scopeCapped: false,
     };
   }
@@ -73,16 +89,18 @@ function applyScope(
     return {
       color: adjusted.color,
       depthAdjusted: adjusted.adjusted,
+      depthDirection: adjusted.direction,
       scopeCapped: false,
     };
   }
   // scope === 'author'
-  if (adjusted.adjusted && baseColor === 'yellow' && adjusted.color === 'green') {
+  if (adjusted.adjusted && adjusted.direction === 'lifted' && baseColor === 'yellow' && adjusted.color === 'green') {
     return { color: 'yellow', depthAdjusted: false, scopeCapped: true, cappedFromColor: 'green' };
   }
   return {
     color: adjusted.color,
     depthAdjusted: adjusted.adjusted,
+    depthDirection: adjusted.direction,
     scopeCapped: false,
   };
 }
@@ -120,11 +138,11 @@ const LABEL_MAP: Record<TierColor, string> = {
  * design wrinkle and the canonical fix isn't symmetric penalty.
  */
 function applyRecency(
-  current: { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; cappedFromColor?: TierColor },
+  current: { color: TierColor; depthAdjusted: boolean; depthDirection?: 'lifted' | 'lowered'; scopeCapped: boolean; cappedFromColor?: TierColor },
   lastUsed: string,
   tech: Technology,
   seniority?: Seniority
-): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; cappedFromColor?: TierColor; recencyAdjusted: boolean; recencyNote?: string; recencyDirection?: 'softener' | 'penalty' } {
+): { color: TierColor; depthAdjusted: boolean; depthDirection?: 'lifted' | 'lowered'; scopeCapped: boolean; cappedFromColor?: TierColor; recencyAdjusted: boolean; recencyNote?: string; recencyDirection?: 'softener' | 'penalty' } {
   const { bucket } = parseLastUsed(lastUsed);
 
   // Only stale/ancient trigger anything; current/recent/unknown pass through.
@@ -163,6 +181,7 @@ function applyRecency(
       // Round-7 7C: also preserve cappedFromColor so the new headline card
       // counts this entry correctly when both softener and scope-cap fire.
       depthAdjusted: current.depthAdjusted,
+      depthDirection: current.depthDirection,
       scopeCapped: current.scopeCapped,
       cappedFromColor: current.cappedFromColor,
       recencyAdjusted: true,
@@ -275,7 +294,9 @@ function resolveVersionTier(
   }
 
   const tier = findTier(tech, item.version);
-  const adjusted = adjustForDepth(tier.color, item.depth);
+  // Round-7 7D: pass seniority so depth=shallow on a junior can lower tier
+  // (Mei TS 5.3 + shallow + junior → Yellow instead of Green).
+  const adjusted = adjustForDepth(tier.color, item.depth, seniority);
   const scoped = applyScope(tier.color, adjusted, item.scope);
   // Fix E: recency runs AFTER scope so its asymmetric softener/penalty
   // applies to the post-scope verdict (not the raw tier match). Order
@@ -292,7 +313,9 @@ function resolveVersionTier(
     label: composeLabel({
       finalColor: withRecency.color,
       baseLabel: tier.label,
+      baseColor: tier.color,
       depthAdjusted: withRecency.depthAdjusted,
+      depthDirection: withRecency.depthDirection,
       scopeCapped: withRecency.scopeCapped,
       cappedFromColor: withRecency.cappedFromColor,
       scope: item.scope,
@@ -308,6 +331,7 @@ function resolveVersionTier(
         : undefined,
     unknownVersion: false,
     depthAdjusted: withRecency.depthAdjusted,
+    depthDirection: withRecency.depthDirection,
     scopeCapped: withRecency.scopeCapped,
     cappedFromColor: withRecency.cappedFromColor,
     recencyAdjusted: withRecency.recencyAdjusted,
@@ -324,7 +348,13 @@ function resolveVersionTier(
 function composeLabel(opts: {
   finalColor: TierColor;
   baseLabel: string;
+  /** Round-7 7D: needed to render "(lowered from <baseLabel> by shallow depth)"
+   *  for junior cases — when depth lowers Green→Yellow, baseLabel is "Excellent"
+   *  (Green) but finalColor is Yellow. Optional for back-compat with checklist
+   *  call sites that don't have a base color concept. */
+  baseColor?: TierColor;
   depthAdjusted: boolean;
+  depthDirection?: 'lifted' | 'lowered';
   scopeCapped: boolean;
   cappedFromColor?: TierColor;
   scope: Scope | undefined;
@@ -350,6 +380,12 @@ function composeLabel(opts: {
     return `${finalLabel} (capped — ${opts.scope} scope)`;
   }
   if (opts.depthAdjusted) {
+    // Round-7 7D (J1): direction differentiates junior-shallow-down from
+    // the existing senior-deep-lift. "Lowered from Good by shallow depth"
+    // tells HM the junior's verdict honestly reflects their depth claim.
+    if (opts.depthDirection === 'lowered') {
+      return `${finalLabel} (lowered from ${opts.baseLabel} by shallow depth)`;
+    }
     return `${finalLabel} (lifted from ${opts.baseLabel} by depth)`;
   }
   return opts.baseLabel;
