@@ -15,12 +15,23 @@ interface AssessmentState {
   addTech: (techId: string, scope?: Scope) => void;
   removeTech: (techId: string) => void;
   updateItem: (techId: string, patch: Partial<AssessmentItem>) => void;
+  /** Fix C: record a tech the candidate named that isn't in the catalog.
+   *  Trims, rejects empty / whitespace-only, dedupes case-insensitively,
+   *  enforces an 80-char cap. Free-text only — no scoring, no PDF
+   *  verdict, just a "probe target" list for the technical interviewer. */
+  addNamedOnly: (name: string) => void;
+  removeNamedOnly: (name: string) => void;
   setFocused: (techId: string | null) => void;
   reset: () => void;
   loadDraft: () => boolean;
   saveDraft: () => void;
   clearDraft: () => void;
 }
+
+/** Max length for a single named-only entry. Prevents the field from
+ *  becoming a notes dumping ground; long descriptions belong in the
+ *  per-tech Notes field or the candidate-context block (Fix M). */
+const NAMED_ONLY_MAX_LEN = 80;
 
 const emptyMeta: AssessmentMeta = {
   candidateName: '',
@@ -29,6 +40,7 @@ const emptyMeta: AssessmentMeta = {
   mandate: '',
   startedAt: '',
   channel: 'phone',
+  namedNotInCatalog: [],
 };
 
 const DRAFT_KEY = 'techvet-draft';
@@ -77,6 +89,31 @@ export const useAssessment = create<AssessmentState>()(
           items: state.items.map(i =>
             i.techId === techId ? { ...i, ...patch } : i
           ),
+        })),
+
+      addNamedOnly: name =>
+        set(state => {
+          const trimmed = name.trim().slice(0, NAMED_ONLY_MAX_LEN);
+          if (!trimmed) return state;
+          const lower = trimmed.toLowerCase();
+          const existing = state.meta.namedNotInCatalog ?? [];
+          if (existing.some(n => n.toLowerCase() === lower)) return state;
+          return {
+            meta: {
+              ...state.meta,
+              namedNotInCatalog: [...existing, trimmed],
+            },
+          };
+        }),
+
+      removeNamedOnly: name =>
+        set(state => ({
+          meta: {
+            ...state.meta,
+            namedNotInCatalog: (state.meta.namedNotInCatalog ?? []).filter(
+              n => n !== name
+            ),
+          },
         })),
 
       setFocused: techId => set({ focusedTechId: techId }),

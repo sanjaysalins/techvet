@@ -12,7 +12,7 @@ import {
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
 import { notDiscussedCopy, channelLabel } from '../lib/channel';
-import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders } from 'lucide-react';
+import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders, MessageSquarePlus } from 'lucide-react';
 
 const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
 
@@ -78,7 +78,7 @@ export default function Summary() {
     }));
   }, [scored]);
 
-  if (items.length === 0) {
+  if (items.length === 0 && meta.namedNotInCatalog.length === 0) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
         <h2 className="text-2xl font-bold text-navy-900 dark:text-white">
@@ -236,7 +236,7 @@ export default function Summary() {
             confirmed not in stack" from "ran out of time" — both used to be
             buried below the disclaimer. Chip-row gives them headline-level
             visibility without polluting the three scored buckets. */}
-        {(skipped.length > 0 || notDiscussed.length > 0) && (
+        {(skipped.length > 0 || notDiscussed.length > 0 || meta.namedNotInCatalog.length > 0) && (
           <section className="flex flex-wrap gap-2 mb-8">
             {skipped.length > 0 && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-300 bg-slate-100 text-slate-700 text-sm">
@@ -252,9 +252,18 @@ export default function Summary() {
                 <span className="text-xs text-amber-700">{notDiscussedCopy(meta.channel).chipHint}</span>
               </span>
             )}
+            {/* Fix C: surface named-only count in the headline chip-row so
+                hiring manager sees there are off-catalog probe targets. */}
+            {meta.namedNotInCatalog.length > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-amber-300 bg-amber-100 text-amber-900 text-sm">
+                <MessageSquarePlus className="w-3.5 h-3.5" />
+                <strong>{meta.namedNotInCatalog.length}</strong> candidate mentioned, off-catalog
+                <span className="text-xs text-amber-800">(see section below)</span>
+              </span>
+            )}
           </section>
         )}
-        {skipped.length === 0 && notDiscussed.length === 0 && <div className="mb-8" />}
+        {skipped.length === 0 && notDiscussed.length === 0 && meta.namedNotInCatalog.length === 0 && <div className="mb-8" />}
 
         {/* Radar */}
         <section className="mb-8">
@@ -294,6 +303,42 @@ export default function Summary() {
             items={buckets.red}
             color="red"
           />
+        )}
+
+        {/* Candidate mentioned — out of catalog (Fix C, round-3).
+            Round-3 sessions (Lou-Oracle, Devon-Tokio, Tomi-Vault,
+            Dmitri-Ruby) had named techs vanish to sticky notes because
+            the catalog didn't have them. Now captured via the no-results
+            search CTA and rendered here as probe targets — the technical
+            interviewer reads this section to know what to dig in on. */}
+        {meta.namedNotInCatalog.length > 0 && (
+          <section className="mb-6">
+            <div className="mb-3 flex items-start gap-2">
+              <MessageSquarePlus className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
+              <div>
+                <h2 className="text-lg font-semibold text-navy-900">
+                  Candidate mentioned — out of catalog ({meta.namedNotInCatalog.length})
+                </h2>
+                <p className="text-sm text-slate-600">
+                  Names heard during the screening that aren&rsquo;t in
+                  TechVet&rsquo;s catalog. <strong>No verdict</strong> — these
+                  are probe targets for the technical interviewer. Captured
+                  because the recruiter heard them; the candidate&rsquo;s
+                  actual depth on each is not represented here.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {meta.namedNotInCatalog.map(name => (
+                <span
+                  key={name}
+                  className="inline-flex items-center px-3 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-sm font-medium"
+                >
+                  {name}
+                </span>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Confirmed not in stack — first-class section, not a footer note.

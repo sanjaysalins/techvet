@@ -8,7 +8,7 @@ import TechSearch from '../components/TechSearch';
 import CategoryPrompt from '../components/CategoryPrompt';
 import GuidancePanel from '../components/GuidancePanel';
 import { resolveTier } from '../lib/scoring';
-import { Save, FileBarChart, Sparkles, Phone, Video, FileText } from 'lucide-react';
+import { Save, FileBarChart, Sparkles, Phone, Video, FileText, X, MessageSquarePlus } from 'lucide-react';
 import { cn } from '../lib/cn';
 
 const CHANNELS: { id: Channel; label: string; icon: typeof Phone; hint: string }[] = [
@@ -29,6 +29,8 @@ export default function Assessment() {
     focusedTechId,
     setMeta,
     addTech,
+    addNamedOnly,
+    removeNamedOnly,
     setFocused,
     saveDraft,
   } = useAssessment();
@@ -172,7 +174,45 @@ export default function Assessment() {
             technologies={TECHS}
             alreadyAdded={alreadyAdded}
             onAdd={addTech}
+            onAddNamedOnly={addNamedOnly}
           />
+
+          {/* Fix C: "Candidate mentioned" chip strip. Shows the names
+              recruiter captured via the no-results search CTA. Each chip
+              has an x-button to remove. Stays compact — primary purpose
+              is "did the tool catch what I just heard?" feedback. */}
+          {meta.namedNotInCatalog.length > 0 && (
+            <div className="card p-3">
+              <div className="flex items-start gap-2">
+                <MessageSquarePlus className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <div className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                    Candidate mentioned ({meta.namedNotInCatalog.length})
+                    <span className="ml-1.5 font-normal text-slate-400 dark:text-slate-500">
+                      — not in catalog; probe target for the technical interviewer
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {meta.namedNotInCatalog.map(name => (
+                      <span
+                        key={name}
+                        className="inline-flex items-center gap-1 pl-2.5 pr-1 py-1 rounded-md bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-700 text-sm"
+                      >
+                        {name}
+                        <button
+                          onClick={() => removeNamedOnly(name)}
+                          className="p-0.5 hover:bg-amber-100 dark:hover:bg-amber-800/30 rounded"
+                          aria-label={`Remove ${name}`}
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {items.length === 0 ? (
             <div className="card p-10 text-center">

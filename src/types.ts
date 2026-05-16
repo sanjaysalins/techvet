@@ -124,4 +124,12 @@ export interface AssessmentMeta {
   mandate: string;
   startedAt: string;
   channel: Channel;
+  /** Fix C (round-3 cross-cut): free-text names the candidate mentioned
+   *  that aren't in the catalog. Captured via the no-results CTA in
+   *  TechSearch so a recruiter who hears "we use Vault" but finds no
+   *  catalog entry can still record it as a probe target for the
+   *  technical interviewer. Round-3 confirmed Lou-Oracle, Devon-Tokio,
+   *  Tomi-Vault, Dmitri-Ruby all vanished into sticky notes without
+   *  this. Strings only; trimmed, deduplicated case-insensitively. */
+  namedNotInCatalog: string[];
 }
