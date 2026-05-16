@@ -1,12 +1,21 @@
-# Resume point — TechVet (2026-05-16 EOD-16 — round-5 cumulative validation complete; 8 new bugs + 5 structural patterns surfaced; hot patches queued)
+# Resume point — TechVet (2026-05-16 EOD-17 — round-5 hot patches shipped; 6 composition gaps closed)
 
-**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **224/224**; `npx vite build` clean (1.24 MB / **~374 KB gzipped**). Catalog: **103 entries** across 12 categories. Eighteen things today:
+**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **226/226** (+2 today); `npx vite build` clean (1.24 MB / **~374 KB gzipped**). Catalog: **103 entries** across 12 categories. Nineteen things today:
 
 1. **Priority #4 shipped** — scope-of-use axis. Closes the *named* half of yesterday's 12-session cluster.
 2. **Built `simulations/` pipeline + ran 10-session phone-screening round.** 10 independent agents wrote ~19k words of findings into `simulations/rounds/2026-05-16-phone-screening/`. Surfaced **6 code bugs, 10 structural defects, 13+ catalog gaps, 4 substantive pushbacks on shipped work**. Cross-cut + 16-item priority list (A–P) in `cross-cut.md`.
 3. **Shipped round-2 top-5 fixes (A/B/G/J/L)** in ~2 hours. The two highest-precision scoring bugs closed; Snowflake/GraphQL/gRPC "Green rubber-stamp" single-tier entries now checklist-mode; untouched template cards excluded from buckets; confirmed-absent + not-discussed are headline chips + prominent sections.
 4. **Shipped Fix K — scope-axis UX redesign (hybrid).** Catalog-side `defaultScope: "author"` on all 10 AI/ML libraries so the cap fires automatically without the recruiter touching the dropdown. Interactive `<select>` chip on Summary lets the recruiter tune scope post-call — live verdict update, buckets shift, can move techs between Strengths and Probe Further with one click. Closes the round-2 "scope axis unreachable on phone" finding **for the AI/ML subset only** (see #5 below — round 3 found this insufficient).
 5. **Ran round 3: multi-channel × underrepresented roles.** 10 sessions (3 video / 3 async / 4 phone) covering Solution Architect, SRE, Security AppSec, Data Scientist, QA, OSS maintainer, academic→industry, founder→IC, internal transfer, 18yr DBA specialist. **Headline finding: Fix K covers 10 of 96 catalog techs** — 5 of 10 round-3 agents independently named this as their #1 finding. The non-AI/ML cluster (Terraform / K8s / cloud / DB) is still scope-unreachable on phone. Cross-cut + 7 new priorities (K2, Q, R, S, T, U, V) in `simulations/rounds/2026-05-16-multichannel-round-3/cross-cut.md`. New architectural concern surfaced (provenance tagging for async/CV-inferred entries — Fix Q) that round 2's phone-only cast couldn't have caught.
+19. **Shipped round-5 hot patches (5α-ζ — 6 fixes in ~1.5h).** Six data-only edits closing named composition gaps from round-5 cross-cut:
+    - **5α** Fix E softener broadened from `=== 'red'` to all non-Green for enterpriseStillUsed techs. Margarethe's PG 13 + Java 11 Yellow-tier stale now softens with returner note. Label reads `"(softened from Review / Probe — stale but defensible)"` even when color stays Yellow. Preserves upstream `scopeCapped` flag so scope-cap note + softener note coexist on the same card.
+    - **5β** SA AWS filter gains `security` tag — Anil's KMS/Macie/GuardDuty/Security Hub/Inspector surface for fin-services SA archetype.
+    - **5γ** Backend template gets `serviceTagFilters: { aws: ['general'] }` — Margarethe's manually-added AWS no longer hits the full 26-service list.
+    - **5δ** Azure preloaded in SA template with `architect` techScope — Anil's Azure no longer falls through to catalog `defaultScope: "operator"`.
+    - **5ε** Removed `slos` from observability checklist — Brigit's D4 chip + obs service double-count closed (SLO is methodology not product).
+    - **5ζ** `channelLabel()` capitalizes phone → "Phone", video → "Video panel". Async unchanged. Closes Anil's "Channel: video" lowercase finding.
+    Tests: 224 → 226 (+2 — Yellow-tier softener regression + video label). All integrity snapshots updated for SA template addition + AWS filter tag changes. Browser-verified PG 13 + lastUsed=2022 → "softened from Review/Probe" badge + returner note.
+
 18. **Ran round 5 cumulative validation (6 sessions, ~14k words).** First Safe rating in 21 sessions across 3 rounds (Idris/AppSec) — proof-of-concept that the post-fix shape works when every fix lines up. **Fix O sharply validated** end-to-end: Tanvir's 10/10 in-prod LangChain → Green vs Bashir's 3/10 tutorial → Yellow. **Fix U + K2 + AWS filter + D4 + M compose cleanly** for the Security happy path. **8 new bugs + 5 structural patterns surfaced** — most are composition gaps at the edges that single-fix validation couldn't catch (KMS hidden under SA filter, Azure-scope-leak via catalog defaultScope, Fix E softener only reaches Red-tier not Yellow-tier, SLO double-counts between D4 chip and obs checklist, D4 free-text-vs-chip slug collision). **Structural pattern recurring 4 rounds:** coverage-as-single-axis under-rates deep-narrow specialists (Robin/Cara/Brigit/Tanvir) — needs redesign. Cross-cut + 12-item priority list (α-μ) in `simulations/rounds/2026-05-16-round-5-cumulative-validation/cross-cut.md`. Speed-of-use distribution: 1 Safe / 5 At-risk / **0 Unworkable** (vs round 3's 0/7/3).
 
 17. **Shipped D4 — methodology + practices section.** Round-1 Mei: "*TechVet scores tools, not skills — and senior ICs are differentiated by skills.*" Round-3 Yara + round-4 Marisol confirmed it open across DS / SA / SRE / Security shapes. New `MethodologyChip` + `MethodologyEntry` types; `methodologyEntries: MethodologyEntry[]` on AssessmentMeta; `methodologyChips?: MethodologyChip[]` on RoleTemplate. 8 templates carry 5-6 curated chips each (SA: TOGAF/C4/DDD/ADRs/Well-Architected/EventStorming; DevOps: GitOps/IaC/canary/trunk/feature-flags/runbooks; SRE: SLOs/error-budgets/chaos-eng/DORA/blameless/capacity; Data Eng: Kimball/lakehouse/contracts/SCDs/quality-SLOs/medallion; DS: A/B/causal/Bayesian/experimental/MCMC/feature-eng; AI-ML: MLOps/retraining/feature-stores/drift/LLM-evals/RAG-eval; Security: STRIDE/OWASP/SDLC/SLSA/PTES/zero-trust; QA: pyramid/contract/mutation/a11y/perf/flaky). New `MethodologySection` UI on Assessment between candidate header and main column — click chips to add, free-text input + Enter for long tail, dedup by id. **Display-only on Summary report** (no scoring impact per v1 design). +16 tests (10 store + 6 integrity including canonical-case pins for Yara/Marisol/Robin/Cara/Tomi/Wendy). Browser-verified end-to-end on DS template: chip click + free-text add both work; Summary shows "Methodology + practices (2)" with the Mei quote framing.
@@ -151,15 +160,11 @@ Tests: **70 → 86** (+16). Build: **363 → 363.6 KB gzipped** (+0.6 KB).
 
 ## What's next — start here tomorrow
 
-**Recommended next: round-5 hot patches** (~1.5h total) — six data-only edits that close specific findings from round-5 cumulative validation. Concretely:
-- **5α** Broaden Fix E softener from `=== 'red'` to `!== 'green'` (1h) — Margarethe Yellow-tier stale gap
-- **5β** SA AWS filter add `security` tag (5m) — Anil KMS hidden
-- **5γ** Backend AWS filter `['general']` (5m) — Margarethe AWS 11% Red
-- **5δ** Azure to SA template + architect techScope (5m) — Anil cloud-defaultScope-backfire
-- **5ε** Remove `slos` from obs checklist (5m) — Brigit D4 double-count
-- **5ζ** Capitalize phone/video in channelLabel (5m) — Anil cosmetic
-
-Then medium (~2h): methodology as 4th headline stat card (Yasmin); D4 `causal-inference` chip split into did/iv/rdd/propensity (Yasmin); channel-aware hide-on-empty for NamedOnlyEditor (Yasmin); Fix E extension to checklist-mode (Brigit).
+**Recommended next: round-5 medium items** (~2h). The 6 hot patches (5α-ζ) are shipped. Medium:
+- **5η** Split D4 `causal-inference` chip into did/iv/rdd/propensity (15m) — Yasmin
+- **5θ** Channel-aware hide-on-empty for NamedOnlyEditor in async (30m) — Yasmin
+- **5ι** Methodology as 4th headline stat card (1h) — Yasmin
+- **5κ** Fix E extension to checklist-mode (0.5d) — Brigit
 
 Then larger (design-pass-first): **coverage-as-single-axis redesign** (Robin round-1 → Cara round-3 → Brigit + Tanvir round-5 = four rounds of the same finding). Yellow sub-grouping in headline (Idris/Yasmin). 3-4d total.
 
