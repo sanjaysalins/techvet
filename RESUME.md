@@ -1,9 +1,10 @@
-# Resume point — TechVet (2026-05-16 EOD — priority #4 shipped + 10-session phone-screening adversarial round complete, pipeline now in-repo)
+# Resume point — TechVet (2026-05-16 EOD — priority #4 + round-2 top-5 fixes (A/B/G/J/L) all shipped)
 
-**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **86/86**; `npx vite build` clean (1.23 MB / **363.6 KB gzipped**). Two big things today:
+**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **107/107** (was 86 this morning; +21 round-2 regression tests); `npx vite build` clean (1.24 MB / **364.8 KB gzipped**, +1.2 KB). Three things today:
 
-1. **Priority #4 shipped** — scope-of-use axis (operator / author / reviewer / architect). Closes the *named* half of the cluster from yesterday's 12-session round.
-2. **Built `simulations/` pipeline + ran 10-session phone-screening round.** 10 independent agents played fictional candidates from junior bootcamp grad to 12-year contractor on simulated 5-10 min phone calls; wrote findings into `simulations/rounds/2026-05-16-phone-screening/`. The round surfaced **6 code bugs, 10 structural defects, 13+ catalog gaps, and 4 substantive pushbacks on shipped work** including: **scope axis shipped today does not fire on phone calls** (10 of 10 sessions). Cross-cut and 16-item priority list in `simulations/rounds/2026-05-16-phone-screening/cross-cut.md`. Top-5 fixes total 2.5 days and would clear the worst over/under-rates from the round.
+1. **Priority #4 shipped** — scope-of-use axis. Closes the *named* half of yesterday's 12-session cluster.
+2. **Built `simulations/` pipeline + ran 10-session phone-screening round.** 10 independent agents wrote ~19k words of findings into `simulations/rounds/2026-05-16-phone-screening/`. Surfaced **6 code bugs, 10 structural defects, 13+ catalog gaps, 4 substantive pushbacks on shipped work**. Cross-cut + 16-item priority list (A–P) in `cross-cut.md`.
+3. **Shipped round-2 top-5 fixes (A/B/G/J/L)** in ~2 hours (estimate was 2.5 days). The two highest-precision scoring bugs (depth-lift undoing checklist coverage signal; depth-lift on unknown-version) are now closed; the Snowflake/GraphQL/gRPC "Green rubber-stamp" single-tier entries are now checklist-mode; untouched template cards no longer pollute the Probe Further bucket; confirmed-absent + not-discussed sections are now first-class headline chips + prominent report sections.
 
 ## Today's commit (2026-05-16)
 
@@ -98,31 +99,39 @@ Tests: **70 → 86** (+16). Build: **363 → 363.6 KB gzipped** (+0.6 KB).
 
 ### Round 2 additions (2026-05-16 phone-screening — see `simulations/rounds/2026-05-16-phone-screening/cross-cut.md` for full evidence)
 
-| # | Fix | Effort | Why |
-|---|-----|--------|-----|
-| **A** | **Drop depth-lift on checklist mode** (or gate behind ≥50% coverage) | 0.5 day | Closes Vikram Green-from-tutorial; 1-line scoring change |
-| **B** | **Suppress depth-LIFT (not just enterprise note) when `unknownVersion=true`** | 0.5 day | Closes Helm/Storybook/Swift/Docker over-rates from 6 sessions |
-| **C** | Search aliases + "named-but-not-in-catalog" capture | 1.5 day | Highest-frequency friction (6 sessions); Dmitri's vanished techs |
-| **D** | `phoneScreenPivot: true` flag on top 3-5 services per checklist | 1.5 day | Closes Aisha's 4-of-7-checklist-techs-unworkable |
-| **F** | "Managed-platform / toolchain-pinned" as 4th version-axis state | 1.5 day | Closes Tomás-Supabase, Hana-Swift, Aisha-Helm; cleaner than B once shipped |
-| **G** | Auto-exclude untouched template cards from buckets/radar | 0.5 day | Closes Priya-Databricks PDF pollution |
-| **H** | Backend template = JVM-aware (or stack-family chooser) | 1 day | Sarah + Lin + prior round Hiroshi |
-| **I** | Catalog refresh — reprioritized: Vault, Vercel, Stripe, Prisma, SwiftUI, UIKit, Combine, Xcode Cloud, TanStack Query, RTK, Zustand, MLflow, SageMaker-as-AWS-service, Bedrock, Spring Framework, Hibernate, Mockito, Testcontainers, Maven, Gradle, Git, Docker Compose | 3 days | Spans 8 of 10 sessions |
-| **J** | Snowflake → checklist mode (and audit other `min: "0"` single-tier entries) | 0.5 day | Bug 3 — structural Green rubber-stamp |
-| **K** | **Scope-axis UX redesign** — move to post-call enrichment OR auto-default per category | 2 days | **10/10 round 2 sessions found scope dropdown unreachable on phone calls.** Don't ship v2, redesign |
-| **L** | Surface "Confirmed not in stack" more prominently on Summary + count chip | 0.5 day | Lin/Tomás — section exists but visually de-emphasized |
-| **M** | Candidate-context block on report (junior/mid/senior/returner/contractor + years) | 1 day | Marcus/Sarah/Janelle/Priya — junior reads like mid |
-| **N** | `scope=consumer / triggered-by` 5th option for orchestration tools | 0.5 day | Priya/Airflow — do after K |
-| **O** | Self-overclaim guard: fast-moving libs (LangChain, vector DBs, llm-api-sdk) max at Yellow without checklist services | 1 day | Vikram natural-Green LangChain after 6 weeks of tutorials |
-| **P** | Per-tech depth tooltips (what "working" / "deep" means in this category) | 1 day | Dmitri-Kafka + Sarah scope-confusion |
+| # | Fix | Effort | Status |
+|---|-----|--------|--------|
+| **A** | Drop depth-lift on checklist mode | 0.5 day | ✅ today — closes Vikram Green-from-tutorial. +5 regression tests pinning coverage-is-the-signal |
+| **B** | Suppress depth-lift when `unknownVersion=true` | 0.5 day | ✅ today — closes Helm/Storybook/Swift/Docker over-rates from 6 sessions. +5 regression tests |
+| **C** | Search aliases + "named-but-not-in-catalog" capture | 1.5 day | ⏳ — highest-frequency friction; Dmitri's vanished techs |
+| **D** | `phoneScreenPivot: true` flag on top 3-5 services per checklist | 1.5 day | ⏳ — closes Aisha's 4-of-7-checklist-techs-unworkable |
+| **F** | "Managed-platform / toolchain-pinned" as 4th version-axis state | 1.5 day | ⏳ — closes Tomás-Supabase, Hana-Swift, Aisha-Helm; cleaner long-term than B |
+| **G** | Auto-exclude untouched template cards from buckets/radar | 0.5 day | ✅ today — closes Priya-Databricks PDF pollution. New `notDiscussed` flag + Summary section + headline chip. +9 regression tests |
+| **H** | Backend template = JVM-aware (or stack-family chooser) | 1 day | ⏳ — Sarah + Lin + prior round Hiroshi |
+| **I** | Catalog refresh — Vault, Vercel, Stripe, Prisma, SwiftUI, UIKit, Combine, Xcode Cloud, TanStack Query, RTK, Zustand, MLflow, SageMaker-as-AWS-service, Bedrock, Spring Framework, Hibernate, Mockito, Testcontainers, Maven, Gradle, Git, Docker Compose | 3 days | ⏳ — spans 8 of 10 sessions |
+| **J** | Snowflake → checklist mode (and audit other `min: "0"` single-tier entries) | 0.5 day | ✅ today — Snowflake/GraphQL/gRPC all converted (audit found 3, not 1). 12 / 10 / 10 services respectively. +4 integrity tests including a global guard against future single-tier `min:0` regressions |
+| **K** | **Scope-axis UX redesign** — move to post-call enrichment OR auto-default per category | 2 days | ⏳ — **recommended next priority.** 10/10 round 2 sessions found scope unreachable on phone |
+| **L** | Surface "Confirmed not in stack" more prominently on Summary + count chip | 0.5 day | ✅ today — first-class h2 sections + headline chip-row for both confirmed-absent and not-discussed |
+| **M** | Candidate-context block on report (junior/mid/senior/returner/contractor + years) | 1 day | ⏳ — Marcus/Sarah/Janelle/Priya |
+| **N** | `scope=consumer / triggered-by` 5th option for orchestration tools | 0.5 day | ⏳ — do after K |
+| **O** | Self-overclaim guard: fast-moving libs max at Yellow without checklist services | 1 day | ⏳ — Vikram natural-Green LangChain |
+| **P** | Per-tech depth tooltips | 1 day | ⏳ — Dmitri-Kafka + Sarah scope-confusion |
 
 ## What's next — start here tomorrow
 
-**RECOMMENDED PIVOT after the round 2 cross-cut: ship fixes A + B + G + J + L = 2.5 days total ("Week 1 quick wins").** These are 1-line-to-30-line scoring/data changes that close the highest-precision failure modes from the phone-screening round. After that, redesign scope (fix K, 2 days) before doing fix E (`lastUsed`), because the round changed the design from "penalize stale" to "asymmetric stale-aware". Full sequencing in `simulations/rounds/2026-05-16-phone-screening/cross-cut.md`.
+**Recommended next: Fix K — scope-axis UX redesign (2 days).** All 10 round-2 sessions found the dropdown unreachable on phone calls. With A/B/G/J/L now shipped, this is the highest-signal open round-2 item. Concrete options to evaluate:
 
-The previous "next: priority #5" plan below is **superseded but kept for reference** — it didn't account for the asymmetric design feedback Sarah's session surfaced.
+- **Option 1: Auto-default per category.** AI/ML libs default `author`; cloud + K8s + observability default `operator`; recruiter only flips when the candidate explicitly contradicts. Closes Vikram (`author` default on LangChain caps it). Cheapest; preserves the axis as-is.
+- **Option 2: Post-call enrichment.** Move scope out of TechCard; show it only on Summary as a per-tech chip that defaults from depth, with one-click re-tagging. Recruiter does it AFTER the call when they have a second. Tomás/Sarah/Vikram all argued for this independently.
+- **Option 3: Hybrid.** Default per category (Option 1) + post-call chip (Option 2). Recruiter never has to think about it mid-call; corrections are one click on Summary.
 
-### Superseded plan: priority #5 — use `lastUsed` in scoring (1 day)
+I'd recommend prototyping Option 3 — costs an extra ~0.5d but closes both the "didn't reach the dropdown" failure (Option 1's contribution) and the "wrong default in edge cases" failure (Option 2's contribution).
+
+**After K:** Fix E (`lastUsed` in scoring, **asymmetric design** per Sarah — penalize stale Greens AND soften stale Reds when version was contemporary). 1.5 days.
+
+**Then ongoing in parallel:** Fix I (catalog refresh, 3 days).
+
+### Reference: original priority #5 plan (PRE-Sarah's design wrinkle, kept for diff)
 
 **Concrete plan:**
 
@@ -145,15 +154,28 @@ The previous "next: priority #5" plan below is **superseded but kept for referen
 
 ## Code state — what's where
 
-**Files modified today (2026-05-16):**
-- `src/types.ts` — new `Scope` type (`'operator' | 'author' | 'reviewer' | 'architect'`); added `scope?: Scope` to `AssessmentItem`; added `scopeCapped?: boolean` to `ResolvedTier`.
-- `src/lib/scoring.ts` — new `applyScope()` (runs after `adjustForDepth`); new `composeLabel()` helper centralizes the depth-lift / scope-cap label suffix; new `scopeLabel()` exported. Three call sites (unknown-version, tier-match, checklist) updated to flow through `applyScope`.
-- `src/store/assessment.ts` — `addTech` defaults `scope: undefined`.
-- `src/components/TechCard.tsx` — grid expanded `md:grid-cols-2` → `md:grid-cols-3` to fit new "Scope of use" dropdown between Depth and Last used. New amber italic note when `resolved.scopeCapped`; existing green depth-lift note now only fires when scope didn't cap.
-- `src/screens/Summary.tsx` — scope chip rendered inline with Depth in every tier item; new amber italic cap-explanation note above tier guidance when `tier.scopeCapped`.
-- `src/lib/__tests__/scoring.test.ts` — +16 regression tests across backward compat, reviewer/architect cap, author depth-restriction, checklist-mode scope, and interactions with `notUsed` / `enterpriseStillUsed`.
+**Files modified today (2026-05-16) — full day:**
 
-**Test totals:** 70 → **86** (+16 scope regression tests today).
+**Morning (priority #4 — scope axis):**
+- `src/types.ts` — `Scope` type + `scope` on `AssessmentItem` + `scopeCapped` on `ResolvedTier`.
+- `src/lib/scoring.ts` — `applyScope()` runs after `adjustForDepth`; `composeLabel()` helper; `scopeLabel()` exported.
+- `src/store/assessment.ts` — `scope: undefined` default in `addTech`.
+- `src/components/TechCard.tsx` — `md:grid-cols-3` to fit Scope dropdown; scope-cap amber note.
+- `src/screens/Summary.tsx` — scope chip inline with Depth; cap-explanation note.
+- `src/lib/__tests__/scoring.test.ts` — +16 scope regression tests.
+
+**Afternoon (10-session phone-screening round + cross-cut):**
+- `simulations/` — new directory: pipeline README, brief-template, finding-schema; rounds/2026-05-16-phone-screening/ with cast.md, 10 session files (~19k words), cross-cut.md (16-item priority list A-P).
+
+**EOD (round-2 top-5 fixes A/B/G/J/L):**
+- `src/types.ts` — `notDiscussed?: boolean` on `ResolvedTier` (Fix G).
+- `src/lib/scoring.ts` — **Fix A**: dropped `adjustForDepth` call on checklist coverage path (coverage IS the signal). **Fix B**: dropped `adjustForDepth` on version-mode unknown path (no version evidence to lift). **Fix G**: `notDiscussed` flag set on version-mode empty-no-toggle and checklist 0/N-untouched paths.
+- `src/data/technologies.json` — **Fix J**: Snowflake/GraphQL/gRPC all converted from single-tier `min:"0"` rubber-stamps to checklist-mode with curated services (12 / 10 / 10 respectively).
+- `src/screens/Summary.tsx` — **Fix G**: `notDiscussed` filtered from `scored`/`buckets`/`radarData`, rendered in new "Not discussed on the call" section. **Fix L**: headline chip-row with `Slash`/`Circle` icons showing confirmed-absent and not-discussed counts; "Confirmed not in candidate's stack" elevated to first-class h2 with positive-coverage-signal framing.
+- `src/lib/__tests__/scoring.test.ts` — updated 5 tests for changed behavior (depth-lift no longer fires); +19 new regression tests across Fix A (checklist no lift), Fix B (unknown-version no lift), Fix G (notDiscussed flag transitions).
+- `src/data/__tests__/integrity.test.ts` — +4 Fix J tests including a global guard (no single-tier `min:"0"` entries ever again) + per-tech checklist-shape pins for Snowflake/GraphQL/gRPC.
+
+**Test totals:** 70 → 86 (scope) → **107** (round-2 fixes). +21 regression tests today total.
 
 ## Code state — yesterday's changes (2026-05-15, reference)
 
