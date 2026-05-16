@@ -41,6 +41,10 @@ const emptyMeta: AssessmentMeta = {
   startedAt: '',
   channel: 'phone',
   namedNotInCatalog: [],
+  seniority: 'unspecified',
+  yearsInIndustry: '',
+  pathType: 'unspecified',
+  candidateContext: '',
 };
 
 const DRAFT_KEY = 'techvet-draft';

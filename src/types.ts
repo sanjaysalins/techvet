@@ -117,6 +117,24 @@ export interface ResolvedTier {
  *  in the candidate header. Defaults to `phone` (primary use case). */
 export type Channel = 'phone' | 'video' | 'async';
 
+/** Fix M (round-3 cross-cut): structured candidate-context block on
+ *  the report so the hiring manager doesn't read a 2-yr coding career-
+ *  switcher's Green Python identically to a senior's Green Python.
+ *  Round-3 Eitan (SE→dev 2yr coding), Riya (founder→IC 6yr), Min
+ *  (academic→industry 4yr) all hit this. */
+export type Seniority = 'unspecified' | 'junior' | 'mid' | 'senior' | 'staff';
+export type PathType =
+  | 'unspecified'
+  | 'traditional'
+  | 'junior-first-role'
+  | 'career-switcher'
+  | 'returner'
+  | 'contractor'
+  | 'founder-cto'
+  | 'academic'
+  | 'internal-transfer'
+  | 'oss-maintainer';
+
 export interface AssessmentMeta {
   candidateName: string;
   role: string;
@@ -132,4 +150,14 @@ export interface AssessmentMeta {
    *  Tomi-Vault, Dmitri-Ruby all vanished into sticky notes without
    *  this. Strings only; trimmed, deduplicated case-insensitively. */
   namedNotInCatalog: string[];
+  /** Fix M (round-3 cross-cut): candidate seniority + path. Renders
+   *  inline in the report header. Defaults to 'unspecified' so the line
+   *  is hidden when the recruiter doesn't fill it in. */
+  seniority: Seniority;
+  /** Years in industry (free-text — accepts "8", "10+", "1.5", etc.). */
+  yearsInIndustry: string;
+  pathType: PathType;
+  /** Optional free-text qualifier (e.g. "3 yr break for kids", "ex-teacher",
+   *  "ex-Salesforce dev"). Renders after the structured fields. */
+  candidateContext: string;
 }

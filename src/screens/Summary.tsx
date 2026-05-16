@@ -12,6 +12,7 @@ import {
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
 import { notDiscussedCopy, channelLabel } from '../lib/channel';
+import { formatCandidateContext } from '../lib/candidateContext';
 import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders, MessageSquarePlus } from 'lucide-react';
 
 const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
@@ -179,6 +180,14 @@ export default function Summary() {
               </h1>
               {meta.role && (
                 <div className="text-slate-600 mt-1">Role: {meta.role}</div>
+              )}
+              {/* Fix M: candidate-context line. Hidden when all defaults so
+                  the header stays clean for the screens recruiter didn't
+                  fill out. */}
+              {formatCandidateContext(meta) && (
+                <div className="text-sm text-slate-700 mt-1.5 font-medium">
+                  {formatCandidateContext(meta)}
+                </div>
               )}
             </div>
             <div className="text-right text-xs text-slate-500">

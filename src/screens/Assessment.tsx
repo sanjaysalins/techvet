@@ -2,7 +2,13 @@ import { useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import technologiesData from '../data/technologies.json';
-import type { Channel, Technology } from '../types';
+import type { Channel, PathType, Seniority, Technology } from '../types';
+import {
+  seniorityLabel,
+  pathTypeLabel,
+  SENIORITY_OPTIONS,
+  PATH_TYPE_OPTIONS,
+} from '../lib/candidateContext';
 import TechCard from '../components/TechCard';
 import TechSearch from '../components/TechSearch';
 import CategoryPrompt from '../components/CategoryPrompt';
@@ -146,6 +152,76 @@ export default function Assessment() {
               value={meta.notes}
               onChange={e => setMeta({ notes: e.target.value })}
               placeholder="Anything top-of-mind"
+              className="input"
+            />
+          </div>
+        </div>
+        {/* Fix M (round-3): candidate context row. Renders inline on
+            Summary header so HM reads it before the verdicts. All optional;
+            defaults hide the line. */}
+        <div className="grid grid-cols-1 md:grid-cols-[auto_120px_1fr_1.5fr] gap-3">
+          <div>
+            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+              Seniority
+            </label>
+            <div className="flex flex-wrap gap-1">
+              {SENIORITY_OPTIONS.map(s => {
+                const active = meta.seniority === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setMeta({ seniority: s as Seniority })}
+                    className={cn(
+                      'px-2.5 py-1.5 rounded-md text-sm font-medium border transition',
+                      active
+                        ? 'bg-brand text-white border-brand shadow-sm'
+                        : 'bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-navy-700 hover:border-slate-300 dark:hover:border-navy-600'
+                    )}
+                  >
+                    {s === 'unspecified' ? '—' : seniorityLabel(s)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+              Years in industry
+            </label>
+            <input
+              type="text"
+              value={meta.yearsInIndustry}
+              onChange={e => setMeta({ yearsInIndustry: e.target.value })}
+              placeholder="e.g. 8 or 10+"
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+              Path
+            </label>
+            <select
+              value={meta.pathType}
+              onChange={e => setMeta({ pathType: e.target.value as PathType })}
+              className="input"
+            >
+              {PATH_TYPE_OPTIONS.map(p => (
+                <option key={p} value={p}>
+                  {p === 'unspecified' ? '— Not specified' : pathTypeLabel(p)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+              Additional context <span className="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={meta.candidateContext}
+              onChange={e => setMeta({ candidateContext: e.target.value })}
+              placeholder="e.g. 3 yr career break, ex-teacher, ex-Salesforce dev"
               className="input"
             />
           </div>
