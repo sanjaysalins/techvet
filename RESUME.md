@@ -1,5 +1,54 @@
 # Resume point — TechVet (2026-05-16 EOD-24 — 7D/E/F shipped; round-7 priority list cleared)
 
+---
+
+## 👋 Pick up here tomorrow
+
+**Repo state — already clean as of 2026-05-16 EOD.**
+
+- Working tree clean (last commit `3343b81`). 28 items shipped today across 7 rounds of adversarial validation (rounds 1–7) and ~10 ship batches.
+- `npx tsc -b` clean. `npm test` → **275/275 pass** (+49 today). `npx vite build` clean (1.24 MB / ~374 KB gzipped). Catalog **107 entries** / **15 templates**.
+- Speed-of-use trajectory across rounds: round 3 (0 Safe / 7 At-risk / 3 Unworkable) → round 4 → 5 → 6 (2 Safe / 4 At-risk / 0 Unworkable) → **round 7 (3 Safe / 3 At-risk / 0 Unworkable)** — best to date.
+
+**What's next (in priority order):**
+
+1. **Run another adversarial validation round** (round 8) to surface what 7D/7E/7F missed — the round-7 pattern was that each ship cycle reveals 2–3 structural items the prior round couldn't see. Cast suggestion: 3 redux on personas whose fixes just shipped (Mei junior FE for 7D / Kenji iOS for 7F / Sven backend for 7A) + 3 new (e.g. iOS-on-mobile-ios template, deeper junior cross-role, a senior-on-Cross-Platform template). Follow the pattern in `simulations/rounds/2026-05-16-round-7-post-6F-validation/cast.md`.
+2. **Low/cosmetic backlog still open** (any worth folding into round-8 fixes):
+   - **J4** — hide Scope dropdown on `meta.seniority === 'junior'` (~5 LOC, Mei+Eitan ~20s tax)
+   - **J5** — level-fit copy line below headline cards ("for a Junior FE, this report shows…") (~10 LOC)
+   - **7B-tier-note** — tier `note` field also needs junior-aware wording (Eitan Spring Boot 2.x "verify migration awareness" mis-fits junior-inherited-legacy) (~5 LOC + few catalog edits)
+   - **6E threshold tighter** — Kenji small-N over-eager promotion at `4 > 2`; change to `> scored + 1` (~3 LOC)
+   - **6γ tautology label** — "softened from Review/Probe — stale but defensible" when final color == base color (Margarethe cosmetic)
+   - **5θ expand-back caret** — compact NamedOnlyEditor on async has no way to expand back (Yasmin round-6)
+   - **5ι color A/B** — emerald-100 Methodology card too close to Good's emerald-50 (Yasmin minor)
+3. **Larger structural items deferred**:
+   - **UIKit catalog entry** — 6F shipped SwiftUI without UIKit; for migration-shop iOS engineers (Kenji's actual role) half the daily work has no verdict surface. ~30 min catalog work copy-modifying the SwiftUI entry.
+   - **K8s hybrid mode** — Sven R5: K8s is version-mode only, so Helm-chart-consumers have no service-slice signal. Needs new `vetMode: 'hybrid'` with both `versionTiers` AND `services`. Half-day design + implementation.
+   - **Mobile chip iOS expansion polish** — Kenji noted Crashlytics is Firebase-specific (Apple ecosystem uses Xcode Organizer); the mobile-cross-platform/mobile-android sets need a vendor-neutral pass.
+
+**How to verify nothing regressed before starting work:**
+
+```bash
+cd ~/devtools/techvet
+git status                   # should be clean (3343b81 is HEAD)
+npx tsc -b                   # types clean
+npm test                     # 275/275 pass
+npx vite build               # builds clean ~12s
+npm run dev                  # boots ~1s; visit http://localhost:5173
+                             # smoke 3 things:
+                             #   1. Landing shows 15 templates with 3 Mobile sub-templates (no generic "Mobile Engineer")
+                             #   2. Backend template Methodology section shows 6 chips (contract testing / event-driven / etc.)
+                             #   3. Pick SA template + AWS (architect scope, deep) + methodology chips → Summary
+                             #      shows 5- or 6-card grid with "Scope-capped: N" sky card + "(capped from Good by architect scope)" labels
+```
+
+**Pointers:**
+- `CLAUDE.md` — codebase notes (stack, scoring quirks, Tailwind config gotchas, what's verified)
+- `simulations/rounds/` — 7 rounds of adversarial agent findings (~75k words total across ~40 sessions). `cross-cut.md` in each round is the synthesis + priority list.
+- The numbered log below this section is the chronological "28 things shipped today" — historical reference, not pickup material. Items are reverse-chronological (28 = latest).
+
+---
+
 **Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **275/275** (+49 today); `npx vite build` clean (1.24 MB / **~374 KB gzipped**). Catalog: **107 entries** across 12 categories. **15 role templates** (Mobile split 1 → 3). Twenty-eight things today:
 
 1. **Priority #4 shipped** — scope-of-use axis. Closes the *named* half of yesterday's 12-session cluster.
