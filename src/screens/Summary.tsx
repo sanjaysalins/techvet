@@ -11,6 +11,7 @@ import {
 } from '../lib/scoring';
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
+import { notDiscussedCopy, channelLabel } from '../lib/channel';
 import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders } from 'lucide-react';
 
 const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
@@ -187,6 +188,13 @@ export default function Summary() {
                   Started {new Date(meta.startedAt).toLocaleString()}
                 </div>
               )}
+              {/* Fix Q: channel chip in report header so the hiring
+                  manager knows whether this was a phone screen, a video
+                  panel, or async CV review — meaningfully different
+                  evidence levels. */}
+              <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-semibold uppercase tracking-wider">
+                Channel: {channelLabel(meta.channel)}
+              </div>
             </div>
           </div>
           {meta.mandate && (
@@ -240,8 +248,8 @@ export default function Summary() {
             {notDiscussed.length > 0 && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-amber-200 bg-amber-50 text-amber-800 text-sm">
                 <Circle className="w-3.5 h-3.5" />
-                <strong>{notDiscussed.length}</strong> not discussed on the call
-                <span className="text-xs text-amber-700">(template-loaded, recruiter pivoted)</span>
+                <strong>{notDiscussed.length}</strong> {notDiscussedCopy(meta.channel).chip}
+                <span className="text-xs text-amber-700">{notDiscussedCopy(meta.channel).chipHint}</span>
               </span>
             )}
           </section>
@@ -351,14 +359,10 @@ export default function Summary() {
               <Circle className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
               <div>
                 <h2 className="text-lg font-semibold text-navy-900">
-                  Not discussed on the call ({notDiscussed.length})
+                  {notDiscussedCopy(meta.channel).sectionTitle} ({notDiscussed.length})
                 </h2>
                 <p className="text-sm text-slate-600">
-                  Loaded by the role template but the recruiter ran out of
-                  time or pivoted. <strong>No verdict</strong> — these are
-                  not candidate weaknesses, they're gaps in the screen.
-                  Worth a follow-up before passing to the technical
-                  interviewer.
+                  {notDiscussedCopy(meta.channel).sectionBody}
                 </p>
               </div>
             </div>

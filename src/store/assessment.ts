@@ -28,6 +28,7 @@ const emptyMeta: AssessmentMeta = {
   notes: '',
   mandate: '',
   startedAt: '',
+  channel: 'phone',
 };
 
 const DRAFT_KEY = 'techvet-draft';
@@ -110,6 +111,15 @@ export const useAssessment = create<AssessmentState>()(
       name: 'techvet-session',
       storage: createJSONStorage(() => sessionStorage),
       partialize: state => ({ meta: state.meta, items: state.items }),
+      // Fix Q: old sessions persisted before the channel field existed
+      // would hydrate with meta.channel === undefined; spread emptyMeta
+      // over the rehydrated meta to backfill it (and any future fields
+      // added to the meta shape).
+      onRehydrateStorage: () => state => {
+        if (state) {
+          state.meta = { ...emptyMeta, ...state.meta };
+        }
+      },
     }
   )
 );

@@ -2,13 +2,20 @@ import { useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import technologiesData from '../data/technologies.json';
-import type { Technology } from '../types';
+import type { Channel, Technology } from '../types';
 import TechCard from '../components/TechCard';
 import TechSearch from '../components/TechSearch';
 import CategoryPrompt from '../components/CategoryPrompt';
 import GuidancePanel from '../components/GuidancePanel';
 import { resolveTier } from '../lib/scoring';
-import { Save, FileBarChart, Sparkles } from 'lucide-react';
+import { Save, FileBarChart, Sparkles, Phone, Video, FileText } from 'lucide-react';
+import { cn } from '../lib/cn';
+
+const CHANNELS: { id: Channel; label: string; icon: typeof Phone; hint: string }[] = [
+  { id: 'phone', label: 'Phone', icon: Phone, hint: '5-10 min, typing while listening' },
+  { id: 'video', label: 'Video', icon: Video, hint: '30-45 min, more probe time' },
+  { id: 'async', label: 'Async (CV-only)', icon: FileText, hint: 'No live call — CV + JD only' },
+];
 
 const TECHS = technologiesData as unknown as Technology[];
 
@@ -68,6 +75,41 @@ export default function Assessment() {
     <div className="max-w-7xl mx-auto px-6 py-8">
       {/* Candidate header */}
       <div className="card p-5 mb-6 space-y-4">
+        {/* Fix Q: channel pill — drives per-channel empty-field semantics
+            on the Summary report. Phone is the primary use case (default);
+            async needs different framing because the recruiter never spoke
+            to the candidate. */}
+        <div>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+            Screening channel
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {CHANNELS.map(c => {
+              const Icon = c.icon;
+              const active = meta.channel === c.id;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setMeta({ channel: c.id })}
+                  type="button"
+                  title={c.hint}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium border transition',
+                    active
+                      ? 'bg-brand text-white border-brand shadow-sm'
+                      : 'bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-navy-700 hover:border-slate-300 dark:hover:border-navy-600'
+                  )}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  {c.label}
+                </button>
+              );
+            })}
+            <span className="text-xs text-slate-500 dark:text-slate-400 italic self-center ml-2">
+              {CHANNELS.find(c => c.id === meta.channel)?.hint}
+            </span>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">

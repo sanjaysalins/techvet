@@ -109,10 +109,19 @@ export interface ResolvedTier {
   notDiscussed?: boolean;
 }
 
+/** Fix Q (round-3 cross-cut): channel the screening is happening on.
+ *  Drives per-channel empty-field semantics on the Summary report —
+ *  "blank version" means "ran out of time" on phone/video but "CV is
+ *  silent" on async, and those need different framing for the hiring
+ *  manager. Set once at the start of the session via the channel pill
+ *  in the candidate header. Defaults to `phone` (primary use case). */
+export type Channel = 'phone' | 'video' | 'async';
+
 export interface AssessmentMeta {
   candidateName: string;
   role: string;
   notes: string;
   mandate: string;
   startedAt: string;
+  channel: Channel;
 }
