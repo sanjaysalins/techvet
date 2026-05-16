@@ -7,6 +7,7 @@ import type {
   TierColor,
 } from '../types';
 import { compareVersions, looksLikeVersion } from './version';
+import { parseLastUsed } from './lastUsed';
 
 /**
  * Severity ordering used for depth adjustment.
@@ -87,6 +88,80 @@ const LABEL_MAP: Record<TierColor, string> = {
   yellow: 'Review / Probe',
   red: 'Concern',
 };
+
+/**
+ * Fix E (round-3 cross-cut, Sarah's design wrinkle): asymmetric recency
+ * adjustment. Runs AFTER scope and ONLY on version-mode tier-match
+ * results (not unknown-version, not checklist, not notUsed, not
+ * notDiscussed — none of those have a version to anchor recency to).
+ *
+ * - **Penalize stale Greens** (Sam-Ansible / Maya-RN-2022 case): when
+ *   the version is current but the candidate hasn't touched it in 2+
+ *   years, drop Green→Yellow with "Stale — verify currency" note.
+ *   Without this, a confidently-quoted version reads identical to live
+ *   production use.
+ * - **Soften stale Reds for enterprise-still-used techs** (Sarah-Spring
+ *   case): when the tech carries `enterpriseStillUsed: true` (catalog's
+ *   way of saying "this is still around, the old version is defensible"),
+ *   stale Red lifts to Yellow with "returner — expect ramp-up" note.
+ *   Spring Boot 2.5 was current when Sarah left in 2022; she shouldn't
+ *   read as Concern in 2026, she should read as "returner, ramp-up
+ *   expected".
+ *
+ * Recent / current / unknown — no adjustment. Yellow tiers no change.
+ *
+ * Why asymmetric? The same axis (years stale) means opposite things
+ * depending on the *direction*: it weakens an active-tech claim and
+ * softens an outdated-tech concern. Round-3 Sarah's session named this
+ * design wrinkle and the canonical fix isn't symmetric penalty.
+ */
+function applyRecency(
+  current: { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean },
+  lastUsed: string,
+  tech: Technology
+): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; recencyAdjusted: boolean; recencyNote?: string; recencyDirection?: 'softener' | 'penalty' } {
+  const { bucket } = parseLastUsed(lastUsed);
+
+  // Only stale/ancient trigger anything; current/recent/unknown pass through.
+  if (bucket !== 'stale' && bucket !== 'ancient') {
+    return { ...current, recencyAdjusted: false };
+  }
+
+  const yearsLabel = bucket === 'ancient' ? '5+ yr' : '2-4 yr';
+
+  // Penalize stale Greens — the version was current but the candidate
+  // hasn't touched it. Most over-confident-recency-claim case.
+  if (current.color === 'green') {
+    return {
+      color: 'yellow',
+      depthAdjusted: false, // recency overrides depth-lift credit
+      scopeCapped: false,
+      recencyAdjusted: true,
+      recencyDirection: 'penalty',
+      recencyNote: `Stale (${yearsLabel} since last used) — verify currency before relying on this signal.`,
+    };
+  }
+
+  // Soften stale Reds for enterprise-still-used techs. The flag is the
+  // catalog's signal that the tech is still around AND old versions are
+  // defensible (e.g. Spring Boot 2.x, Selenium 3, Cypress 10). Pairs
+  // with the Sarah-returner case: she was current when she left;
+  // softener says "expect ramp-up", not "concern".
+  if (current.color === 'red' && tech.enterpriseStillUsed) {
+    return {
+      color: 'yellow',
+      depthAdjusted: false,
+      scopeCapped: false,
+      recencyAdjusted: true,
+      recencyDirection: 'softener',
+      recencyNote: `Stale (${yearsLabel}) but was contemporary at last-use — returner shape; expect ramp-up rather than concern.`,
+    };
+  }
+
+  // Stale Reds without the enterprise flag → genuine concern, no softening.
+  // Stale Yellows → no adjustment (already in probe-further state).
+  return { ...current, recencyAdjusted: false };
+}
 
 export function resolveTier(
   tech: Technology,
@@ -175,6 +250,10 @@ function resolveVersionTier(
   const tier = findTier(tech, item.version);
   const adjusted = adjustForDepth(tier.color, item.depth);
   const scoped = applyScope(tier.color, adjusted, item.scope);
+  // Fix E: recency runs AFTER scope so its asymmetric softener/penalty
+  // applies to the post-scope verdict (not the raw tier match). Order
+  // matters: tier → depth → scope → recency.
+  const withRecency = applyRecency(scoped, item.lastUsed, tech);
 
   // Tier-level flag overrides root. ~20 catalog entries declare the flag at
   // tier level (e.g. Selenium 3, Cypress 10–11) — those want the reassurance
@@ -182,36 +261,50 @@ function resolveVersionTier(
   const enterpriseFlag = tier.enterpriseStillUsed ?? tech.enterpriseStillUsed;
 
   return {
-    color: scoped.color,
+    color: withRecency.color,
     label: composeLabel({
-      finalColor: scoped.color,
+      finalColor: withRecency.color,
       baseLabel: tier.label,
-      depthAdjusted: scoped.depthAdjusted,
-      scopeCapped: scoped.scopeCapped,
+      depthAdjusted: withRecency.depthAdjusted,
+      scopeCapped: withRecency.scopeCapped,
       scope: item.scope,
+      recencyAdjusted: withRecency.recencyAdjusted,
+      recencyDirection: withRecency.recencyDirection,
     }),
     note: tier.note,
     enterpriseNote:
-      tier.color === 'yellow' && enterpriseFlag
+      tier.color === 'yellow' && enterpriseFlag && !withRecency.recencyAdjusted
         ? 'Still widely used in many enterprise applications.'
         : undefined,
     unknownVersion: false,
-    depthAdjusted: scoped.depthAdjusted,
-    scopeCapped: scoped.scopeCapped,
+    depthAdjusted: withRecency.depthAdjusted,
+    scopeCapped: withRecency.scopeCapped,
+    recencyAdjusted: withRecency.recencyAdjusted,
+    recencyNote: withRecency.recencyNote,
   };
 }
 
 /** Centralized label composition: final-tier name, plus parenthetical when
- *  depth lifted it or scope capped it. Scope cap takes precedence in the
- *  label — if the cap fired, the lift was either net-zero or erased. */
+ *  depth lifted it, scope capped it, or recency adjusted it. Precedence:
+ *  recencyAdjusted > scopeCapped > depthAdjusted > raw tier label.
+ *  Recency takes priority because the softener/penalty *replaces* the
+ *  reason the candidate is at the final color (the asymmetric story is
+ *  the most decision-relevant signal). */
 function composeLabel(opts: {
   finalColor: TierColor;
   baseLabel: string;
   depthAdjusted: boolean;
   scopeCapped: boolean;
   scope: Scope | undefined;
+  recencyAdjusted?: boolean;
+  recencyDirection?: 'softener' | 'penalty';
 }): string {
   const finalLabel = LABEL_MAP[opts.finalColor];
+  if (opts.recencyAdjusted) {
+    return opts.recencyDirection === 'softener'
+      ? `${finalLabel} (softened from ${opts.baseLabel} — stale but defensible)`
+      : `${finalLabel} (penalized from ${opts.baseLabel} — stale)`;
+  }
   if (opts.scopeCapped) {
     return `${finalLabel} (capped — ${opts.scope} scope)`;
   }

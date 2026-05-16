@@ -107,7 +107,19 @@ export interface ResolvedTier {
    *  recruiter's silence isn't scored as candidate weakness.
    *  Distinct from `skipped` (notUsed = explicitly confirmed absent). */
   notDiscussed?: boolean;
+  /** Fix E (round-3 cross-cut, Sarah's design wrinkle): asymmetric
+   *  recency adjustment fired. True when stale/ancient `lastUsed`
+   *  shifted the verdict — either *penalty* (Green→Yellow for a stale
+   *  version that wasn't current at last-use) or *softener* (Red→Yellow
+   *  for an enterprise-still-used tech the candidate left when it was
+   *  contemporary). Paired with `recencyNote` so the UI can render the
+   *  explanation. */
+  recencyAdjusted?: boolean;
+  recencyNote?: string;
 }
+
+/** Fix E: coarse recency bucket from the free-text `lastUsed` field. */
+export type Recency = 'current' | 'recent' | 'stale' | 'ancient' | 'unknown';
 
 /** Fix Q (round-3 cross-cut): channel the screening is happening on.
  *  Drives per-channel empty-field semantics on the Summary report —

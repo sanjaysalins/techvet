@@ -811,3 +811,146 @@ describe('resolveTier — Fix K: defaultScope from catalog', () => {
     expect(r.scopeCapped).toBe(true);
   });
 });
+
+/**
+ * Fix E (round-3 cross-cut, Sarah's design wrinkle): asymmetric recency.
+ * Penalize stale Greens (Sam-Ansible case) AND soften stale Reds where
+ * `enterpriseStillUsed` says the old version is defensible (Sarah-Spring
+ * case). Only fires on version-mode tier-match path.
+ */
+describe('resolveTier — Fix E: asymmetric recency', () => {
+  describe('stale Green penalty (Sam-Ansible / Maya-RN-2022 shape)', () => {
+    it('Green tier + lastUsed="2022" (4 yr stale) → Yellow with stale note', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', lastUsed: '2022' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.recencyNote).toMatch(/Stale/);
+      expect(r.recencyNote).toMatch(/verify currency/);
+    });
+
+    it('Green tier + lastUsed="2018" (ancient) → Yellow with 5+ yr framing', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', lastUsed: '2018' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyNote).toMatch(/5\+ yr/);
+    });
+
+    it('Green tier + lastUsed="current" → stays Green', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', lastUsed: 'current role' }));
+      expect(r.color).toBe('green');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('Green tier + empty lastUsed → stays Green (unknown does nothing)', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', lastUsed: '' }));
+      expect(r.color).toBe('green');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+  });
+
+  describe('stale Red softener (Sarah-Spring-Boot-2.5 shape)', () => {
+    it('Red tier + enterpriseStillUsed + stale → Yellow with returner softener note', () => {
+      // versionTech() has enterpriseStillUsed: true at root by default.
+      const r = resolveTier(versionTech(), item({ version: '12', lastUsed: '2022' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.recencyNote).toMatch(/contemporary at last-use/);
+      expect(r.recencyNote).toMatch(/returner shape/);
+    });
+
+    it('Red tier WITHOUT enterpriseStillUsed + stale → stays Red (no false softener)', () => {
+      const tech: Technology = {
+        ...versionTech(),
+        id: 'no-enterprise-flag',
+        enterpriseStillUsed: false,
+      };
+      const r = resolveTier(tech, item({ techId: 'no-enterprise-flag', version: '12', lastUsed: '2022' }));
+      expect(r.color).toBe('red');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+  });
+
+  describe('no-op cases', () => {
+    it('Yellow tier + stale → stays Yellow (no recency adjustment)', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', lastUsed: '2022' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('Green tier + "6 months ago" (current bucket) → stays Green', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', lastUsed: '6 months ago' }));
+      expect(r.color).toBe('green');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('Green tier + recent ("last year") → stays Green', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', lastUsed: 'last year' }));
+      expect(r.color).toBe('green');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('checklist mode + stale → no recency adjustment (coverage is the signal, not version freshness)', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({
+          selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5', 'svc-6', 'svc-7'],
+          checklistTouched: true,
+          lastUsed: '2020',
+        })
+      );
+      expect(r.color).toBe('green');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('unknown-version + stale → no recency adjustment (no version to anchor)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', lastUsed: '2020' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('notUsed + stale → skipped wins (recency never runs)', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', notUsed: true, lastUsed: '2018' }));
+      expect(r.skipped).toBe(true);
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+  });
+
+  describe('interaction with scope cap', () => {
+    it('scope=reviewer caps Green→Yellow first; recency does not double-discount', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '19', depth: 'very-deep', scope: 'reviewer', lastUsed: '2022' })
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+      // Recency saw Yellow (post-cap) — Yellow → no penalty applies.
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('Green tier from depth-lift + stale → recency penalizes back to Yellow', () => {
+      // version=17 (Yellow) + deep lifts to Green; lastUsed="2022" (stale)
+      // penalizes back to Yellow with the stale note.
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep', lastUsed: '2022' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.depthAdjusted).toBe(false); // recency overrides depth-lift credit
+    });
+  });
+
+  describe('enterprise note interaction', () => {
+    it('Yellow tier + enterpriseStillUsed + stale Red softener override suppresses the enterprise note', () => {
+      // Sarah's case: pre-Fix-E Red Concern. Post-Fix-E Yellow via recency softener.
+      // The recency note replaces the enterprise-still-used reassurance to avoid noise.
+      const r = resolveTier(versionTech(), item({ version: '12', lastUsed: '2022' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      // Enterprise note suppressed because the recency note takes precedence in this case.
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+
+    it('Yellow tier + enterpriseStillUsed + no recency adjustment → enterprise note still fires', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', lastUsed: 'current' }));
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toMatch(/widely used/);
+    });
+  });
+});

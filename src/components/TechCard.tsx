@@ -162,6 +162,15 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
           Depth raised this one tier — credit given for hands-on experience.
         </div>
       )}
+      {/* Fix E: recency note. Sky for softener (Red→Yellow returner),
+          amber for penalty (Green→Yellow stale). Both use sky tone to
+          differentiate from the depth (green) + scope (amber) notes;
+          softener variant gets a distinct icon-less prefix. */}
+      {resolved.recencyAdjusted && resolved.recencyNote && (
+        <div className="mt-3 text-xs italic text-sky-700 dark:text-sky-300">
+          {resolved.recencyNote}
+        </div>
+      )}
     </div>
   );
 }

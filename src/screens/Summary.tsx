@@ -546,6 +546,15 @@ function TierSection({
                   Capped by {item.scope ?? tech.defaultScope} scope — operates differently than an operator-level signal would imply.
                 </div>
               )}
+              {/* Fix E: recency note rendered before the tier note so the
+                  recency reasoning is the first thing HM reads when it
+                  fires. Sky tone differentiates from depth (green) +
+                  scope (amber). */}
+              {tier.recencyAdjusted && tier.recencyNote && (
+                <div className="text-xs italic text-sky-700 mt-1">
+                  {tier.recencyNote}
+                </div>
+              )}
               {tier.note && (
                 <div className="text-xs text-slate-700 mt-1.5">{tier.note}</div>
               )}
