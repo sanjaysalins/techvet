@@ -199,13 +199,17 @@ describe('resolveTier — checklist mode', () => {
     expect(r.depthAdjusted).toBe(false);
   });
 
-  it('depth=deep promotes Red → Yellow in checklist mode too', () => {
+  it('depth=deep does NOT lift in checklist mode (Fix A, 2026-05-16 round-2)', () => {
+    // Pre-fix behavior: depth-lift fired on checklist mode, so deep + 1/10 (10%, Red)
+    // → Yellow. Post-fix: coverage IS the signal in checklist mode; a self-reported
+    // "deep" can't bypass it. 1/10 = 10% stays Red. Closes Vikram's 5/14 LLM-SDK +
+    // deep → Green over-rate.
     const r = resolveTier(
       checklistTech(),
       item({ selectedServices: ['svc-1'], checklistTouched: true, depth: 'deep' })
     );
-    expect(r.color).toBe('yellow');
-    expect(r.depthAdjusted).toBe(true);
+    expect(r.color).toBe('red');
+    expect(r.depthAdjusted).toBe(false);
   });
 
   it('filters out selectedServices that do not exist on the tech', () => {
@@ -292,20 +296,11 @@ describe('resolveTier — adversarial regressions (5-bug fix)', () => {
       expect(r.label).not.toMatch(/depth-adjusted from/);
     });
 
-    it('unknown-version + meaningful depth label uses "lifted from Review / Probe by depth"', () => {
-      const r = resolveTier(versionTech(), item({ version: '', depth: 'deep' }));
-      expect(r.depthAdjusted).toBe(true);
-      expect(r.label).toMatch(/lifted from Review \/ Probe by depth/);
-    });
-
-    it('checklist depth-lift label uses "lifted from X by depth" phrasing', () => {
-      const r = resolveTier(
-        checklistTech(),
-        item({ selectedServices: ['svc-1'], checklistTouched: true, depth: 'deep' })
-      );
-      expect(r.depthAdjusted).toBe(true);
-      expect(r.label).toMatch(/lifted from .* by depth/);
-    });
+    // Removed by Fix B (2026-05-16 round-2): depth-lift no longer fires on
+    // unknown-version path. See "Fix B" regression block below for the
+    // updated assertion.
+    // Removed by Fix A (2026-05-16 round-2): depth-lift no longer fires on
+    // checklist mode. See "Fix A" regression block below.
   });
 
   describe('Bug 5: enterprise note misfires on empty-version + non-skill', () => {
@@ -331,13 +326,14 @@ describe('resolveTier — adversarial regressions (5-bug fix)', () => {
       expect(r.enterpriseNote).toMatch(/widely used/);
     });
 
-    it('STILL fires the note when unknownVersion=true AND depth=deep (lifts to Green-via-depth, no note since not Yellow)', () => {
+    it('STILL fires the note when unknownVersion=true AND depth=deep (no lift anymore, but Yellow + meaningful depth)', () => {
+      // Updated by Fix B (2026-05-16 round-2): depth no longer lifts on unknown-version,
+      // so the result stays Yellow. The enterprise note's gate (meaningful depth) still
+      // passes, so the reassurance text still fires — which is correct for the
+      // "candidate uses it but doesn't track the version" case the note exists for.
       const r = resolveTier(versionTech(), item({ version: '', depth: 'deep' }));
-      // Depth lifted Yellow → Green; the note only fires when result is Yellow.
-      // But under our new rule the meaningful-depth guard already passed, and
-      // since the color is now Green, the enterprise note is gated by `tier.color === yellow`
-      // in the version-tier path — but unknown-version uses a different gate.
-      // Concretely: for unknown-version with meaningful depth, we DO want the note.
+      expect(r.color).toBe('yellow');
+      expect(r.depthAdjusted).toBe(false);
       expect(r.enterpriseNote).toMatch(/widely used/);
     });
   });
@@ -498,7 +494,11 @@ describe('resolveTier — scope-of-use axis', () => {
       expect(r.label).toMatch(/7\/10 services/);
     });
 
-    it('scope=author + depth=deep + Yellow coverage stays Yellow (no lift to Green)', () => {
+    it('scope=author + depth=deep + Yellow coverage stays Yellow (no lift at all in checklist post-Fix-A)', () => {
+      // Pre-Fix-A: depth-lift fired in checklist mode, then author scope reverted
+      // it (scopeCapped=true). Post-Fix-A: no lift happens at all in checklist mode,
+      // so the author cap has nothing to revert. Result is still Yellow but via
+      // a different path. scopeCapped is now false because no lift was attempted.
       const r = resolveTier(
         checklistTech(),
         item({
@@ -509,7 +509,7 @@ describe('resolveTier — scope-of-use axis', () => {
         })
       );
       expect(r.color).toBe('yellow');
-      expect(r.scopeCapped).toBe(true);
+      expect(r.scopeCapped).toBe(false);
     });
   });
 
@@ -520,11 +520,13 @@ describe('resolveTier — scope-of-use axis', () => {
       expect(r.scopeCapped).toBeFalsy();
     });
 
-    it('unknownVersion + scope=reviewer + meaningful depth → cap kicks in even though base is already Yellow', () => {
-      // Yellow base + deep would lift to Green; reviewer caps it back to Yellow.
+    it('unknownVersion + scope=reviewer + meaningful depth → stays Yellow, no cap needed post-Fix-B', () => {
+      // Pre-Fix-B: Yellow base + deep lifted to Green; reviewer scope capped back.
+      // Post-Fix-B: no lift happens on unknown-version, so result is naturally
+      // Yellow and the cap doesn't need to fire. Same final color, different path.
       const r = resolveTier(versionTech(), item({ version: '', depth: 'deep', scope: 'reviewer' }));
       expect(r.color).toBe('yellow');
-      expect(r.scopeCapped).toBe(true);
+      expect(r.scopeCapped).toBe(false);
       expect(r.depthAdjusted).toBe(false);
     });
 
@@ -534,6 +536,181 @@ describe('resolveTier — scope-of-use axis', () => {
       const r = resolveTier(versionTech(), item({ version: '17', depth: 'working', scope: 'reviewer' }));
       expect(r.color).toBe('yellow');
       expect(r.enterpriseNote).toMatch(/widely used/);
+    });
+  });
+});
+
+/**
+ * Round 2 (2026-05-16 phone-screening) — fixes A, B, G, J. See
+ * `simulations/rounds/2026-05-16-phone-screening/cross-cut.md` for the
+ * full evidence trail. These regression tests pin the new behavior so a
+ * future agent can't quietly revert it.
+ */
+describe('resolveTier — round 2 fixes (A, B, G)', () => {
+  describe('Fix A: no depth-lift on checklist mode', () => {
+    it('1/10 + deep stays Red (was Yellow pre-fix)', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({ selectedServices: ['svc-1'], checklistTouched: true, depth: 'deep' })
+      );
+      expect(r.color).toBe('red');
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('3/10 (Yellow band) + very-deep stays Yellow (was Green pre-fix)', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({
+          selectedServices: ['svc-1', 'svc-2', 'svc-3'],
+          checklistTouched: true,
+          depth: 'very-deep',
+        })
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('5/14 (≈36%, Yellow) + deep stays Yellow — Vikram LLM-SDK case', () => {
+      const tech = checklistTech({
+        services: Array.from({ length: 14 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+      });
+      const r = resolveTier(
+        tech,
+        item({
+          selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4'],
+          checklistTouched: true,
+          depth: 'deep',
+        })
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.label).not.toMatch(/lifted/);
+    });
+
+    it('7/10 (Green) coverage stays Green regardless of depth — coverage IS the signal', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({
+          selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5', 'svc-6', 'svc-7'],
+          checklistTouched: true,
+          depth: 'shallow',
+        })
+      );
+      expect(r.color).toBe('green');
+    });
+
+    it('scope=reviewer STILL caps Green coverage to Yellow (Fix A doesn\'t touch scope)', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({
+          selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5', 'svc-6', 'svc-7'],
+          checklistTouched: true,
+          depth: 'very-deep',
+          scope: 'reviewer',
+        })
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+    });
+  });
+
+  describe('Fix B: no depth-lift on unknown-version', () => {
+    it('unknownVersion + deep stays Yellow (was Green pre-fix)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'deep' }));
+      expect(r.color).toBe('yellow');
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('unknownVersion + very-deep stays Yellow (was Green pre-fix)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'very-deep' }));
+      expect(r.color).toBe('yellow');
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('unknownVersion=true (toggle) + deep stays Yellow', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', unknownVersion: true, depth: 'deep' }));
+      expect(r.color).toBe('yellow');
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('version-mode tier-match path STILL lifts on deep (Fix B only touches unknown path)', () => {
+      // Sanity: the Yellow→Green depth-lift on a matched Yellow tier with a known
+      // version is the legitimate case (candidate IS on the older version and the
+      // version-tier is the signal). That path is unchanged.
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep' }));
+      expect(r.color).toBe('green');
+      expect(r.depthAdjusted).toBe(true);
+    });
+
+    it('enterprise note still fires on unknownVersion + working+ depth (gate unchanged)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'working' }));
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toMatch(/widely used/);
+    });
+  });
+
+  describe('Fix G: notDiscussed flag for untouched template cards', () => {
+    it('version-mode: empty version, no toggles → notDiscussed=true', () => {
+      const r = resolveTier(versionTech(), item({ version: '' }));
+      expect(r.notDiscussed).toBe(true);
+    });
+
+    it('version-mode: empty version + unknownVersion toggle → NOT notDiscussed (recruiter interacted)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', unknownVersion: true }));
+      expect(r.notDiscussed).toBeFalsy();
+    });
+
+    it('version-mode: empty version + notUsed → NOT notDiscussed (skipped takes precedence)', () => {
+      const r = resolveTier(versionTech(), item({ version: '', notUsed: true }));
+      expect(r.skipped).toBe(true);
+      // notDiscussed not set on the skipped path — separate exclusion.
+      expect(r.notDiscussed).toBeFalsy();
+    });
+
+    it('version-mode: typed version → NOT notDiscussed', () => {
+      const r = resolveTier(versionTech(), item({ version: '19' }));
+      expect(r.notDiscussed).toBeFalsy();
+    });
+
+    it('version-mode: garbage version ("latest") → NOT notDiscussed (recruiter did type something)', () => {
+      const r = resolveTier(versionTech(), item({ version: 'latest' }));
+      expect(r.notDiscussed).toBeFalsy();
+    });
+
+    it('checklist-mode: 0/N untouched → notDiscussed=true', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({ selectedServices: [], checklistTouched: false })
+      );
+      expect(r.notDiscussed).toBe(true);
+      expect(r.label).toMatch(/Not yet assessed/);
+    });
+
+    it('checklist-mode: 0/N after interaction → NOT notDiscussed (Red Concern is the real verdict)', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({ selectedServices: [], checklistTouched: true })
+      );
+      expect(r.color).toBe('red');
+      expect(r.notDiscussed).toBeFalsy();
+    });
+
+    it('checklist-mode: any services ticked → NOT notDiscussed', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({ selectedServices: ['svc-1'], checklistTouched: true })
+      );
+      expect(r.notDiscussed).toBeFalsy();
+    });
+
+    it('checklist-mode: checklistUnsure flag → NOT notDiscussed (recruiter explicitly parked)', () => {
+      // checklistUnsure is the recruiter saying "candidate said they can't recall"
+      // — that's an active datum, not silence. Currently lands in the Unsure path
+      // before the untouched path, so notDiscussed stays falsy.
+      const r = resolveTier(
+        checklistTech(),
+        item({ selectedServices: [], checklistTouched: false, checklistUnsure: true })
+      );
+      expect(r.notDiscussed).toBeFalsy();
     });
   });
 });

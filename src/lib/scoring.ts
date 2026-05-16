@@ -120,8 +120,19 @@ function resolveVersionTier(
 ): ResolvedTier {
   if (item.unknownVersion || !item.version || !looksLikeVersion(item.version)) {
     const baseColor: TierColor = 'yellow';
-    const adjusted = adjustForDepth(baseColor, item.depth);
-    const scoped = applyScope(baseColor, adjusted, item.scope);
+    // Fix B (2026-05-16 round-2 cross-cut): no depth-lift when version is
+    // unknown. If the candidate can't quote a version, there's no version
+    // evidence to "lift". Lifting Yellow→Green from depth alone produced
+    // misleading Greens for managed-platform daily-drivers (Tomás/Postgres,
+    // Aisha/Helm) and toolchain-pinned ecosystems (Hana/Swift, Marcus/Docker).
+    // Scope still runs so reviewer/architect caps continue to fire.
+    const noLift = { color: baseColor, adjusted: false };
+    const scoped = applyScope(baseColor, noLift, item.scope);
+    // Fix G: a card was never touched (template-preloaded, recruiter ran
+    // out of time) if there's no version, no toggle, and no notes/services.
+    // Excluded from headline buckets/radar; rendered as "Not discussed".
+    const notDiscussed =
+      !item.unknownVersion && !item.version && !item.notUsed;
     // Suppress the "still widely used in enterprise" reassurance when the
     // candidate has neither a version NOR meaningful depth. The note is
     // designed for "they're on Cypress 10 because the org won't migrate" —
@@ -147,6 +158,7 @@ function resolveVersionTier(
       unknownVersion: true,
       depthAdjusted: scoped.depthAdjusted,
       scopeCapped: scoped.scopeCapped,
+      notDiscussed,
     };
   }
 
@@ -237,6 +249,8 @@ function resolveChecklistTier(
   // 0/N before any interaction = "not yet assessed" (yellow), not "concern" (red).
   // Once the recruiter has ticked anything (even if later unticked back to 0),
   // a genuine zero still surfaces as Concern.
+  // Fix G (2026-05-16 round-2): also flag notDiscussed so Summary excludes
+  // from buckets/radar — recruiter's silence isn't candidate weakness.
   if (selected.length === 0 && !item.checklistTouched) {
     return {
       color: 'yellow',
@@ -246,6 +260,7 @@ function resolveChecklistTier(
       unknownVersion: false,
       depthAdjusted: false,
       coverage,
+      notDiscussed: true,
     };
   }
 
@@ -254,8 +269,13 @@ function resolveChecklistTier(
   else if (ratio < 0.66) baseColor = 'yellow';
   else baseColor = 'green';
 
-  const adjusted = adjustForDepth(baseColor, item.depth);
-  const scoped = applyScope(baseColor, adjusted, item.scope);
+  // Fix A (2026-05-16 round-2 cross-cut): no depth-lift on checklist mode.
+  // Coverage IS the signal in checklist mode — letting a self-reported "deep"
+  // override 17% coverage turns Red→Yellow and 36%→Green just by typing into
+  // the depth dropdown (Vikram/LangChain). Scope still runs so reviewer/
+  // architect caps continue to fire (Aliyah-style reviewers on K8s checklists).
+  const noLift = { color: baseColor, adjusted: false };
+  const scoped = applyScope(baseColor, noLift, item.scope);
   const ratioPct = Math.round(ratio * 100);
   const coverageSuffix = ` — ${coverage.selected}/${coverage.total} services`;
 

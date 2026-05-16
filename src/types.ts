@@ -91,6 +91,14 @@ export interface ResolvedTier {
    *  restricted to Red→Yellow only). Surfaces a small caveat in the UI so
    *  the recruiter sees *why* a deep-experience reviewer didn't land Green. */
   scopeCapped?: boolean;
+  /** The recruiter never interacted with this tech on the call — the card
+   *  exists only because a role template pre-loaded it, and was left at
+   *  defaults (no version typed, no toggle flipped; or no checklist
+   *  ticks + no checklistTouched/checklistUnsure). Excluded from buckets
+   *  and the radar; rendered separately as "Not discussed" so the
+   *  recruiter's silence isn't scored as candidate weakness.
+   *  Distinct from `skipped` (notUsed = explicitly confirmed absent). */
+  notDiscussed?: boolean;
 }
 
 export interface AssessmentMeta {

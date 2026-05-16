@@ -12,7 +12,7 @@ import {
 } from '../lib/scoring';
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
-import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle } from 'lucide-react';
 
 const TECHS = technologiesData as unknown as Technology[];
 const TECH_BY_ID = new Map(TECHS.map(t => [t.id, t]));
@@ -37,10 +37,22 @@ export default function Summary() {
     });
   }, [items]);
 
-  // Skipped items (notUsed=true) are excluded from scoring buckets and radar.
-  // They get their own neutral section at the bottom of the report.
-  const scored = useMemo(() => resolved.filter(r => !r.tier.skipped), [resolved]);
+  // Three exclusion buckets, in order of precedence:
+  //   - skipped       (notUsed=true)        — candidate confirmed absent
+  //   - notDiscussed  (Fix G, round-2)      — recruiter never touched the card
+  //   - scored        (everything else)     — feeds buckets + radar
+  // notDiscussed cards are template-preloaded but the recruiter ran out of
+  // time or pivoted. Scoring the recruiter's silence as candidate weakness
+  // (the pre-fix behavior) inflated Yellow probes and diluted real ones.
+  const scored = useMemo(
+    () => resolved.filter(r => !r.tier.skipped && !r.tier.notDiscussed),
+    [resolved]
+  );
   const skipped = useMemo(() => resolved.filter(r => r.tier.skipped), [resolved]);
+  const notDiscussed = useMemo(
+    () => resolved.filter(r => r.tier.notDiscussed && !r.tier.skipped),
+    [resolved]
+  );
 
   const buckets = useMemo(() => {
     const b: Record<TierColor, typeof resolved> = { green: [], yellow: [], red: [] };
@@ -171,8 +183,8 @@ export default function Summary() {
           )}
         </header>
 
-        {/* Headline stats */}
-        <section className="grid grid-cols-3 gap-4 mb-2">
+        {/* Headline stats — three scored buckets up top */}
+        <section className="grid grid-cols-3 gap-4 mb-3">
           <StatCard
             color="green"
             count={buckets.green.length}
@@ -192,14 +204,30 @@ export default function Summary() {
             icon={<AlertCircle className="w-5 h-5" />}
           />
         </section>
-        {skipped.length > 0 && (
-          <p className="text-xs text-slate-500 mb-8">
-            {skipped.length} additional tech{skipped.length === 1 ? '' : 's'}{' '}
-            flagged &ldquo;not in candidate&rsquo;s stack&rdquo; — excluded from the
-            headline stats and radar; see section below.
-          </p>
+        {/* Coverage chips — confirmed-absent and not-discussed counts. Fix L
+            (round-2 cross-cut): hiring managers asked to distinguish "asked &
+            confirmed not in stack" from "ran out of time" — both used to be
+            buried below the disclaimer. Chip-row gives them headline-level
+            visibility without polluting the three scored buckets. */}
+        {(skipped.length > 0 || notDiscussed.length > 0) && (
+          <section className="flex flex-wrap gap-2 mb-8">
+            {skipped.length > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-300 bg-slate-100 text-slate-700 text-sm">
+                <Slash className="w-3.5 h-3.5" />
+                <strong>{skipped.length}</strong> confirmed not in stack
+                <span className="text-xs text-slate-500">(see section below)</span>
+              </span>
+            )}
+            {notDiscussed.length > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-amber-200 bg-amber-50 text-amber-800 text-sm">
+                <Circle className="w-3.5 h-3.5" />
+                <strong>{notDiscussed.length}</strong> not discussed on the call
+                <span className="text-xs text-amber-700">(template-loaded, recruiter pivoted)</span>
+              </span>
+            )}
+          </section>
         )}
-        {skipped.length === 0 && <div className="mb-8" />}
+        {skipped.length === 0 && notDiscussed.length === 0 && <div className="mb-8" />}
 
         {/* Radar */}
         <section className="mb-8">
@@ -241,23 +269,33 @@ export default function Summary() {
           />
         )}
 
-        {/* Not in candidate's stack — neutral, excluded from scoring */}
+        {/* Confirmed not in stack — first-class section, not a footer note.
+            Fix L (round-2): agents asked for "asked and confirmed absent" to
+            read as positive coverage signal (right role) or a flag (wrong
+            role) — not as silent omission. Heading-level prominence + a
+            slash-icon callout box. */}
         {skipped.length > 0 && (
           <section className="mb-6">
-            <div className="mb-3">
-              <h2 className="text-lg font-semibold text-navy-900">
-                Not in candidate&rsquo;s stack
-              </h2>
-              <p className="text-sm text-slate-500">
-                Confirmed not part of the candidate&rsquo;s working set. Listed
-                for completeness; excluded from the score and radar.
-              </p>
+            <div className="mb-3 flex items-start gap-2">
+              <Slash className="w-5 h-5 text-slate-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <h2 className="text-lg font-semibold text-navy-900">
+                  Confirmed not in candidate&rsquo;s stack ({skipped.length})
+                </h2>
+                <p className="text-sm text-slate-600">
+                  The recruiter asked; the candidate confirmed they do not
+                  work with these. Excluded from the score and radar but{' '}
+                  <strong>positive coverage signal</strong> — for the right
+                  role this is a clean fit; for the wrong role this is the
+                  ramp-up flag.
+                </p>
+              </div>
             </div>
             <div className="space-y-2">
               {skipped.map(({ tech, item }) => (
                 <div
                   key={tech.id}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50"
+                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-300 bg-slate-50"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -275,6 +313,52 @@ export default function Summary() {
                         Note: {item.notes}
                       </div>
                     )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Not discussed on the call — template-preloaded but never touched.
+            Fix G (round-2): pre-fix these cards scored as Yellow "Review /
+            Probe" and inflated the Probe Further bucket with non-issues
+            (Priya/Databricks, Tomás/React, Aisha/Docker). Now excluded
+            from buckets/radar and surfaced here with a clear "we didn't
+            get to it" framing — distinct from confirmed-absent. */}
+        {notDiscussed.length > 0 && (
+          <section className="mb-6">
+            <div className="mb-3 flex items-start gap-2">
+              <Circle className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
+              <div>
+                <h2 className="text-lg font-semibold text-navy-900">
+                  Not discussed on the call ({notDiscussed.length})
+                </h2>
+                <p className="text-sm text-slate-600">
+                  Loaded by the role template but the recruiter ran out of
+                  time or pivoted. <strong>No verdict</strong> — these are
+                  not candidate weaknesses, they're gaps in the screen.
+                  Worth a follow-up before passing to the technical
+                  interviewer.
+                </p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              {notDiscussed.map(({ tech }) => (
+                <div
+                  key={tech.id}
+                  className="flex items-start gap-3 p-3 rounded-lg border border-amber-200 bg-amber-50"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <strong className="text-navy-900">{tech.name}</strong>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                        Not discussed
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-600 mt-1">
+                      Category: {tech.category}
+                    </div>
                   </div>
                 </div>
               ))}

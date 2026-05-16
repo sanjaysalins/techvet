@@ -212,3 +212,55 @@ describe('technologies.json — Docker tier shape (regression for red-team Bug 4
     expect(colors.filter(c => c === 'red').length).toBe(1);
   });
 });
+
+/**
+ * Regression test for Fix J (2026-05-16 round-2 cross-cut Bug 3): version-mode
+ * entries with a single tier at `min: "0"` produce a structural Green
+ * rubber-stamp — `findTier` matches any digit input ≥ [0] → Green "Good."
+ * Recruiter typing "1" or "8" or any digit → Green by accident. Snowflake was
+ * the canonical case (Priya session); audit found GraphQL and gRPC had the
+ * same shape. All three converted to checklist-mode where the catalog probes
+ * already knew what to ask. This test prevents regression.
+ */
+describe('technologies.json — no single-tier `min: "0"` rubber-stamps (Fix J)', () => {
+  it('no version-mode tech has a single tier with `min: "0"` (would Green-stamp any digit)', () => {
+    const offenders: string[] = [];
+    for (const t of TECHS) {
+      if (t.vetMode === 'checklist') continue;
+      const tiers = t.versionTiers ?? [];
+      if (tiers.length === 1 && tiers[0].min === '0') {
+        offenders.push(t.id);
+      }
+    }
+    expect(
+      offenders,
+      `single-tier min:"0" entries produce structural Green rubber-stamps; convert to checklist-mode or add real tier bands`
+    ).toEqual([]);
+  });
+
+  it('Snowflake is checklist-mode with curated services (post-Fix-J)', () => {
+    const sf = TECH_BY_ID.get('snowflake');
+    expect(sf, 'snowflake missing from catalog').toBeDefined();
+    expect(sf!.vetMode).toBe('checklist');
+    expect((sf!.services ?? []).length).toBeGreaterThanOrEqual(8);
+    // Spot-check a few load-bearing services that the recruiter probes for.
+    const serviceIds = new Set((sf!.services ?? []).map(s => s.id));
+    expect(serviceIds.has('warehouses')).toBe(true);
+    expect(serviceIds.has('snowpark')).toBe(true);
+    expect(serviceIds.has('rbac-governance')).toBe(true);
+  });
+
+  it('GraphQL is checklist-mode with curated services (post-Fix-J audit)', () => {
+    const gql = TECH_BY_ID.get('graphql');
+    expect(gql, 'graphql missing from catalog').toBeDefined();
+    expect(gql!.vetMode).toBe('checklist');
+    expect((gql!.services ?? []).length).toBeGreaterThanOrEqual(8);
+  });
+
+  it('gRPC is checklist-mode with curated services (post-Fix-J audit)', () => {
+    const grpc = TECH_BY_ID.get('grpc');
+    expect(grpc, 'grpc missing from catalog').toBeDefined();
+    expect(grpc!.vetMode).toBe('checklist');
+    expect((grpc!.services ?? []).length).toBeGreaterThanOrEqual(8);
+  });
+});

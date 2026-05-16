@@ -1224,22 +1224,27 @@
     "id": "snowflake",
     "name": "Snowflake",
     "category": "Database",
-    "currentVersion": "Current (rolling)",
-    "versionTiers": [
-      {
-        "min": "0",
-        "label": "Good",
-        "color": "green",
-        "note": "Versionless SaaS — probe modeling and cost"
-      }
+    "vetMode": "checklist",
+    "services": [
+      { "id": "warehouses", "name": "Virtual Warehouses (sizing & multi-cluster)" },
+      { "id": "snowpark", "name": "Snowpark (Python / Scala UDFs)" },
+      { "id": "tasks-streams", "name": "Tasks & Streams (CDC pipelines)" },
+      { "id": "dynamic-tables", "name": "Dynamic Tables" },
+      { "id": "snowpipe", "name": "Snowpipe (continuous ingestion)" },
+      { "id": "cortex", "name": "Cortex AI / Cortex Search" },
+      { "id": "time-travel", "name": "Time Travel & Fail-safe" },
+      { "id": "resource-monitors", "name": "Resource Monitors & cost controls" },
+      { "id": "rbac-governance", "name": "RBAC, masking & governance" },
+      { "id": "data-sharing", "name": "Data Sharing & Marketplace" },
+      { "id": "external-tables", "name": "External Tables / Iceberg integration" },
+      { "id": "materialized-views", "name": "Materialized Views" }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Warehouse sizing / multi-cluster?",
       "Snowpark vs SQL workflows?",
       "Cost monitoring / resource monitors?"
     ],
-    "guidanceForUnknownVersion": "Versionless — probe."
+    "checklistGuidance": "Snowflake is versionless — probe the *services* the candidate has actually run in production. Warehouses + RBAC are table-stakes; Snowpark + Tasks/Streams + Dynamic Tables separate pipeline-builders from query-writers."
   },
   {
     "id": "docker",
@@ -1879,43 +1884,49 @@
     "id": "graphql",
     "name": "GraphQL",
     "category": "Backend",
-    "currentVersion": "Spec October 2021 (stable)",
-    "versionTiers": [
-      {
-        "min": "0",
-        "label": "Good",
-        "color": "green",
-        "note": "Probe schema design and federation awareness"
-      }
+    "vetMode": "checklist",
+    "services": [
+      { "id": "schema-design", "name": "Schema design & SDL" },
+      { "id": "resolvers", "name": "Resolvers & data fetching" },
+      { "id": "subscriptions", "name": "Subscriptions (real-time)" },
+      { "id": "federation", "name": "Federation (Apollo subgraphs / schema stitching)" },
+      { "id": "dataloader", "name": "DataLoader / N+1 mitigation" },
+      { "id": "persisted-queries", "name": "Persisted queries / APQ" },
+      { "id": "authz-directives", "name": "Authorization & directives" },
+      { "id": "caching", "name": "Caching (HTTP / Apollo client cache)" },
+      { "id": "tooling", "name": "Tooling (Apollo / Relay / urql / Hasura)" },
+      { "id": "schema-first-vs-code-first", "name": "Schema-first vs code-first workflow" }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Schema design — fragments, federation?",
       "N+1 problem — DataLoader patterns?",
       "Apollo / Relay / Hasura experience?"
     ],
-    "guidanceForUnknownVersion": "Versionless — probe."
+    "checklistGuidance": "GraphQL is a spec, not a version-driven tool — probe the services. Resolvers + schema design are baseline; federation, persisted queries, and DataLoader patterns separate production owners from API consumers."
   },
   {
     "id": "grpc",
     "name": "gRPC",
     "category": "Backend",
-    "currentVersion": "Current (rolling)",
-    "versionTiers": [
-      {
-        "min": "0",
-        "label": "Good",
-        "color": "green",
-        "note": "Probe Protobuf and streaming patterns"
-      }
+    "vetMode": "checklist",
+    "services": [
+      { "id": "unary", "name": "Unary RPC" },
+      { "id": "server-streaming", "name": "Server streaming" },
+      { "id": "client-streaming", "name": "Client streaming" },
+      { "id": "bidi-streaming", "name": "Bidirectional streaming" },
+      { "id": "protobuf-schema", "name": "Protobuf schema design & evolution" },
+      { "id": "interceptors", "name": "Interceptors / middleware" },
+      { "id": "tls-auth", "name": "TLS & authentication (mTLS, JWT)" },
+      { "id": "load-balancing", "name": "Load balancing (client-side / xDS)" },
+      { "id": "codegen", "name": "Code generation & build integration" },
+      { "id": "reflection-health", "name": "Reflection & health checks" }
     ],
-    "enterpriseStillUsed": true,
     "suggestedProbes": [
       "Protobuf schema evolution?",
       "Server / client / bidi streaming?",
       "Interceptors / middleware?"
     ],
-    "guidanceForUnknownVersion": "Versionless — probe."
+    "checklistGuidance": "gRPC is a protocol — probe the services. Unary + protobuf design are baseline; streaming variants, interceptors, and codegen integration separate consumers from prod operators."
   },
   {
     "id": "aws",
