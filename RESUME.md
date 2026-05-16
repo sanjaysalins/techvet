@@ -1,11 +1,12 @@
-# Resume point — TechVet (2026-05-16 EOD — priority #4 + round-2 fixes A/B/G/J/L + K all shipped)
+# Resume point — TechVet (2026-05-16 EOD-3 — priority #4 + round-2 fixes A/B/G/J/L + K shipped; round 3 cross-cut surfaces critical gap in Fix K coverage)
 
-**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **114/114** (was 86 this morning; +28 regression tests today); `npx vite build` clean (1.24 MB / **365.5 KB gzipped**, +2 KB net). Four things today:
+**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **114/114**; `npx vite build` clean (1.24 MB / **365.5 KB gzipped**). Five things today:
 
 1. **Priority #4 shipped** — scope-of-use axis. Closes the *named* half of yesterday's 12-session cluster.
 2. **Built `simulations/` pipeline + ran 10-session phone-screening round.** 10 independent agents wrote ~19k words of findings into `simulations/rounds/2026-05-16-phone-screening/`. Surfaced **6 code bugs, 10 structural defects, 13+ catalog gaps, 4 substantive pushbacks on shipped work**. Cross-cut + 16-item priority list (A–P) in `cross-cut.md`.
 3. **Shipped round-2 top-5 fixes (A/B/G/J/L)** in ~2 hours. The two highest-precision scoring bugs closed; Snowflake/GraphQL/gRPC "Green rubber-stamp" single-tier entries now checklist-mode; untouched template cards excluded from buckets; confirmed-absent + not-discussed are headline chips + prominent sections.
-4. **Shipped Fix K — scope-axis UX redesign (hybrid).** Catalog-side `defaultScope: "author"` on all 10 AI/ML libraries so the cap fires automatically without the recruiter touching the dropdown. Interactive `<select>` chip on Summary lets the recruiter tune scope post-call — live verdict update, buckets shift, can move techs between Strengths and Probe Further with one click. Closes the round-2 "scope axis unreachable on phone" finding (10 of 10 sessions). What it does NOT close: Vikram-shape natural-Green over-rate (LangChain 1.x hits Green tier directly, no lift to cap) — that needs Fix O (fast-moving libs max at Yellow without checklist services).
+4. **Shipped Fix K — scope-axis UX redesign (hybrid).** Catalog-side `defaultScope: "author"` on all 10 AI/ML libraries so the cap fires automatically without the recruiter touching the dropdown. Interactive `<select>` chip on Summary lets the recruiter tune scope post-call — live verdict update, buckets shift, can move techs between Strengths and Probe Further with one click. Closes the round-2 "scope axis unreachable on phone" finding **for the AI/ML subset only** (see #5 below — round 3 found this insufficient).
+5. **Ran round 3: multi-channel × underrepresented roles.** 10 sessions (3 video / 3 async / 4 phone) covering Solution Architect, SRE, Security AppSec, Data Scientist, QA, OSS maintainer, academic→industry, founder→IC, internal transfer, 18yr DBA specialist. **Headline finding: Fix K covers 10 of 96 catalog techs** — 5 of 10 round-3 agents independently named this as their #1 finding. The non-AI/ML cluster (Terraform / K8s / cloud / DB) is still scope-unreachable on phone. Cross-cut + 7 new priorities (K2, Q, R, S, T, U, V) in `simulations/rounds/2026-05-16-multichannel-round-3/cross-cut.md`. New architectural concern surfaced (provenance tagging for async/CV-inferred entries — Fix Q) that round 2's phone-only cast couldn't have caught.
 
 ## Today's commit (2026-05-16)
 
@@ -120,7 +121,27 @@ Tests: **70 → 86** (+16). Build: **363 → 363.6 KB gzipped** (+0.6 KB).
 
 ## What's next — start here tomorrow
 
-**Recommended next: Fix E — `lastUsed` in scoring (1.5 days).** With Fix K shipped, this is the next-highest-signal open round-2 item. Sarah and Dmitri are the canonical cases. Design must be **asymmetric** per Sarah's session: penalize stale Greens (Sam-Ansible from prior round) AND *soften* stale Reds when the version was contemporary at last-use time (Sarah's Spring Boot 2.5 was current when she left in 2022). Same axis, opposite signs depending on whether the version was current-at-the-time.
+**RECOMMENDED PIVOT after round 3 cross-cut: Fix K2 — template-keyed `defaultScope` (1.5 days).** 5 of 10 round-3 sessions independently named this as their #1 finding (Aaron, Cara, Tomi, Riya, Eitan). Today's Fix K closed scope-axis reachability only for the AI/ML subset (10 of 96 techs); the much larger non-AI/ML cluster (Terraform / K8s / cloud / DB) is still scope-unreachable on phone for SA/SRE/Security/Founder shapes. Riya's design (template-keyed defaults layered on top of per-tech defaults) closes the entire cluster without adding any per-card control under the phone budget. This is the single highest-leverage fix on the priority list.
+
+After K2: Fix Q (channel/source flag for async provenance — new from round 3, 1.5d), then Fix C (named-not-in-catalog capture — round-2 carryover but bumped by round 3 frequency, 1.5d). Then Fix E.
+
+Full round-3 priority list + sequencing in `simulations/rounds/2026-05-16-multichannel-round-3/cross-cut.md`.
+
+### Round 3 additions (2026-05-16 multi-channel)
+
+| # | Fix | Effort | Why |
+|---|-----|--------|-----|
+| **K2** | **Template-keyed `defaultScope`** (Riya's design) | 1.5 day | **5 of 10 round-3 sessions named this #1.** Closes Aaron/Cara/Tomi/Riya/Eitan/Aliyah cluster — non-AI/ML scope reach |
+| **Q** | `source` field (or `channel` flag) for async provenance | 1.5 day | NEW from round 3. Closes Yara/Devon/Min critique of Fix G in async |
+| **R** | Broaden Fix J integrity guard to catch non-zero single-Green-tier rubber-stamps (k6) | 0.5 day | Spotted by Pranav; trivial |
+| **S** | `searchAliases` field + sub-service substring-match warning (Vault → Ansible Vault collision) | 1 day | Bug 5 round-3; visible-fumble fix during video screens |
+| **T** | "Evaluated / migrated off" 4th tri-state option | 0.5 day | Pranav/Riya + round-1 Sam-Pulumi / Hiroshi-GraphQL carryovers |
+| **U** | Security template overhaul (preload actual security stack, depends on Fix I) | 1 day | Tomi: Security template preloads zero security tools |
+| **V** | QA template → checklist-mode for Playwright/Selenium | 1 day | Pranav; round-1 Esi carryover |
+
+Round-2 carryovers reprioritized: **Fix C** (named-not-in-catalog capture) bumped to #1 carryover — 4 round-3 sessions named it (Lou/Devon/Tomi/Pranav); cheaper than each catalog refresh. **Fix M** (candidate context) bumped — 3 round-3 sessions confirmed (Eitan/Riya/Min). **Fix O** scope broadened — not just LangChain; also PyTorch/scikit-learn/pandas when version is current (Min/Yara).
+
+### Superseded plan: Fix E — `lastUsed` in scoring (1.5 days) Sarah and Dmitri are the canonical cases. Design must be **asymmetric** per Sarah's session: penalize stale Greens (Sam-Ansible from prior round) AND *soften* stale Reds when the version was contemporary at last-use time (Sarah's Spring Boot 2.5 was current when she left in 2022). Same axis, opposite signs depending on whether the version was current-at-the-time.
 
 Implementation outline:
 - Parse `item.lastUsed` (free-text today: "current role", "2 years ago", "2022") in new `lib/lastUsed.ts` → coarse bucket `current | recent (≤1yr) | stale (≥2yr) | ancient (≥5yr) | unknown`.
