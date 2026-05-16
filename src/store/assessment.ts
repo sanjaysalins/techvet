@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { AssessmentItem, AssessmentMeta, Depth, Scope } from '../types';
+import type { AssessmentItem, AssessmentMeta, Depth, NamedOnlyEntry, Scope } from '../types';
 
 interface AssessmentState {
   meta: AssessmentMeta;
@@ -20,6 +20,10 @@ interface AssessmentState {
    *  enforces an 80-char cap. Free-text only — no scoring, no PDF
    *  verdict, just a "probe target" list for the technical interviewer. */
   addNamedOnly: (name: string) => void;
+  /** Bug 4 (round-4 Wendy): patch an existing named-only entry's depth
+   *  or lastUsed via the post-call Summary editor. Match is by exact
+   *  name (case-sensitive — the user just clicked the existing row). */
+  updateNamedOnly: (name: string, patch: Partial<Omit<NamedOnlyEntry, 'name'>>) => void;
   removeNamedOnly: (name: string) => void;
   setFocused: (techId: string | null) => void;
   reset: () => void;
@@ -101,21 +105,31 @@ export const useAssessment = create<AssessmentState>()(
           if (!trimmed) return state;
           const lower = trimmed.toLowerCase();
           const existing = state.meta.namedNotInCatalog ?? [];
-          if (existing.some(n => n.toLowerCase() === lower)) return state;
+          if (existing.some(e => e.name.toLowerCase() === lower)) return state;
           return {
             meta: {
               ...state.meta,
-              namedNotInCatalog: [...existing, trimmed],
+              namedNotInCatalog: [...existing, { name: trimmed }],
             },
           };
         }),
+
+      updateNamedOnly: (name, patch) =>
+        set(state => ({
+          meta: {
+            ...state.meta,
+            namedNotInCatalog: (state.meta.namedNotInCatalog ?? []).map(e =>
+              e.name === name ? { ...e, ...patch } : e
+            ),
+          },
+        })),
 
       removeNamedOnly: name =>
         set(state => ({
           meta: {
             ...state.meta,
             namedNotInCatalog: (state.meta.namedNotInCatalog ?? []).filter(
-              n => n !== name
+              e => e.name !== name
             ),
           },
         })),
@@ -156,9 +170,19 @@ export const useAssessment = create<AssessmentState>()(
       // would hydrate with meta.channel === undefined; spread emptyMeta
       // over the rehydrated meta to backfill it (and any future fields
       // added to the meta shape).
+      //
+      // Bug 4 (round-4 Wendy): namedNotInCatalog evolved from string[]
+      // to NamedOnlyEntry[]; coerce legacy bare-string entries to the
+      // object form on rehydrate so old sessions don't blow up readers
+      // expecting `.name`.
       onRehydrateStorage: () => state => {
-        if (state) {
-          state.meta = { ...emptyMeta, ...state.meta };
+        if (!state) return;
+        state.meta = { ...emptyMeta, ...state.meta };
+        const named = state.meta.namedNotInCatalog as unknown[];
+        if (Array.isArray(named) && named.some(e => typeof e === 'string')) {
+          state.meta.namedNotInCatalog = named.map(e =>
+            typeof e === 'string' ? { name: e } : (e as NamedOnlyEntry)
+          );
         }
       },
     }

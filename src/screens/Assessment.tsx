@@ -265,20 +265,20 @@ export default function Assessment() {
                   <div className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
                     Candidate mentioned ({meta.namedNotInCatalog.length})
                     <span className="ml-1.5 font-normal text-slate-400 dark:text-slate-500">
-                      — not in catalog; probe target for the technical interviewer
+                      — not in catalog; add depth + last-used on Summary
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
-                    {meta.namedNotInCatalog.map(name => (
+                    {meta.namedNotInCatalog.map(entry => (
                       <span
-                        key={name}
+                        key={entry.name}
                         className="inline-flex items-center gap-1 pl-2.5 pr-1 py-1 rounded-md bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-700 text-sm"
                       >
-                        {name}
+                        {entry.name}
                         <button
-                          onClick={() => removeNamedOnly(name)}
+                          onClick={() => removeNamedOnly(entry.name)}
                           className="p-0.5 hover:bg-amber-100 dark:hover:bg-amber-800/30 rounded"
-                          aria-label={`Remove ${name}`}
+                          aria-label={`Remove ${entry.name}`}
                         >
                           <X className="w-3 h-3" />
                         </button>

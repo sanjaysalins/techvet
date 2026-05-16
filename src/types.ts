@@ -121,6 +121,16 @@ export interface ResolvedTier {
 /** Fix E: coarse recency bucket from the free-text `lastUsed` field. */
 export type Recency = 'current' | 'recent' | 'stale' | 'ancient' | 'unknown';
 
+/** Fix Bug 4 (round-4 Wendy): named-not-in-catalog entries now carry
+ *  optional depth + lastUsed so the recruiter's "Burp daily, deep" doesn't
+ *  flatten to bare "Burp" on the report. Captured on Assessment via the
+ *  search no-results CTA; enriched on Summary via inline editor. */
+export interface NamedOnlyEntry {
+  name: string;
+  depth?: Depth;
+  lastUsed?: string;
+}
+
 /** Fix Q (round-3 cross-cut): channel the screening is happening on.
  *  Drives per-channel empty-field semantics on the Summary report —
  *  "blank version" means "ran out of time" on phone/video but "CV is
@@ -154,14 +164,18 @@ export interface AssessmentMeta {
   mandate: string;
   startedAt: string;
   channel: Channel;
-  /** Fix C (round-3 cross-cut): free-text names the candidate mentioned
-   *  that aren't in the catalog. Captured via the no-results CTA in
+  /** Fix C (round-3 cross-cut): names the candidate mentioned that
+   *  aren't in the catalog. Captured via the no-results CTA in
    *  TechSearch so a recruiter who hears "we use Vault" but finds no
-   *  catalog entry can still record it as a probe target for the
-   *  technical interviewer. Round-3 confirmed Lou-Oracle, Devon-Tokio,
-   *  Tomi-Vault, Dmitri-Ruby all vanished into sticky notes without
-   *  this. Strings only; trimmed, deduplicated case-insensitively. */
-  namedNotInCatalog: string[];
+   *  catalog entry can still record it as a probe target.
+   *
+   *  Fix Bug 4 (round-4 Wendy): shape evolved from `string[]` to
+   *  `NamedOnlyEntry[]` so depth + lastUsed signal can attach. Wendy's
+   *  "Burp daily, deep" was flattening to bare "Burp" with no verdict;
+   *  now the post-call enrichment chips on Summary let recruiter tag
+   *  depth/lastUsed inline. Backward compat: legacy `string[]` entries
+   *  get migrated to `{name}` in onRehydrateStorage. */
+  namedNotInCatalog: NamedOnlyEntry[];
   /** Fix M (round-3 cross-cut): candidate seniority + path. Renders
    *  inline in the report header. Defaults to 'unspecified' so the line
    *  is hidden when the recruiter doesn't fill it in. */

@@ -2,18 +2,20 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import technologiesData from '../data/technologies.json';
-import type { AssessmentItem, Scope, Technology, TierColor } from '../types';
+import type { AssessmentItem, Depth, NamedOnlyEntry, Scope, Technology, TierColor } from '../types';
 import {
   resolveTier,
   colorScore,
   tierBadgeClass,
   depthLabel,
 } from '../lib/scoring';
+
+const DEPTH_OPTIONS: Depth[] = ['unknown', 'shallow', 'working', 'deep', 'very-deep'];
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
 import { notDiscussedCopy, channelLabel, confirmedNotInStackCopy } from '../lib/channel';
 import { formatCandidateContext } from '../lib/candidateContext';
-import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders, MessageSquarePlus } from 'lucide-react';
+import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders, MessageSquarePlus, X } from 'lucide-react';
 
 const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
 
@@ -333,20 +335,16 @@ export default function Summary() {
                 <p className="text-sm text-slate-600">
                   Names heard during the screening that aren&rsquo;t in
                   TechVet&rsquo;s catalog. <strong>No verdict</strong> — these
-                  are probe targets for the technical interviewer. Captured
-                  because the recruiter heard them; the candidate&rsquo;s
-                  actual depth on each is not represented here.
+                  are probe targets for the technical interviewer. Bug 4 (round-4):
+                  add <em>depth</em> and <em>last used</em> inline below so the
+                  recruiter&rsquo;s "Burp daily, deep" isn&rsquo;t lost as bare
+                  "Burp".
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {meta.namedNotInCatalog.map(name => (
-                <span
-                  key={name}
-                  className="inline-flex items-center px-3 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-sm font-medium"
-                >
-                  {name}
-                </span>
+            <div className="space-y-2">
+              {meta.namedNotInCatalog.map(entry => (
+                <NamedOnlyEditor key={entry.name} entry={entry} />
               ))}
             </div>
           </section>
@@ -625,6 +623,62 @@ function ScopeChip({ tech, item }: { tech: Technology; item: AssessmentItem }) {
         <span className="text-xs italic text-slate-500">via default</span>
       )}
     </span>
+  );
+}
+
+/**
+ * Bug 4 (round-4 Wendy): post-call enrichment editor for named-only
+ * entries. Pre-Bug-4 entries were bare strings — "Burp daily, deep"
+ * flattened to "Burp." Now the recruiter can attach depth + lastUsed
+ * inline on Summary (same post-call pattern as Fix K's ScopeChip).
+ * Stays compact: name + remove on the top row; depth select +
+ * lastUsed input on the second row. Defaults rendered as placeholder
+ * hints so unset fields don't look like data.
+ */
+function NamedOnlyEditor({ entry }: { entry: NamedOnlyEntry }) {
+  const { updateNamedOnly, removeNamedOnly } = useAssessment();
+  return (
+    <div className="rounded-md border border-amber-200 bg-amber-50 p-2.5">
+      <div className="flex items-center gap-2 mb-1.5">
+        <strong className="text-navy-900 text-sm flex-1 min-w-0 truncate">
+          {entry.name}
+        </strong>
+        <button
+          onClick={() => removeNamedOnly(entry.name)}
+          className="text-amber-700 hover:bg-amber-100 rounded p-0.5"
+          aria-label={`Remove ${entry.name}`}
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <select
+          value={entry.depth ?? ''}
+          onChange={e =>
+            updateNamedOnly(entry.name, {
+              depth: (e.target.value || undefined) as Depth | undefined,
+            })
+          }
+          className="text-xs px-2 py-1 rounded bg-white border border-amber-200 text-slate-700"
+          aria-label={`Depth for ${entry.name}`}
+        >
+          <option value="">— Depth not set</option>
+          {DEPTH_OPTIONS.map(d => (
+            <option key={d} value={d}>
+              {depthLabel(d)}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          value={entry.lastUsed ?? ''}
+          onChange={e => updateNamedOnly(entry.name, { lastUsed: e.target.value })}
+          placeholder="Last used — e.g. current role, 2022"
+          className="text-xs px-2 py-1 rounded bg-white border border-amber-200 text-slate-700 placeholder:text-slate-400"
+          aria-label={`Last used for ${entry.name}`}
+        />
+      </div>
+    </div>
   );
 }
 
