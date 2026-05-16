@@ -727,6 +727,17 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(fe?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
   });
 
+  it('Round-7 7A: Backend template carries ≥4 methodologyChips (closes Sven 6F deferral mistake)', () => {
+    const be = ROLE_TEMPLATES.find(r => r.id === 'backend');
+    expect(be?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
+    // Load-bearing senior-backend signals — if a future agent strips these,
+    // the Sven misfire returns.
+    const ids = new Set((be?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('contract-testing')).toBe(true);
+    expect(ids.has('otel-instrumentation')).toBe(true);
+    expect(ids.has('idempotency-keys')).toBe(true);
+  });
+
   it('Database / DBA template exists, preloads the Oracle stack + SQL, carries methodologyChips', () => {
     const dba = ROLE_TEMPLATES.find(r => r.id === 'database-dba');
     expect(dba, 'database-dba template missing — Owen-shape recruiter loses the template anchor').toBeDefined();

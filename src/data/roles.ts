@@ -73,6 +73,23 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     // added techs too, so 'general' on AWS gives Backend candidates
     // the standard service set (~10) rather than the full 26.
     serviceTagFilters: { aws: ['general'] },
+    // Round-7 7A (Sven): 6F deferred Backend chips on the assumption
+    // that 6B's free-text fallback would cover it. Sven exposed that
+    // the hint copy lists Mobile/FE/Security examples only — backend
+    // recruiters read the empty section as "not for me" and miss
+    // capturing the very signals that differentiate a senior backend
+    // engineer (contract testing, event-driven design, OTel
+    // discipline, idempotency). Six chips chosen for breadth across
+    // backend archetypes (microservices / message-driven / payments
+    // / platform-services), not just one stack.
+    methodologyChips: [
+      { id: 'contract-testing', label: 'Contract testing (Pact / consumer-driven)' },
+      { id: 'event-driven-design', label: 'Event-driven design (CQRS / outbox pattern)' },
+      { id: 'feature-flags', label: 'Feature flags (Unleash / LaunchDarkly / OpenFeature)' },
+      { id: 'otel-instrumentation', label: 'OpenTelemetry / distributed tracing' },
+      { id: 'idempotency-keys', label: 'Idempotency keys + dedup patterns' },
+      { id: 'circuit-breakers', label: 'Circuit breakers + retry/backoff (Resilience4j etc.)' },
+    ],
   },
   {
     id: 'solution-architect',

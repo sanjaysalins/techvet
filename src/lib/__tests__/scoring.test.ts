@@ -360,7 +360,7 @@ describe('resolveTier — checklist 6D qualified depth-lift', () => {
     );
     expect(r.color).toBe('yellow');
     expect(r.scopeCapped).toBe(true);
-    expect(r.label).toMatch(/capped — reviewer scope/);
+    expect(r.label).toMatch(/capped from .* by reviewer scope/);
   });
 
   it('already-Green coverage (10/10) + very-deep → stays Green, no lift fires (already at top)', () => {
@@ -605,7 +605,7 @@ describe('resolveTier — scope-of-use axis', () => {
       expect(r.color).toBe('yellow');
       expect(r.scopeCapped).toBe(true);
       expect(r.depthAdjusted).toBe(false);
-      expect(r.label).toMatch(/capped — reviewer scope/);
+      expect(r.label).toMatch(/capped from .* by reviewer scope/);
     });
 
     it('scope=reviewer + Yellow version stays Yellow (no cap fires — already there)', () => {
@@ -633,7 +633,7 @@ describe('resolveTier — scope-of-use axis', () => {
       const r = resolveTier(versionTech(), item({ version: '19', depth: 'very-deep', scope: 'architect' }));
       expect(r.color).toBe('yellow');
       expect(r.scopeCapped).toBe(true);
-      expect(r.label).toMatch(/capped — architect scope/);
+      expect(r.label).toMatch(/capped from .* by architect scope/);
     });
   });
 
@@ -677,7 +677,7 @@ describe('resolveTier — scope-of-use axis', () => {
       );
       expect(r.color).toBe('yellow');
       expect(r.scopeCapped).toBe(true);
-      expect(r.label).toMatch(/capped — reviewer scope/);
+      expect(r.label).toMatch(/capped from .* by reviewer scope/);
       // Coverage suffix still appears.
       expect(r.label).toMatch(/7\/10 services/);
     });
@@ -1036,13 +1036,16 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
   });
 
   describe('stale Red softener (Sarah-Spring-Boot-2.5 shape)', () => {
-    it('Red tier + enterpriseStillUsed + stale → Yellow with returner softener note', () => {
+    it('Red tier + enterpriseStillUsed + stale → Yellow with neutral softener note (round-7 7B)', () => {
       // versionTech() has enterpriseStillUsed: true at root by default.
       const r = resolveTier(versionTech(), item({ version: '12', lastUsed: '2022' }));
       expect(r.color).toBe('yellow');
       expect(r.recencyAdjusted).toBe(true);
-      expect(r.recencyNote).toMatch(/contemporary at last-use/);
-      expect(r.recencyNote).toMatch(/returner shape/);
+      // Round-7 7B: note text rephrased to handle returner / moved-off /
+      // team-won't-upgrade equally (Sven misfire on "moved-off" case).
+      expect(r.recencyNote).toMatch(/current at last-use/);
+      expect(r.recencyNote).toMatch(/defensible older usage/);
+      expect(r.recencyNote).toMatch(/returning to it or deliberately moved off/);
     });
 
     it('Red tier WITHOUT enterpriseStillUsed + stale → stays Red (no false softener)', () => {
@@ -1060,13 +1063,14 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
     // Margarethe's PG 13 + Java 11 → Yellow-tier match → was previously
     // skipped; now gets the returner softener note even though the COLOR
     // doesn't change. Label + note carry the returner story.
-    it('Yellow tier + enterpriseStillUsed + stale → returner softener fires (color stays Yellow)', () => {
+    it('Yellow tier + enterpriseStillUsed + stale → softener fires with neutral note (color stays Yellow)', () => {
       const r = resolveTier(versionTech(), item({ version: '17', lastUsed: '2022' }));
       expect(r.color).toBe('yellow');
       expect(r.recencyAdjusted).toBe(true);
-      expect(r.recencyNote).toMatch(/contemporary at last-use/);
-      expect(r.recencyNote).toMatch(/returner shape/);
-      // Label reflects the softener story.
+      // Round-7 7B: neutral wording (was "returner shape; expect ramp-up").
+      expect(r.recencyNote).toMatch(/current at last-use/);
+      expect(r.recencyNote).toMatch(/defensible older usage/);
+      // Label still reflects the softener story.
       expect(r.label).toMatch(/softened from Review \/ Probe/);
     });
   });
@@ -1122,7 +1126,7 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
     // Round-6 6A: Red coverage + enterpriseStillUsed + stale → softener fires
     // (Margarethe's AWS at 3/14 = 21% lastUsed=2022). Symmetric with version
     // mode's Red softener.
-    it('checklist mode + Red coverage + enterpriseStillUsed + stale → softens to Yellow with returner note', () => {
+    it('checklist mode + Red coverage + enterpriseStillUsed + stale → softens to Yellow with neutral note', () => {
       const tech = checklistTech({ id: 'aws-mock', name: 'AWS', enterpriseStillUsed: true });
       const r = resolveTier(
         tech,
@@ -1135,8 +1139,9 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
       );
       expect(r.color).toBe('yellow');
       expect(r.recencyAdjusted).toBe(true);
-      expect(r.recencyNote).toMatch(/contemporary at last-use/);
-      expect(r.recencyNote).toMatch(/returner shape/);
+      // Round-7 7B: neutral wording.
+      expect(r.recencyNote).toMatch(/current at last-use/);
+      expect(r.recencyNote).toMatch(/defensible older usage/);
     });
 
     // Round-6 6A: checklist coverage suffix still appears alongside softener.
@@ -1230,7 +1235,7 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
       );
       expect(r.color).toBe('yellow');
       expect(r.recencyAdjusted).toBe(true);
-      expect(r.recencyNote).toMatch(/contemporary/);
+      expect(r.recencyNote).toMatch(/current at last-use/);
     });
 
     it('seniority undefined (back-compat): softener still fires', () => {
@@ -1313,5 +1318,86 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
       expect(r.color).toBe('yellow');
       expect(r.enterpriseNote).toMatch(/widely used/);
     });
+  });
+});
+
+/**
+ * Round-7 7C (5ξ, Anil): cappedFromColor field + composeLabel differentiator.
+ * Anil's headline `0G/5Y/0R` previously made "capped-strong" and "thin
+ * coverage" read identical in the Yellow bucket. Now ResolvedTier carries
+ * `cappedFromColor` so HM-facing UI can count + differentiate Staff IC
+ * patterns from raw Yellow.
+ */
+describe('resolveTier — 7C cappedFromColor (5ξ)', () => {
+  it('reviewer scope on Green version → cappedFromColor: green', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', scope: 'reviewer' }));
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBe('green');
+  });
+
+  it('architect scope on Green version → cappedFromColor: green', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', scope: 'architect' }));
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBe('green');
+  });
+
+  it('reviewer scope on Yellow version → no cap, cappedFromColor undefined', () => {
+    const r = resolveTier(versionTech(), item({ version: '17', scope: 'reviewer' }));
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(false);
+    expect(r.cappedFromColor).toBeUndefined();
+  });
+
+  it('operator scope → no cappedFromColor regardless of color', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', scope: 'operator' }));
+    expect(r.color).toBe('green');
+    expect(r.cappedFromColor).toBeUndefined();
+  });
+
+  it('author scope on Yellow+deep (would have lifted Green) → cappedFromColor: green', () => {
+    const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep', scope: 'author' }));
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBe('green');
+  });
+
+  it('checklist mode: architect scope on 6D-lifted Green → cappedFromColor: green', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 14 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4', 's-5', 's-6', 's-7'],
+        checklistTouched: true,
+        depth: 'very-deep',
+        scope: 'architect',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBe('green');
+  });
+
+  it('composeLabel uses cappedFromColor in label text', () => {
+    const r = resolveTier(versionTech(), item({ version: '19', scope: 'architect' }));
+    expect(r.label).toMatch(/capped from Good by architect scope/);
+  });
+
+  it('softener composing with scope-cap preserves cappedFromColor', () => {
+    const r = resolveTier(
+      versionTech(),
+      item({ version: '19', depth: 'very-deep', scope: 'reviewer', lastUsed: '2022' })
+    );
+    // Scope caps Green → Yellow with cappedFromColor=green; recency softener
+    // also fires on the Yellow output (enterpriseStillUsed) and preserves
+    // cappedFromColor through the recency path.
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBe('green');
+    expect(r.recencyAdjusted).toBe(true);
   });
 });

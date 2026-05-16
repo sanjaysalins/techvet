@@ -52,7 +52,7 @@ function applyScope(
   baseColor: TierColor,
   adjusted: { color: TierColor; adjusted: boolean },
   scope: Scope | undefined
-): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean } {
+): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; cappedFromColor?: TierColor } {
   if (!scope || scope === 'operator') {
     return {
       color: adjusted.color,
@@ -64,8 +64,11 @@ function applyScope(
     if (SEVERITY[adjusted.color] < SEVERITY.yellow) {
       // Whether the Green came from a natural tier match or a depth-lift,
       // the cap erases it — depthAdjusted reset to false so callers don't
-      // claim credit for a lift the cap removed.
-      return { color: 'yellow', depthAdjusted: false, scopeCapped: true };
+      // claim credit for a lift the cap removed. Round-7 7C: preserve the
+      // pre-cap color in `cappedFromColor` so the UI can differentiate
+      // "capped from Good by architect scope" (Staff IC pattern) from a
+      // plain Yellow ("midmarket signal").
+      return { color: 'yellow', depthAdjusted: false, scopeCapped: true, cappedFromColor: adjusted.color };
     }
     return {
       color: adjusted.color,
@@ -75,7 +78,7 @@ function applyScope(
   }
   // scope === 'author'
   if (adjusted.adjusted && baseColor === 'yellow' && adjusted.color === 'green') {
-    return { color: 'yellow', depthAdjusted: false, scopeCapped: true };
+    return { color: 'yellow', depthAdjusted: false, scopeCapped: true, cappedFromColor: 'green' };
   }
   return {
     color: adjusted.color,
@@ -117,11 +120,11 @@ const LABEL_MAP: Record<TierColor, string> = {
  * design wrinkle and the canonical fix isn't symmetric penalty.
  */
 function applyRecency(
-  current: { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean },
+  current: { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; cappedFromColor?: TierColor },
   lastUsed: string,
   tech: Technology,
   seniority?: Seniority
-): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; recencyAdjusted: boolean; recencyNote?: string; recencyDirection?: 'softener' | 'penalty' } {
+): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; cappedFromColor?: TierColor; recencyAdjusted: boolean; recencyNote?: string; recencyDirection?: 'softener' | 'penalty' } {
   const { bucket } = parseLastUsed(lastUsed);
 
   // Only stale/ancient trigger anything; current/recent/unknown pass through.
@@ -157,11 +160,20 @@ function applyRecency(
       // Preserve upstream flags so the scope-cap note can still render
       // alongside the softener note (both stories are true; both useful).
       // composeLabel precedence still picks the softener label over scope.
+      // Round-7 7C: also preserve cappedFromColor so the new headline card
+      // counts this entry correctly when both softener and scope-cap fire.
       depthAdjusted: current.depthAdjusted,
       scopeCapped: current.scopeCapped,
+      cappedFromColor: current.cappedFromColor,
       recencyAdjusted: true,
       recencyDirection: 'softener',
-      recencyNote: `Stale (${yearsLabel}) but was contemporary at last-use — returner shape; expect ramp-up rather than concern.`,
+      // Round-7 7B (Sven): old wording "returner shape; expect ramp-up"
+      // misfired on the "moved-off" case — Sven deliberately left AWS
+      // Lambda 18mo ago, he's a current employee not a returner. Neutral
+      // wording handles returner / moved-off / team-won't-upgrade equally:
+      // the verdict color is defensible regardless of cause; the recruiter
+      // probes the cause.
+      recencyNote: `Stale (${yearsLabel}) but the version was current at last-use — defensible older usage; probe whether the candidate is returning to it or deliberately moved off.`,
     };
   }
 
@@ -242,6 +254,7 @@ function resolveVersionTier(
         baseLabel: 'Review / Probe',
         depthAdjusted: scoped.depthAdjusted,
         scopeCapped: scoped.scopeCapped,
+        cappedFromColor: scoped.cappedFromColor,
         scope: item.scope,
       }),
       note: tech.guidanceForUnknownVersion,
@@ -256,6 +269,7 @@ function resolveVersionTier(
       unknownVersion: true,
       depthAdjusted: scoped.depthAdjusted,
       scopeCapped: scoped.scopeCapped,
+      cappedFromColor: scoped.cappedFromColor,
       notDiscussed,
     };
   }
@@ -280,6 +294,7 @@ function resolveVersionTier(
       baseLabel: tier.label,
       depthAdjusted: withRecency.depthAdjusted,
       scopeCapped: withRecency.scopeCapped,
+      cappedFromColor: withRecency.cappedFromColor,
       scope: item.scope,
       recencyAdjusted: withRecency.recencyAdjusted,
       recencyDirection: withRecency.recencyDirection,
@@ -294,6 +309,7 @@ function resolveVersionTier(
     unknownVersion: false,
     depthAdjusted: withRecency.depthAdjusted,
     scopeCapped: withRecency.scopeCapped,
+    cappedFromColor: withRecency.cappedFromColor,
     recencyAdjusted: withRecency.recencyAdjusted,
     recencyNote: withRecency.recencyNote,
   };
@@ -310,6 +326,7 @@ function composeLabel(opts: {
   baseLabel: string;
   depthAdjusted: boolean;
   scopeCapped: boolean;
+  cappedFromColor?: TierColor;
   scope: Scope | undefined;
   recencyAdjusted?: boolean;
   recencyDirection?: 'softener' | 'penalty';
@@ -321,6 +338,15 @@ function composeLabel(opts: {
       : `${finalLabel} (penalized from ${opts.baseLabel} — stale)`;
   }
   if (opts.scopeCapped) {
+    // Round-7 7C (5ξ, Anil): when we know the pre-cap color, name it.
+    // "Capped from Good by architect scope" tells the HM "this candidate
+    // would have read Good if they operated it day-to-day" — Staff IC
+    // pattern. Plain "(capped — architect scope)" was the pre-7C fallback
+    // and stays as the no-cappedFromColor case.
+    if (opts.cappedFromColor) {
+      const fromLabel = LABEL_MAP[opts.cappedFromColor];
+      return `${finalLabel} (capped from ${fromLabel} by ${opts.scope} scope)`;
+    }
     return `${finalLabel} (capped — ${opts.scope} scope)`;
   }
   if (opts.depthAdjusted) {
@@ -435,6 +461,7 @@ function resolveChecklistTier(
     baseLabel: LABEL_MAP[baseColor],
     depthAdjusted: withRecency.depthAdjusted,
     scopeCapped: withRecency.scopeCapped,
+    cappedFromColor: withRecency.cappedFromColor,
     scope: item.scope,
     recencyAdjusted: withRecency.recencyAdjusted,
     recencyDirection: withRecency.recencyDirection,
@@ -455,6 +482,7 @@ function resolveChecklistTier(
     unknownVersion: false,
     depthAdjusted: withRecency.depthAdjusted,
     scopeCapped: withRecency.scopeCapped,
+    cappedFromColor: withRecency.cappedFromColor,
     coverage,
     recencyAdjusted: withRecency.recencyAdjusted,
     recencyNote: withRecency.recencyNote,

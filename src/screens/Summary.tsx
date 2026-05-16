@@ -65,6 +65,16 @@ export default function Summary() {
     return b;
   }, [scored]);
 
+  // Round-7 7C (5ξ, Anil): scope-capped count for the new 6th headline card.
+  // Counts scored entries that landed Yellow because reviewer/architect/author
+  // scope capped a higher tier (cappedFromColor is set by `applyScope`).
+  // Anil's round-6 headline `0G/5Y/0R` made "capped-strong" and "thin
+  // coverage" read identical; the 6th sky-toned card differentiates at glance.
+  const scopeCappedCount = useMemo(
+    () => scored.filter(r => r.tier.scopeCapped && r.tier.cappedFromColor === 'green').length,
+    [scored]
+  );
+
   const radarData = useMemo(() => {
     const byCat = new Map<string, { total: number; count: number }>();
     scored.forEach(r => {
@@ -223,25 +233,23 @@ export default function Summary() {
           )}
         </header>
 
-        {/* Headline stats — scored buckets + methodology + off-catalog when
-            present. Round-5 5ι promoted methodology to a 4th card so senior
-            signal (Yasmin async DS) wasn't invisible at headline glance.
-            Round-6 6E promotes off-catalog named-only to a 5th card: Owen's
-            18-yr Oracle DBA had 2 Good / 0 Yellow / 0 Red and 5 enriched
-            named-only chips below the fold — HM read "thin mid-level" when
-            the evidence was clearly senior-specialist. Card scales:
-            3 cards (none) → 4 cards (one extension) → 5 cards (both).
-            On mobile: stacks to 2-col regardless to keep cards readable. */}
+        {/* Headline stats — scored buckets + methodology + off-catalog +
+            scope-capped (round-7 7C) when present. Each card promotes a
+            specific senior-signal axis that pre-5ι/6E/7C was buried below
+            the fold. Card scales 3 → 6 cards based on which extensions fire.
+            Mobile: stacks 2-col regardless to keep cards readable. */}
         {(() => {
           const methCount = meta.methodologyEntries.length;
           const offCount = meta.namedNotInCatalog.length;
-          const extras = (methCount > 0 ? 1 : 0) + (offCount > 0 ? 1 : 0);
+          const extras = (methCount > 0 ? 1 : 0) + (offCount > 0 ? 1 : 0) + (scopeCappedCount > 0 ? 1 : 0);
           const gridClass =
             extras === 0
               ? 'grid-cols-3'
               : extras === 1
                 ? 'grid-cols-2 md:grid-cols-4'
-                : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-5';
+                : extras === 2
+                  ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-5'
+                  : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6';
           return (
             <section className={`grid gap-4 mb-3 ${gridClass}`}>
               <StatCard
@@ -282,6 +290,17 @@ export default function Summary() {
                     </div>
                   </div>
                   <div className="text-3xl font-bold mt-1">{offCount}</div>
+                </div>
+              )}
+              {scopeCappedCount > 0 && (
+                <div className="rounded-xl border-2 p-4 bg-slate-100 text-slate-900 border-slate-300" title="Yellows that would have been Good without the scope cap — Staff IC / architect / reviewer patterns.">
+                  <div className="flex items-center gap-2">
+                    <Sliders className="w-5 h-5" />
+                    <div className="text-xs font-semibold uppercase tracking-wider">
+                      Scope-capped
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold mt-1">{scopeCappedCount}</div>
                 </div>
               )}
             </section>

@@ -106,6 +106,14 @@ export interface ResolvedTier {
    *  restricted to Red→Yellow only). Surfaces a small caveat in the UI so
    *  the recruiter sees *why* a deep-experience reviewer didn't land Green. */
   scopeCapped?: boolean;
+  /** Round-7 7C (5ξ, Anil): when a scope cap fires, this carries the color
+   *  the candidate would have landed at without the cap. Lets HM-facing UI
+   *  differentiate "Yellow (capped from Good by architect scope)" — i.e.
+   *  Staff IC who knows the system top-down but doesn't operate it — from
+   *  plain Yellow ("midmarket signal, probe further"). Anil's round-6 report
+   *  ended up `0G/5Y/0R` with HM unable to distinguish "capped-strong" from
+   *  "thin coverage" in the same bucket. */
+  cappedFromColor?: TierColor;
   /** The recruiter never interacted with this tech on the call — the card
    *  exists only because a role template pre-loaded it, and was left at
    *  defaults (no version typed, no toggle flipped; or no checklist
