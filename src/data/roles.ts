@@ -15,6 +15,15 @@ export interface RoleTemplate {
    *  through to catalog `defaultScope` (Fix K) and then to operator-
    *  implied — pre-K2 behavior preserved. */
   techScopes?: Partial<Record<string, Scope>>;
+  /** Round-4 (Helena/Wendy/Owen "AWS role-blind"): per-tech checklist
+   *  service-tag filters. Map of techId → array of tags to surface. When
+   *  set, the TechCard's checklist only shows services whose `tags`
+   *  array intersects with the filter. Services without `tags` always
+   *  show (untagged = universally relevant). Example: SA template
+   *  filters AWS to `['general', 'architect']` so Landing Zone /
+   *  Organizations appear and CodeBuild / SageMaker don't clutter the
+   *  list. Custom + untagged templates: no filter, all services shown. */
+  serviceTagFilters?: Partial<Record<string, string[]>>;
 }
 
 export const ROLE_TEMPLATES: RoleTemplate[] = [
@@ -23,6 +32,7 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'Full-Stack Developer',
     description: 'Frontend + backend with cloud deployment.',
     techIds: ['react', 'typescript', 'nodejs', 'postgresql', 'docker', 'aws'],
+    serviceTagFilters: { aws: ['general', 'cicd'] },
   },
   {
     id: 'frontend',
@@ -57,12 +67,16 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
       kafka: 'architect',
       postgresql: 'architect',
     },
+    // SA reads the architecture-side of AWS — Landing Zone, Organizations,
+    // IAM Identity Center. Hides CodeBuild/SageMaker noise.
+    serviceTagFilters: { aws: ['general', 'architect'] },
   },
   {
     id: 'devops',
     name: 'DevOps / Platform',
     description: 'CI/CD, infra-as-code, container orchestration.',
     techIds: ['kubernetes', 'terraform', 'docker', 'github-actions', 'argocd', 'helm', 'observability'],
+    serviceTagFilters: { aws: ['general', 'cicd', 'container'] },
   },
   {
     id: 'sre',
@@ -78,6 +92,7 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
       aws: 'reviewer',
       // kubernetes/helm/observability/go/python: operator-implied (default)
     },
+    serviceTagFilters: { aws: ['general', 'container'] },
   },
   {
     id: 'data',
@@ -96,6 +111,9 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'AI / ML Engineer',
     description: 'Build and deploy ML / LLM systems and RAG.',
     techIds: ['python', 'pytorch', 'huggingface-transformers', 'llm-api-sdk', 'vector-db', 'fastapi', 'docker', 'aws'],
+    // Round-3 Vikram named SageMaker + Bedrock as missing AWS slice; now
+    // surfaced via the data-ml tag filter.
+    serviceTagFilters: { aws: ['general', 'data-ml', 'container'] },
   },
   {
     id: 'mobile',
@@ -134,6 +152,9 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
       // vault/burp-suite/semgrep/trivy/snyk/owasp-zap/falco: operator-implied
       // python/oauth-identity/sql: operator-implied
     },
+    // Round-4 Wendy: AppSec needs KMS / Macie / GuardDuty / SecurityHub /
+    // Inspector visible on the AWS checklist. Hides CodeBuild + SageMaker.
+    serviceTagFilters: { aws: ['general', 'security'] },
   },
   {
     id: 'qa',

@@ -49,6 +49,7 @@ const emptyMeta: AssessmentMeta = {
   yearsInIndustry: '',
   pathType: 'unspecified',
   candidateContext: '',
+  templateId: undefined,
 };
 
 const DRAFT_KEY = 'techvet-draft';

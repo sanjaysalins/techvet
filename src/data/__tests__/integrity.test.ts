@@ -363,6 +363,106 @@ describe('technologies.json — Cloud providers carry defaultScope=operator', ()
 });
 
 /**
+ * Round-4 (Helena/Wendy/Owen "AWS role-blind"): per-service tags so role
+ * templates can surface different subsets. Tests pin both the catalog
+ * side (every AWS service has tags) and the template side (filters
+ * reference valid tags that exist on at least one service).
+ */
+describe('technologies.json — AWS role-aware service tags', () => {
+  const VALID_AWS_TAGS = new Set(['general', 'architect', 'security', 'cicd', 'container', 'data-ml']);
+
+  it('every AWS service has a non-empty `tags` array', () => {
+    const aws = TECH_BY_ID.get('aws');
+    expect(aws, 'aws missing from catalog').toBeDefined();
+    const missing = (aws!.services ?? [])
+      .filter(s => !s.tags || s.tags.length === 0)
+      .map(s => s.id);
+    expect(
+      missing,
+      'AWS services without tags would always show regardless of template filter — defeats role-aware filtering'
+    ).toEqual([]);
+  });
+
+  it('AWS service tags are drawn from the canonical set (catches typos)', () => {
+    const aws = TECH_BY_ID.get('aws')!;
+    const offenders: string[] = [];
+    for (const s of aws.services ?? []) {
+      for (const tag of s.tags ?? []) {
+        if (!VALID_AWS_TAGS.has(tag)) {
+          offenders.push(`${s.id}: unknown tag "${tag}"`);
+        }
+      }
+    }
+    expect(
+      offenders,
+      `AWS service tags must be one of: ${[...VALID_AWS_TAGS].join(', ')}`
+    ).toEqual([]);
+  });
+
+  it('AWS includes the canonical round-4 service slice (Helena/Wendy/Owen named)', () => {
+    const aws = TECH_BY_ID.get('aws')!;
+    const ids = new Set((aws.services ?? []).map(s => s.id));
+    // Architect (Helena)
+    expect(ids.has('landing-zone')).toBe(true);
+    expect(ids.has('organizations')).toBe(true);
+    expect(ids.has('iam-identity-center')).toBe(true);
+    // Security (Wendy)
+    expect(ids.has('kms')).toBe(true);
+    expect(ids.has('macie')).toBe(true);
+    expect(ids.has('guardduty')).toBe(true);
+    expect(ids.has('security-hub')).toBe(true);
+    expect(ids.has('inspector')).toBe(true);
+    // CI/CD (Owen)
+    expect(ids.has('codebuild')).toBe(true);
+    expect(ids.has('codepipeline')).toBe(true);
+    // Data/ML (Vikram round-3)
+    expect(ids.has('sagemaker')).toBe(true);
+    expect(ids.has('bedrock')).toBe(true);
+  });
+});
+
+describe('roles.ts — serviceTagFilters integrity (round-4 AWS role-aware)', () => {
+  const VALID_AWS_TAGS = new Set(['general', 'architect', 'security', 'cicd', 'container', 'data-ml']);
+
+  it('every serviceTagFilters entry uses valid tags (filter can target techs added manually mid-call too, not just preloaded)', () => {
+    // Note: serviceTagFilters intentionally applies to techs the recruiter
+    // adds *during* the call too (e.g. DevOps template doesn't preload aws
+    // but if the recruiter adds it, the cicd+container filter should still
+    // apply). So we only validate tag well-formedness here, not techIds
+    // membership.
+    const offenders: string[] = [];
+    for (const role of ROLE_TEMPLATES) {
+      if (!role.serviceTagFilters) continue;
+      for (const [techId, tags] of Object.entries(role.serviceTagFilters)) {
+        if (techId === 'aws') {
+          for (const tag of tags ?? []) {
+            if (!VALID_AWS_TAGS.has(tag)) {
+              offenders.push(`${role.id}: aws filter has unknown tag "${tag}"`);
+            }
+          }
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it('Solution Architect surfaces architect + general AWS services', () => {
+    const sa = ROLE_TEMPLATES.find(r => r.id === 'solution-architect');
+    expect(sa?.serviceTagFilters?.aws).toEqual(['general', 'architect']);
+  });
+
+  it('Security template surfaces security + general AWS services', () => {
+    const sec = ROLE_TEMPLATES.find(r => r.id === 'security');
+    expect(sec?.serviceTagFilters?.aws).toEqual(['general', 'security']);
+  });
+
+  it('AI / ML template surfaces data-ml + container + general AWS services (Vikram SageMaker case)', () => {
+    const aiml = ROLE_TEMPLATES.find(r => r.id === 'ai-ml');
+    expect(aiml?.serviceTagFilters?.aws).toEqual(['general', 'data-ml', 'container']);
+  });
+});
+
+/**
  * Regression test for Fix K (round-2 cross-cut): AI/ML libraries all carry
  * `defaultScope: "author"` so the scope axis fires on phone calls where
  * the recruiter doesn't reach the dropdown. Without this default, every

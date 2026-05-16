@@ -19,6 +19,10 @@ export default function Landing() {
     setMeta({
       role: role?.name ?? 'Custom',
       startedAt: new Date().toISOString(),
+      // Round-4 AWS role-aware: TechCard reads meta.templateId to look up
+      // the active template's serviceTagFilters (e.g. SA → AWS shows
+      // architect-shaped services only).
+      templateId: roleId,
     });
     // Fix K2: pass the template's per-tech scope hint so the cap fires
     // automatically (e.g. SA template → architect on Terraform). Templates

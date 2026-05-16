@@ -1931,62 +1931,32 @@
     "defaultScope": "operator",
     "vetMode": "checklist",
     "services": [
-      {
-        "id": "ec2",
-        "name": "EC2 (Compute / VMs)"
-      },
-      {
-        "id": "lambda",
-        "name": "Lambda (Serverless functions)"
-      },
-      {
-        "id": "ecs-fargate",
-        "name": "ECS / Fargate (Managed containers)"
-      },
-      {
-        "id": "eks",
-        "name": "EKS (Managed Kubernetes)"
-      },
-      {
-        "id": "s3",
-        "name": "S3 (Object storage)"
-      },
-      {
-        "id": "rds",
-        "name": "RDS (Managed relational DB)"
-      },
-      {
-        "id": "dynamodb",
-        "name": "DynamoDB (Managed NoSQL)"
-      },
-      {
-        "id": "api-gateway",
-        "name": "API Gateway (HTTP / REST front door)"
-      },
-      {
-        "id": "sqs-sns",
-        "name": "SQS / SNS / EventBridge (Messaging)"
-      },
-      {
-        "id": "cloudwatch",
-        "name": "CloudWatch (Logs / metrics)"
-      },
-      {
-        "id": "iam",
-        "name": "IAM (Identity / access)"
-      },
-      {
-        "id": "cloudformation-cdk",
-        "name": "CloudFormation / CDK (IaC)"
-      },
-      {
-        "id": "vpc",
-        "name": "VPC (Networking / subnets)"
-      },
-      {
-        "id": "step-functions",
-        "name": "Step Functions (Workflow orchestration)"
-      }
+      { "id": "ec2", "name": "EC2 (Compute / VMs)", "tags": ["general", "container"] },
+      { "id": "lambda", "name": "Lambda (Serverless functions)", "tags": ["general"] },
+      { "id": "ecs-fargate", "name": "ECS / Fargate (Managed containers)", "tags": ["general", "container"] },
+      { "id": "eks", "name": "EKS (Managed Kubernetes)", "tags": ["general", "container"] },
+      { "id": "s3", "name": "S3 (Object storage)", "tags": ["general"] },
+      { "id": "rds", "name": "RDS (Managed relational DB)", "tags": ["general"] },
+      { "id": "dynamodb", "name": "DynamoDB (Managed NoSQL)", "tags": ["general"] },
+      { "id": "api-gateway", "name": "API Gateway (HTTP / REST front door)", "tags": ["general"] },
+      { "id": "sqs-sns", "name": "SQS / SNS / EventBridge (Messaging)", "tags": ["general"] },
+      { "id": "cloudwatch", "name": "CloudWatch (Logs / metrics)", "tags": ["general"] },
+      { "id": "iam", "name": "IAM (Identity / access)", "tags": ["general", "security", "architect"] },
+      { "id": "cloudformation-cdk", "name": "CloudFormation / CDK (IaC)", "tags": ["general", "cicd", "architect"] },
+      { "id": "vpc", "name": "VPC (Networking / subnets)", "tags": ["general", "architect"] },
+      { "id": "step-functions", "name": "Step Functions (Workflow orchestration)", "tags": ["general"] },
+      { "id": "landing-zone", "name": "Landing Zone / Control Tower (multi-account)", "tags": ["architect"] },
+      { "id": "organizations", "name": "Organizations / SCPs", "tags": ["architect"] },
+      { "id": "iam-identity-center", "name": "IAM Identity Center (SSO)", "tags": ["architect", "security"] },
+      { "id": "kms", "name": "KMS (Key Management Service)", "tags": ["security"] },
+      { "id": "macie", "name": "Macie (Data classification / DLP)", "tags": ["security"] },
+      { "id": "guardduty", "name": "GuardDuty (Threat detection)", "tags": ["security"] },
+      { "id": "security-hub", "name": "Security Hub (Findings aggregation)", "tags": ["security"] },
+      { "id": "inspector", "name": "Inspector (Vulnerability scanning)", "tags": ["security"] },
+      { "id": "codebuild", "name": "CodeBuild (Managed builds)", "tags": ["cicd"] },
+      { "id": "codepipeline", "name": "CodePipeline (Release orchestration)", "tags": ["cicd"] },
+      { "id": "sagemaker", "name": "SageMaker (ML training / inference)", "tags": ["data-ml"] },
+      { "id": "bedrock", "name": "Bedrock (Managed LLM APIs)", "tags": ["data-ml"] }
     ],
     "suggestedProbes": [
       "Which AWS services have you used in production (not just tutorials)?",
@@ -1995,7 +1965,7 @@
       "Have you debugged a production outage in AWS? Which service was the culprit?",
       "How do you keep AWS costs visible and under control?"
     ],
-    "checklistGuidance": "AWS spans dozens of services. Coverage of core compute + storage + DB + IAM tells you whether they have real production exposure or just touched one corner."
+    "checklistGuidance": "AWS spans dozens of services. Coverage of core compute + storage + DB + IAM tells you whether they have real production exposure or just touched one corner. Round-4: architect-shaped (Landing Zone / Organizations / IAM Identity Center), security-shaped (KMS / Macie / GuardDuty / Security Hub / Inspector), CI/CD-shaped (CodeBuild / CodePipeline), and data-ML-shaped (SageMaker / Bedrock) services added; templates surface different subsets via `serviceTagFilters`."
   },
   {
     "id": "azure",

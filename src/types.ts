@@ -19,6 +19,13 @@ export interface ServiceItem {
   id: string;
   name: string;
   hint?: string;
+  /** Round-4 (Helena/Wendy/Owen "AWS checklist is role-blind"): per-service
+   *  tags so role templates can surface different subsets. Tags include
+   *  `general` / `architect` / `security` / `cicd` / `container` / `data-ml`
+   *  (catalog-defined, no strict enum — extensible). When unset, the service
+   *  is universally visible regardless of template filter (back-compat for
+   *  SQL / Snowflake / GraphQL / etc. that don't need tag-based filtering). */
+  tags?: string[];
 }
 
 export interface Technology {
@@ -186,4 +193,9 @@ export interface AssessmentMeta {
   /** Optional free-text qualifier (e.g. "3 yr break for kids", "ex-teacher",
    *  "ex-Salesforce dev"). Renders after the structured fields. */
   candidateContext: string;
+  /** Round-4 (Helena/Wendy/Owen "AWS role-blind"): id of the role template
+   *  picked on the Landing screen. Lets the TechCard look up the active
+   *  template's `serviceTagFilters` to filter checklist services per role.
+   *  `undefined` for Custom or sessions that pre-date the field. */
+  templateId?: string;
 }
