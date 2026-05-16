@@ -142,16 +142,27 @@ function applyRecency(
     };
   }
 
-  // Soften stale Reds for enterprise-still-used techs. The flag is the
-  // catalog's signal that the tech is still around AND old versions are
-  // defensible (e.g. Spring Boot 2.x, Selenium 3, Cypress 10). Pairs
-  // with the Sarah-returner case: she was current when she left;
-  // softener says "expect ramp-up", not "concern".
-  if (current.color === 'red' && tech.enterpriseStillUsed) {
+  // Soften stale non-Greens for enterprise-still-used techs. The flag is
+  // the catalog's signal that the tech is still around AND old versions
+  // are defensible (e.g. Spring Boot 2.x, Selenium 3, Cypress 10, PG 13).
+  // Round-5 Margarethe surfaced that the pre-fix guard `=== 'red'` skipped
+  // Yellow-tier stale (PG 13 + Java 11), so a Sarah-shape returner with
+  // mixed Red+Yellow legacy got half-soothed. Broadened to `!== 'green'`
+  // so both buckets soften. For Yellow→Yellow the COLOR doesn't change
+  // but the label + sky note carry the returner story to the HM (otherwise
+  // the report reads "currently on PG 13" instead of "PG 13 in 2022").
+  // After the Green-penalty branch above, current.color is narrowed to
+  // 'yellow' | 'red'. Round-5 5α: both buckets soften if the catalog
+  // marks the tech as enterpriseStillUsed (Margarethe's PG 13 Yellow-tier
+  // stale was getting skipped pre-5α and reading as "currently on PG 13").
+  if (tech.enterpriseStillUsed) {
     return {
       color: 'yellow',
-      depthAdjusted: false,
-      scopeCapped: false,
+      // Preserve upstream flags so the scope-cap note can still render
+      // alongside the softener note (both stories are true; both useful).
+      // composeLabel precedence still picks the softener label over scope.
+      depthAdjusted: current.depthAdjusted,
+      scopeCapped: current.scopeCapped,
       recencyAdjusted: true,
       recencyDirection: 'softener',
       recencyNote: `Stale (${yearsLabel}) but was contemporary at last-use — returner shape; expect ramp-up rather than concern.`,
@@ -159,7 +170,7 @@ function applyRecency(
   }
 
   // Stale Reds without the enterprise flag → genuine concern, no softening.
-  // Stale Yellows → no adjustment (already in probe-further state).
+  // Stale Yellows without the enterprise flag → no adjustment (probe further).
   return { ...current, recencyAdjusted: false };
 }
 

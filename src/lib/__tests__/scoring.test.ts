@@ -867,11 +867,33 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
       expect(r.color).toBe('red');
       expect(r.recencyAdjusted).toBeFalsy();
     });
+
+    // Round-5 5α: broadened softener also fires on Yellow-tier stale + flag.
+    // Margarethe's PG 13 + Java 11 → Yellow-tier match → was previously
+    // skipped; now gets the returner softener note even though the COLOR
+    // doesn't change. Label + note carry the returner story.
+    it('Yellow tier + enterpriseStillUsed + stale → returner softener fires (color stays Yellow)', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', lastUsed: '2022' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.recencyNote).toMatch(/contemporary at last-use/);
+      expect(r.recencyNote).toMatch(/returner shape/);
+      // Label reflects the softener story.
+      expect(r.label).toMatch(/softened from Review \/ Probe/);
+    });
   });
 
   describe('no-op cases', () => {
-    it('Yellow tier + stale → stays Yellow (no recency adjustment)', () => {
-      const r = resolveTier(versionTech(), item({ version: '17', lastUsed: '2022' }));
+    // Round-5 Margarethe shipped: Yellow + enterpriseStillUsed + stale now
+    // softens (broader returner-shape support). The no-op variant requires
+    // the enterprise flag to be absent.
+    it('Yellow tier + stale + NO enterpriseStillUsed → no recency adjustment', () => {
+      const tech: Technology = {
+        ...versionTech(),
+        id: 'no-enterprise-yellow',
+        enterpriseStillUsed: false,
+      };
+      const r = resolveTier(tech, item({ techId: 'no-enterprise-yellow', version: '17', lastUsed: '2022' }));
       expect(r.color).toBe('yellow');
       expect(r.recencyAdjusted).toBeFalsy();
     });
@@ -915,15 +937,20 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
   });
 
   describe('interaction with scope cap', () => {
-    it('scope=reviewer caps Green→Yellow first; recency does not double-discount', () => {
+    it('scope=reviewer caps Green→Yellow; post-5α, the softener still fires for Yellow+enterpriseStillUsed (no color double-discount; both notes render)', () => {
+      // Pre-5α: scope cap stopped the recency path because the Red-only
+      // guard skipped Yellow. Post-5α: Yellow + enterpriseStillUsed + stale
+      // fires the softener — color stays Yellow (no double color discount),
+      // but the returner note + scope-cap note both render on the report.
+      // That's correct: scope explains why it's not Green; recency explains
+      // why the older version is defensible. Different signals, both useful.
       const r = resolveTier(
         versionTech(),
         item({ version: '19', depth: 'very-deep', scope: 'reviewer', lastUsed: '2022' })
       );
       expect(r.color).toBe('yellow');
       expect(r.scopeCapped).toBe(true);
-      // Recency saw Yellow (post-cap) — Yellow → no penalty applies.
-      expect(r.recencyAdjusted).toBeFalsy();
+      expect(r.recencyAdjusted).toBe(true);
     });
 
     it('Green tier from depth-lift + stale → recency penalizes back to Yellow', () => {

@@ -104,7 +104,7 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
     fullstack: ['aws', 'docker', 'nodejs', 'postgresql', 'react', 'typescript'],
     frontend: ['nextjs', 'react', 'tailwind', 'typescript', 'vite'],
     backend: ['docker', 'kubernetes', 'nodejs', 'postgresql', 'python', 'redis'],
-    'solution-architect': ['aws', 'kafka', 'kubernetes', 'postgresql', 'terraform'],
+    'solution-architect': ['aws', 'azure', 'kafka', 'kubernetes', 'postgresql', 'terraform'],
     devops: ['argocd', 'docker', 'github-actions', 'helm', 'kubernetes', 'observability', 'terraform'],
     sre: ['aws', 'go', 'helm', 'kubernetes', 'observability', 'python', 'terraform'],
     data: ['airflow', 'databricks', 'dbt', 'kafka', 'postgresql', 'python', 'spark', 'sql'],
@@ -446,9 +446,9 @@ describe('roles.ts — serviceTagFilters integrity (round-4 AWS role-aware)', ()
     expect(offenders).toEqual([]);
   });
 
-  it('Solution Architect surfaces architect + general AWS services', () => {
+  it('Solution Architect surfaces architect + security + general AWS services (round-5 5β added security tag for fin-services SA archetype)', () => {
     const sa = ROLE_TEMPLATES.find(r => r.id === 'solution-architect');
-    expect(sa?.serviceTagFilters?.aws).toEqual(['general', 'architect']);
+    expect(sa?.serviceTagFilters?.aws).toEqual(['general', 'architect', 'security']);
   });
 
   it('Security template surfaces security + general AWS services', () => {
@@ -593,13 +593,14 @@ describe('roles.ts — techScopes integrity (Fix K2)', () => {
     ).toEqual([]);
   });
 
-  it('Solution Architect template sets architect on all preloaded techs (Aaron round-3)', () => {
+  it('Solution Architect template sets architect on all preloaded techs (Aaron round-3 + round-5 5δ added Azure)', () => {
     const sa = ROLE_TEMPLATES.find(r => r.id === 'solution-architect');
     expect(sa, 'SA template missing').toBeDefined();
     expect(sa!.techScopes).toEqual({
       kubernetes: 'architect',
       terraform: 'architect',
       aws: 'architect',
+      azure: 'architect',
       kafka: 'architect',
       postgresql: 'architect',
     });

@@ -57,12 +57,20 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     // defended catalog-side: aws/azure/gcp carry `defaultScope:
     // "operator"` so the scope is explicit on the chip the moment the
     // recruiter adds them — regardless of which template they're under.
+    // Round-5 5γ (Margarethe): serviceTagFilters applies to manually-
+    // added techs too, so 'general' on AWS gives Backend candidates
+    // the standard service set (~10) rather than the full 26.
+    serviceTagFilters: { aws: ['general'] },
   },
   {
     id: 'solution-architect',
     name: 'Solution Architect',
     description: 'Cloud architecture, services, infra.',
-    techIds: ['kubernetes', 'terraform', 'aws', 'kafka', 'postgresql'],
+    // Round-5 5δ: Azure preloaded so Anil's manually-added-mid-call
+    // Azure no longer falls through to cloud catalog `defaultScope:
+    // "operator"` (wrong for an architect candidate). techScope below
+    // applies architect cap consistently with the rest of the stack.
+    techIds: ['kubernetes', 'terraform', 'aws', 'azure', 'kafka', 'postgresql'],
     // SA designs how infra gets used; doesn't operate it day-to-day.
     // Round-3 Aaron session: SA on Terraform/K8s without this cap was
     // identical to a hands-on operator's verdict.
@@ -70,12 +78,15 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
       kubernetes: 'architect',
       terraform: 'architect',
       aws: 'architect',
+      azure: 'architect',
       kafka: 'architect',
       postgresql: 'architect',
     },
     // SA reads the architecture-side of AWS — Landing Zone, Organizations,
-    // IAM Identity Center. Hides CodeBuild/SageMaker noise.
-    serviceTagFilters: { aws: ['general', 'architect'] },
+    // IAM Identity Center, plus the security slice (KMS / Macie /
+    // GuardDuty / Security Hub / Inspector) regulated-industry SAs
+    // routinely design (round-5 Anil). Hides CodeBuild/SageMaker noise.
+    serviceTagFilters: { aws: ['general', 'architect', 'security'] },
     methodologyChips: [
       { id: 'togaf', label: 'TOGAF' },
       { id: 'c4-model', label: 'C4 model' },

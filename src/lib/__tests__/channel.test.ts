@@ -53,9 +53,14 @@ describe('channelLabel — human-readable channel name', () => {
     expect(channelLabel('async')).toBe('Async (CV-only)');
   });
 
-  it('phone and video render as their lowercase id (header context already capitalizes them)', () => {
-    expect(channelLabel('phone')).toBe('phone');
-    expect(channelLabel('video')).toBe('video');
+  // Round-5 5ζ (Anil): phone and video now render capitalized for parity
+  // with async — "Channel: video" lowercase read unfinished to the HM.
+  it('phone renders as "Phone"', () => {
+    expect(channelLabel('phone')).toBe('Phone');
+  });
+
+  it('video renders as "Video panel"', () => {
+    expect(channelLabel('video')).toBe('Video panel');
   });
 });
 

@@ -2879,10 +2879,6 @@
         "name": "Sentry (errors / perf)"
       },
       {
-        "id": "slos",
-        "name": "SLOs / SLIs / error budgets"
-      },
-      {
         "id": "rum",
         "name": "RUM / frontend telemetry"
       }

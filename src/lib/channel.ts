@@ -54,9 +54,19 @@ export function notDiscussedCopy(channel: Channel): {
   }
 }
 
-/** Human-readable channel name for the report header chip. */
+/** Human-readable channel name for the report header chip.
+ *  Round-5 5ζ (Anil): phone/video used to render lowercase ("Channel: video")
+ *  which reads unfinished. Now capitalized consistently with async. */
 export function channelLabel(channel: Channel): string {
-  return channel === 'async' ? 'Async (CV-only)' : channel;
+  switch (channel) {
+    case 'async':
+      return 'Async (CV-only)';
+    case 'video':
+      return 'Video panel';
+    case 'phone':
+    default:
+      return 'Phone';
+  }
 }
 
 /**
