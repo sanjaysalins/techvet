@@ -35,6 +35,12 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'Backend Engineer',
     description: 'API and services specialist.',
     techIds: ['nodejs', 'python', 'postgresql', 'redis', 'docker', 'kubernetes'],
+    // Backend template doesn't preload aws/azure/gcp (recruiter adds
+    // them manually mid-call) so a per-template techScopes map can't
+    // reach them. The Eitan/Owen SE→dev AWS-over-rate failure is
+    // defended catalog-side: aws/azure/gcp carry `defaultScope:
+    // "operator"` so the scope is explicit on the chip the moment the
+    // recruiter adds them — regardless of which template they're under.
   },
   {
     id: 'solution-architect',

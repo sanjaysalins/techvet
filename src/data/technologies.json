@@ -1928,6 +1928,7 @@
     "id": "aws",
     "name": "AWS (Amazon Web Services)",
     "category": "Cloud",
+    "defaultScope": "operator",
     "vetMode": "checklist",
     "services": [
       {
@@ -2000,6 +2001,7 @@
     "id": "azure",
     "name": "Microsoft Azure",
     "category": "Cloud",
+    "defaultScope": "operator",
     "vetMode": "checklist",
     "services": [
       {
@@ -2068,6 +2070,7 @@
     "id": "gcp",
     "name": "Google Cloud Platform (GCP)",
     "category": "Cloud",
+    "defaultScope": "operator",
     "vetMode": "checklist",
     "services": [
       {

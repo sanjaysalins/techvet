@@ -339,6 +339,30 @@ describe('technologies.json — Security catalog (Fix U)', () => {
 });
 
 /**
+ * Round-4 Owen session (post-Bug-4 + Backend-template-techScopes batch):
+ * cloud-provider catalog entries (AWS / Azure / GCP) must carry
+ * `defaultScope: "operator"`. Without this the Eitan/Owen SE→dev
+ * internal-transfer shape can name-drop 10 AWS services from non-
+ * operator context and the chip stays "Not specified" instead of
+ * making the operator claim explicit. Per-template techScopes can't
+ * close this (Backend doesn't preload aws/azure/gcp), so the catalog
+ * entry IS the defense.
+ */
+describe('technologies.json — Cloud providers carry defaultScope=operator', () => {
+  it('every Cloud category tech has defaultScope set to "operator"', () => {
+    const cloud = TECHS.filter(t => t.category === 'Cloud');
+    expect(cloud.length, 'Cloud category empty').toBeGreaterThan(0);
+    const missing = cloud
+      .filter(t => t.defaultScope !== 'operator')
+      .map(t => `${t.id} (defaultScope=${t.defaultScope ?? 'undefined'})`);
+    expect(
+      missing,
+      'Cloud providers without defaultScope=operator silently fail the Eitan/Owen SE-rattle guard — make the operator claim explicit on the chip'
+    ).toEqual([]);
+  });
+});
+
+/**
  * Regression test for Fix K (round-2 cross-cut): AI/ML libraries all carry
  * `defaultScope: "author"` so the scope axis fires on phone calls where
  * the recruiter doesn't reach the dropdown. Without this default, every
