@@ -111,7 +111,15 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
     'data-scientist': ['databricks', 'jupyter', 'numpy', 'pandas', 'python', 'scikit-learn', 'sql'],
     'ai-ml': ['aws', 'docker', 'fastapi', 'huggingface-transformers', 'llm-api-sdk', 'pytorch', 'python', 'vector-db'],
     mobile: ['expo', 'flutter', 'kotlin', 'react-native', 'swift'],
-    security: ['aws', 'docker', 'kubernetes', 'oauth-identity', 'observability', 'python', 'sql', 'terraform'],
+    security: [
+      // Fix U (round-4): Security template now preloads actual security
+      // tools alongside the infra reviewer-cap stack. If a future agent
+      // removes any, update this snapshot AND the Security catalog audit
+      // test below.
+      'aws', 'burp-suite', 'docker', 'falco', 'kubernetes', 'oauth-identity',
+      'observability', 'owasp-zap', 'python', 'semgrep', 'snyk', 'sql',
+      'terraform', 'trivy', 'vault',
+    ],
     qa: ['cypress', 'github-actions', 'playwright', 'pytest', 'python', 'selenium', 'typescript', 'vitest'],
     custom: [],
   };
@@ -285,6 +293,48 @@ describe('technologies.json — no single-tier `min: "0"` rubber-stamps (Fix J)'
     expect(serviceIds.has('rag-retrieval')).toBe(true);
     expect(serviceIds.has('tool-use')).toBe(true);
     expect(serviceIds.has('evals-langsmith')).toBe(true);
+  });
+});
+
+/**
+ * Fix U (round-4 cross-cut, Wendy AppSec validation): Security catalog
+ * overhaul. Pre-Fix-U the Security template was "back-end engineer with
+ * OAuth probes wearing a security-template badge" — zero actual security
+ * tools. Now 7 first-class checklist entries cover the most-named tools
+ * from rounds 1, 3, and 4 (Diego/Tomi/Wendy).
+ *
+ * This test fails loudly if any of the 7 is removed without a deliberate
+ * decision; same shape as the Fix J / Fix O integrity guards.
+ */
+describe('technologies.json — Security catalog (Fix U)', () => {
+  const SECURITY_TECHS = ['vault', 'burp-suite', 'semgrep', 'trivy', 'snyk', 'owasp-zap', 'falco'];
+
+  it('every Security catalog entry exists and is checklist-mode', () => {
+    for (const id of SECURITY_TECHS) {
+      const t = TECH_BY_ID.get(id);
+      expect(t, `${id} missing from catalog (Fix U regression)`).toBeDefined();
+      expect(t!.category, `${id} not in Security category`).toBe('Security');
+      expect(t!.vetMode, `${id} should be checklist-mode`).toBe('checklist');
+      expect(
+        (t!.services ?? []).length,
+        `${id} should have ≥8 curated services to separate name-dropped from operated`
+      ).toBeGreaterThanOrEqual(8);
+    }
+  });
+
+  it('Vault has the load-bearing service slice (Wendy round-4 case)', () => {
+    const v = TECH_BY_ID.get('vault');
+    expect(v).toBeDefined();
+    const serviceIds = new Set((v!.services ?? []).map(s => s.id));
+    expect(serviceIds.has('kv-secrets')).toBe(true);
+    expect(serviceIds.has('dynamic-secrets')).toBe(true);
+    expect(serviceIds.has('pki-ca')).toBe(true);
+    expect(serviceIds.has('audit-siem')).toBe(true);
+  });
+
+  it('Security category appears in the catalog with ≥7 entries', () => {
+    const sec = TECHS.filter(t => t.category === 'Security');
+    expect(sec.length).toBeGreaterThanOrEqual(7);
   });
 });
 

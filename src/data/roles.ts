@@ -101,18 +101,32 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'security',
     name: 'Security Engineer (AppSec)',
     description: 'Application and cloud security.',
-    techIds: ['python', 'oauth-identity', 'aws', 'kubernetes', 'docker', 'terraform', 'sql', 'observability'],
+    // Fix U (round-4 cross-cut): Security template now preloads actual
+    // security tools — Vault / Burp / Semgrep / Trivy / Snyk / ZAP / Falco
+    // — alongside the infra reviewer-cap stack. Round-4 Wendy: pre-Fix-U
+    // the template was "back-end engineer with OAuth probes wearing a
+    // security-template badge."
+    techIds: [
+      // Security tools (new — Fix U)
+      'vault', 'burp-suite', 'semgrep', 'trivy', 'snyk', 'owasp-zap', 'falco',
+      // Infra (existing — AppSec reviews these for security posture)
+      'aws', 'kubernetes', 'docker', 'terraform', 'observability',
+      // Code + auth + data (existing — AppSec operates these)
+      'python', 'oauth-identity', 'sql',
+    ],
     // AppSec reviews infra for security posture; doesn't run it.
     // Round-3 Tomi session: lead AppSec at a bank, infra knowledge is
     // reviewer-shaped (threat-models, audits, IR) not operator-shaped.
-    // Python stays operator-implied — AppSec engineers write Python tools.
+    // Python / SQL / OAuth / security-tools stay operator-implied —
+    // AppSec engineers actually run these tools daily.
     techScopes: {
       aws: 'reviewer',
       kubernetes: 'reviewer',
       docker: 'reviewer',
       terraform: 'reviewer',
       observability: 'reviewer',
-      // python/oauth-identity/sql: operator-implied (default)
+      // vault/burp-suite/semgrep/trivy/snyk/owasp-zap/falco: operator-implied
+      // python/oauth-identity/sql: operator-implied
     },
   },
   {

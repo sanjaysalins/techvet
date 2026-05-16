@@ -4064,5 +4064,180 @@
       "Hono vs Express vs Fastify — what tipped the choice?"
     ],
     "guidanceForUnknownVersion": "Yellow — ask which deployment target they shipped to."
+  },
+  {
+    "id": "vault",
+    "name": "HashiCorp Vault",
+    "category": "Security",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "kv-secrets", "name": "KV secret engines (v1/v2) + leases" },
+      { "id": "dynamic-secrets", "name": "Dynamic secrets (DB / AWS / cloud creds)" },
+      { "id": "pki-ca", "name": "PKI / certificate authority" },
+      { "id": "transit", "name": "Transit / encryption-as-a-service" },
+      { "id": "auto-unseal", "name": "Auto-unseal (KMS / Cloud HSM)" },
+      { "id": "audit-siem", "name": "Audit logs / SIEM integration" },
+      { "id": "namespaces", "name": "Namespaces / multi-tenancy" },
+      { "id": "vault-agent", "name": "Vault Agent / sidecar injector" },
+      { "id": "policies-hcl", "name": "Policies / ACL (HCL)" },
+      { "id": "replication-dr", "name": "Replication (DR / performance)" }
+    ],
+    "suggestedProbes": [
+      "Which secret engines do you run in prod, and at what request volume?",
+      "Walk me through your auto-unseal + DR/replication topology.",
+      "How are policies authored and reviewed?",
+      "Vault Agent injector vs the sidecar pattern — what tipped your choice?"
+    ],
+    "checklistGuidance": "Secrets management at scale. KV + policies are baseline; dynamic secrets + PKI + auto-unseal + replication separate prod operators from devs-who-write-to-Vault."
+  },
+  {
+    "id": "burp-suite",
+    "name": "Burp Suite",
+    "category": "Security",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "proxy-intercept", "name": "Proxy & manual interception" },
+      { "id": "repeater", "name": "Repeater — manual request crafting" },
+      { "id": "intruder", "name": "Intruder — parametric / brute-force attacks" },
+      { "id": "scanner", "name": "Scanner — active + passive automated scan (Pro)" },
+      { "id": "collaborator", "name": "Collaborator — out-of-band detection" },
+      { "id": "extensions-bapp", "name": "Extensions / BApp store / custom plugins" },
+      { "id": "macros-sessions", "name": "Macros & session-handling rules" },
+      { "id": "ci-enterprise", "name": "CI integration (Burp Suite Enterprise)" },
+      { "id": "websocket", "name": "WebSocket testing" },
+      { "id": "authz-bypass", "name": "Authorization / auth-bypass workflows" }
+    ],
+    "suggestedProbes": [
+      "Repeater + Intruder daily vs occasional?",
+      "Have you authored a BApp / custom extension?",
+      "How do you handle SPAs + WebSocket apps in Burp?",
+      "Burp Suite Enterprise + CI — your team running it?"
+    ],
+    "checklistGuidance": "Proxy + Repeater are table-stakes; Intruder + Collaborator + custom extensions + Enterprise/CI usage separate fluency from familiarity."
+  },
+  {
+    "id": "semgrep",
+    "name": "Semgrep",
+    "category": "Security",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "custom-rules", "name": "Custom rule authoring" },
+      { "id": "ci-integration", "name": "CI/CD integration (PR gating)" },
+      { "id": "semgrep-cloud", "name": "Semgrep Cloud / app management" },
+      { "id": "taint-mode", "name": "Taint mode (source → sink dataflow)" },
+      { "id": "autofix", "name": "Auto-fix suggestions / PR comments" },
+      { "id": "pre-commit", "name": "Pre-commit hooks" },
+      { "id": "diff-baseline", "name": "SAST baseline + diff-aware scans" },
+      { "id": "secrets-scan", "name": "Secrets scanning" },
+      { "id": "sca-supply-chain", "name": "Supply-chain (SCA) checks" },
+      { "id": "policy-as-code", "name": "Policy as code / rulepacks" }
+    ],
+    "suggestedProbes": [
+      "Have you written custom Semgrep rules for your codebase?",
+      "Taint mode — where have you used it?",
+      "How do you handle baseline + diff to keep PR noise low?",
+      "Semgrep Cloud vs self-hosted — which and why?"
+    ],
+    "checklistGuidance": "CI integration is baseline; custom rules + taint mode + diff-aware scans separate operators from people who installed the GitHub Action."
+  },
+  {
+    "id": "trivy",
+    "name": "Trivy",
+    "category": "Security",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "container-scan", "name": "Container image scan" },
+      { "id": "iac-scan", "name": "IaC scan (Terraform / K8s manifests / Dockerfile)" },
+      { "id": "sbom", "name": "SBOM generation (SPDX / CycloneDX)" },
+      { "id": "secrets-detect", "name": "Secrets detection" },
+      { "id": "license-compliance", "name": "License compliance" },
+      { "id": "custom-policies", "name": "Custom checks / OPA Rego policies" },
+      { "id": "ci-integration", "name": "CI/CD integration" },
+      { "id": "air-gapped", "name": "Air-gapped DB updates" },
+      { "id": "filesystem-scan", "name": "Filesystem / repo scanning" },
+      { "id": "k8s-scan", "name": "Kubernetes cluster scanning" }
+    ],
+    "suggestedProbes": [
+      "Image scan + IaC scan both in CI?",
+      "Have you authored custom Rego policies?",
+      "SBOM — generating, consuming, or both?",
+      "How do you handle air-gapped DB updates?"
+    ],
+    "checklistGuidance": "Container scan is baseline; IaC + custom policies + SBOM + air-gapped operation separate end-to-end ownership from CLI-against-images."
+  },
+  {
+    "id": "snyk",
+    "name": "Snyk",
+    "category": "Security",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "open-source-sca", "name": "Snyk Open Source (SCA)" },
+      { "id": "code-sast", "name": "Snyk Code (SAST)" },
+      { "id": "container-scan", "name": "Snyk Container" },
+      { "id": "iac-scan", "name": "Snyk IaC" },
+      { "id": "license-mgmt", "name": "License management & policies" },
+      { "id": "ide-integration", "name": "IDE integration (VS Code / IntelliJ)" },
+      { "id": "cli-usage", "name": "Snyk CLI in CI" },
+      { "id": "broker", "name": "Snyk Broker (private repo proxy)" },
+      { "id": "pr-checks", "name": "PR checks / SCM integration" },
+      { "id": "reports-dashboards", "name": "Reports / dashboards / org governance" }
+    ],
+    "suggestedProbes": [
+      "Which of the four products do you run — Open Source, Code, Container, IaC?",
+      "Broker — running it for private repos?",
+      "How are findings triaged and assigned across teams?",
+      "Snyk vs alternatives — what tipped the choice?"
+    ],
+    "checklistGuidance": "Open Source + IDE/CLI is baseline; Code (SAST) + Container + IaC + Broker + org governance separate developer-tool usage from platform-owner usage."
+  },
+  {
+    "id": "owasp-zap",
+    "name": "OWASP ZAP",
+    "category": "Security",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "active-scan", "name": "Active scan" },
+      { "id": "passive-scan", "name": "Passive scan" },
+      { "id": "spider-crawl", "name": "Spider / crawler" },
+      { "id": "auth-scripts", "name": "Authentication scripts" },
+      { "id": "api-scan", "name": "API scanning (OpenAPI / Swagger / GraphQL)" },
+      { "id": "automation-framework", "name": "Automation Framework (YAML plans)" },
+      { "id": "ci-zap-cli", "name": "CI/CD integration (zap-cli / Docker)" },
+      { "id": "custom-scripts", "name": "Custom rules / scripts" },
+      { "id": "fuzzing", "name": "Fuzzing" },
+      { "id": "reports", "name": "Reports — customization & SARIF" }
+    ],
+    "suggestedProbes": [
+      "ZAP in CI — Automation Framework or zap-cli?",
+      "How do you handle auth scripts for SPAs?",
+      "API scanning — OpenAPI imports or GraphQL?",
+      "ZAP vs Burp — when do you reach for which?"
+    ],
+    "checklistGuidance": "Active + passive scan are baseline; Automation Framework + auth scripts + API scanning + custom scripts separate CI-integrated operators from GUI tinkerers."
+  },
+  {
+    "id": "falco",
+    "name": "Falco",
+    "category": "Security",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "runtime-rules", "name": "Runtime threat detection rules" },
+      { "id": "custom-rules", "name": "Custom rule authoring" },
+      { "id": "k8s-audit", "name": "Kubernetes audit log integration" },
+      { "id": "plugin-ecosystem", "name": "Plugin ecosystem (k8s_audit / cloudtrail / etc.)" },
+      { "id": "alerting", "name": "Alerting (Slack / PagerDuty / SIEM)" },
+      { "id": "sandboxed-runtimes", "name": "gVisor / sandboxed runtime support" },
+      { "id": "falcosidekick", "name": "Falcosidekick + response engine" },
+      { "id": "drift-detection", "name": "Container drift detection" },
+      { "id": "multi-tenant", "name": "Multi-tenant deployment patterns" },
+      { "id": "ueba-context", "name": "UEBA / contextual enrichment" }
+    ],
+    "suggestedProbes": [
+      "Custom rules in prod — how many, and how are they versioned?",
+      "K8s audit log feed — are you forwarding it to Falco?",
+      "Falcosidekick — alerting routing or response actions?",
+      "How do you tune false-positives at scale?"
+    ],
+    "checklistGuidance": "Default rules + alerting is baseline; custom rule authoring + plugin ecosystem + audit-log integration + Falcosidekick separate operators from people who installed the helm chart."
   }
 ]
