@@ -463,6 +463,84 @@ describe('roles.ts — serviceTagFilters integrity (round-4 AWS role-aware)', ()
 });
 
 /**
+ * Fix D4 (round-1+3+4): methodology chip catalogs per template. Required
+ * for templates whose round-1/3/4 sessions explicitly named the gap.
+ * Free-text fallback covers the long tail.
+ */
+describe('roles.ts — methodology chip catalogs (Fix D4)', () => {
+  // Templates that MUST have methodology chips per round 1/3/4 evidence.
+  // (Backend / Full-Stack / Frontend / Mobile / Custom get the free-text
+  // input only — methodology surface is less role-defining there.)
+  const REQUIRED_CHIP_TEMPLATES = [
+    'solution-architect',
+    'devops',
+    'sre',
+    'data',
+    'data-scientist',
+    'ai-ml',
+    'security',
+    'qa',
+  ];
+
+  it('every required template carries methodologyChips with ≥4 entries', () => {
+    for (const id of REQUIRED_CHIP_TEMPLATES) {
+      const role = ROLE_TEMPLATES.find(r => r.id === id);
+      expect(role, `${id} template missing`).toBeDefined();
+      const chips = role!.methodologyChips ?? [];
+      expect(
+        chips.length,
+        `${id} template needs ≥4 methodology chips (round-1+3+4 evidence: senior IC differentiation lives in methodology)`
+      ).toBeGreaterThanOrEqual(4);
+    }
+  });
+
+  it('methodology chip ids are unique within a template', () => {
+    for (const role of ROLE_TEMPLATES) {
+      if (!role.methodologyChips) continue;
+      const ids = role.methodologyChips.map(c => c.id);
+      const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+      expect(dupes, `${role.id} methodology chip id collisions`).toEqual([]);
+    }
+  });
+
+  it('methodology chip ids are stable slugs (no spaces; lowercase + hyphens only)', () => {
+    const slugRe = /^[a-z0-9-]+$/;
+    const offenders: string[] = [];
+    for (const role of ROLE_TEMPLATES) {
+      for (const chip of role.methodologyChips ?? []) {
+        if (!slugRe.test(chip.id)) {
+          offenders.push(`${role.id}: chip id "${chip.id}" must be lowercase + hyphens (stable id)`);
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it('Data Scientist surfaces causal-inference + Bayesian (Yara/Marisol canonical case)', () => {
+    const ds = ROLE_TEMPLATES.find(r => r.id === 'data-scientist');
+    const ids = new Set((ds?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('causal-inference')).toBe(true);
+    expect(ids.has('bayesian-inference')).toBe(true);
+    expect(ids.has('ab-testing')).toBe(true);
+  });
+
+  it('SRE surfaces SLOs + error budgets (Robin/Cara canonical case)', () => {
+    const sre = ROLE_TEMPLATES.find(r => r.id === 'sre');
+    const ids = new Set((sre?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('slos-slis')).toBe(true);
+    expect(ids.has('error-budgets')).toBe(true);
+  });
+
+  it('Security surfaces STRIDE + OWASP + SLSA (Tomi/Wendy canonical case)', () => {
+    const sec = ROLE_TEMPLATES.find(r => r.id === 'security');
+    const ids = new Set((sec?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('stride-threat-modeling')).toBe(true);
+    expect(ids.has('owasp-top-10')).toBe(true);
+    expect(ids.has('slsa-supply-chain')).toBe(true);
+  });
+});
+
+/**
  * Regression test for Fix K (round-2 cross-cut): AI/ML libraries all carry
  * `defaultScope: "author"` so the scope axis fires on phone calls where
  * the recruiter doesn't reach the dropdown. Without this default, every

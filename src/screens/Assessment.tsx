@@ -1,7 +1,8 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import technologiesData from '../data/technologies.json';
+import { ROLE_TEMPLATES } from '../data/roles';
 import type { Channel, PathType, Seniority, Technology } from '../types';
 import {
   seniorityLabel,
@@ -243,6 +244,8 @@ export default function Assessment() {
         </div>
       </div>
 
+      <MethodologySection />
+
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         {/* Main column */}
         <div className="space-y-6">
@@ -368,6 +371,114 @@ export default function Assessment() {
           </div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Fix D4 (round-1+3+4): methodology + practice capture. Mei round 1:
+ * "TechVet scores tools, not skills — and senior ICs are differentiated
+ * by skills." Yara round 3, Marisol round 4: senior DS/SA/SRE candidates
+ * are differentiated by methodology (DiD/SLOs/STRIDE/DDD/etc.), and the
+ * tool had nowhere to put it. v1 capture-only on Assessment; display-only
+ * on Summary. No scoring impact.
+ */
+function MethodologySection() {
+  const { meta, addMethodology, removeMethodology } = useAssessment();
+  const [freeText, setFreeText] = useState('');
+
+  const template = meta.templateId
+    ? ROLE_TEMPLATES.find(r => r.id === meta.templateId)
+    : null;
+  const chips = template?.methodologyChips ?? [];
+  const addedIds = new Set(meta.methodologyEntries.map(e => e.id));
+  const availableChips = chips.filter(c => !addedIds.has(c.id));
+
+  function addFreeText() {
+    const trimmed = freeText.trim();
+    if (!trimmed) return;
+    // Stable id from slug — recruiter typing the same thing twice dedups.
+    const slug = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 60);
+    addMethodology(`free:${slug}`, trimmed);
+    setFreeText('');
+  }
+
+  // Hide entirely if no template chips AND no entries yet (Custom + nothing
+  // typed): keeps the Assessment screen clean for the no-methodology case.
+  if (chips.length === 0 && meta.methodologyEntries.length === 0) return null;
+
+  return (
+    <div className="card p-5 mb-6">
+      <div className="flex items-start gap-2 mb-3">
+        <div className="flex-1">
+          <h2 className="text-sm font-semibold text-navy-900 dark:text-white">
+            Methodology + practices
+            <span className="ml-1.5 font-normal text-slate-400 dark:text-slate-500">
+              — what the candidate brought up beyond tools (no verdict, surfaces on report)
+            </span>
+          </h2>
+        </div>
+      </div>
+      {availableChips.length > 0 && (
+        <div className="mb-3">
+          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+            Suggested for {template?.name} — click to add:
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {availableChips.map(chip => (
+              <button
+                key={chip.id}
+                onClick={() => addMethodology(chip.id, chip.label)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-navy-700 hover:border-brand hover:text-brand text-sm transition"
+              >
+                + {chip.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="mb-3 flex gap-2">
+        <input
+          type="text"
+          value={freeText}
+          onChange={e => setFreeText(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addFreeText(); } }}
+          placeholder="Type a methodology and press Enter — e.g. EventStorming, OKR rituals, capability mapping"
+          className="input flex-1"
+        />
+        <button
+          type="button"
+          onClick={addFreeText}
+          disabled={!freeText.trim()}
+          className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Add
+        </button>
+      </div>
+      {meta.methodologyEntries.length > 0 && (
+        <div>
+          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+            Added ({meta.methodologyEntries.length}):
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {meta.methodologyEntries.map(entry => (
+              <span
+                key={entry.id}
+                className="inline-flex items-center gap-1 pl-2.5 pr-1 py-1 rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700 text-sm"
+              >
+                {entry.label}
+                <button
+                  onClick={() => removeMethodology(entry.id)}
+                  className="p-0.5 hover:bg-emerald-100 dark:hover:bg-emerald-800/30 rounded"
+                  aria-label={`Remove ${entry.label}`}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

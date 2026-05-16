@@ -138,6 +138,32 @@ export interface NamedOnlyEntry {
   lastUsed?: string;
 }
 
+/** Fix D4 (round-1+3+4): methodology / practice the candidate brought up.
+ *  Round-1 Mei: "TechVet scores tools, not skills — and senior ICs are
+ *  differentiated by skills." Round-3 Yara + round-4 Marisol confirmed it
+ *  open. DS / SA / SRE / Security candidates are differentiated by
+ *  *methodology* (DiD / SLOs / STRIDE / DDD / etc.), not tools alone.
+ *
+ *  Display-only in v1 — no scoring impact. Renders on Summary as a
+ *  "senior signal" section the hiring manager reads.
+ *
+ *  Chip = curated catalog suggestion shown by the active template.
+ *  Entry = an instance the recruiter actually added (could be from a
+ *  chip or free-text). Stable `id` (catalog id or `free:slug`) +
+ *  display label. Optional depth/notes for the post-call enrichment
+ *  pattern (deferred to a follow-up; v1 captures id + label only). */
+export interface MethodologyChip {
+  id: string;
+  label: string;
+}
+
+export interface MethodologyEntry {
+  id: string;
+  label: string;
+  depth?: Depth;
+  notes?: string;
+}
+
 /** Fix Q (round-3 cross-cut): channel the screening is happening on.
  *  Drives per-channel empty-field semantics on the Summary report —
  *  "blank version" means "ran out of time" on phone/video but "CV is
@@ -198,4 +224,8 @@ export interface AssessmentMeta {
    *  template's `serviceTagFilters` to filter checklist services per role.
    *  `undefined` for Custom or sessions that pre-date the field. */
   templateId?: string;
+  /** Fix D4: methodology / practice the candidate brought up. Captured
+   *  via per-template chip suggestions + free-text. Display-only in v1
+   *  (no scoring impact). */
+  methodologyEntries: MethodologyEntry[];
 }

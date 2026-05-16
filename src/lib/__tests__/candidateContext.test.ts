@@ -14,6 +14,7 @@ const baseMeta: AssessmentMeta = {
   yearsInIndustry: '',
   pathType: 'unspecified',
   candidateContext: '',
+  methodologyEntries: [],
 };
 
 /**

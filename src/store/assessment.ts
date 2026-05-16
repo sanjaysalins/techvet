@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { AssessmentItem, AssessmentMeta, Depth, NamedOnlyEntry, Scope } from '../types';
+import type { AssessmentItem, AssessmentMeta, Depth, MethodologyEntry, NamedOnlyEntry, Scope } from '../types';
 
 interface AssessmentState {
   meta: AssessmentMeta;
@@ -25,6 +25,10 @@ interface AssessmentState {
    *  name (case-sensitive — the user just clicked the existing row). */
   updateNamedOnly: (name: string, patch: Partial<Omit<NamedOnlyEntry, 'name'>>) => void;
   removeNamedOnly: (name: string) => void;
+  /** Fix D4: methodology / practice the candidate brought up. Dedupes
+   *  by id (catalog-id or `free:slug`). Display-only — no scoring. */
+  addMethodology: (id: string, label: string) => void;
+  removeMethodology: (id: string) => void;
   setFocused: (techId: string | null) => void;
   reset: () => void;
   loadDraft: () => boolean;
@@ -50,6 +54,7 @@ const emptyMeta: AssessmentMeta = {
   pathType: 'unspecified',
   candidateContext: '',
   templateId: undefined,
+  methodologyEntries: [],
 };
 
 const DRAFT_KEY = 'techvet-draft';
@@ -131,6 +136,31 @@ export const useAssessment = create<AssessmentState>()(
             ...state.meta,
             namedNotInCatalog: (state.meta.namedNotInCatalog ?? []).filter(
               e => e.name !== name
+            ),
+          },
+        })),
+
+      addMethodology: (id, label) =>
+        set(state => {
+          const trimmedLabel = label.trim().slice(0, 120);
+          if (!id || !trimmedLabel) return state;
+          const existing = state.meta.methodologyEntries ?? [];
+          if (existing.some(e => e.id === id)) return state;
+          const newEntry: MethodologyEntry = { id, label: trimmedLabel };
+          return {
+            meta: {
+              ...state.meta,
+              methodologyEntries: [...existing, newEntry],
+            },
+          };
+        }),
+
+      removeMethodology: id =>
+        set(state => ({
+          meta: {
+            ...state.meta,
+            methodologyEntries: (state.meta.methodologyEntries ?? []).filter(
+              e => e.id !== id
             ),
           },
         })),

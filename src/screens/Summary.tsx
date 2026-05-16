@@ -15,7 +15,7 @@ import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
 import { notDiscussedCopy, channelLabel, confirmedNotInStackCopy } from '../lib/channel';
 import { formatCandidateContext } from '../lib/candidateContext';
-import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders, MessageSquarePlus, X } from 'lucide-react';
+import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders, MessageSquarePlus, X, Lightbulb } from 'lucide-react';
 
 const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
 
@@ -316,6 +316,39 @@ export default function Summary() {
             items={buckets.red}
             color="red"
           />
+        )}
+
+        {/* Methodology + practices (Fix D4, round-1+3+4). Display-only:
+            senior signal the hiring manager reads. No verdict; capture is
+            on Assessment. Empty → section hidden. */}
+        {meta.methodologyEntries.length > 0 && (
+          <section className="mb-6">
+            <div className="mb-3 flex items-start gap-2">
+              <Lightbulb className="w-5 h-5 text-emerald-700 mt-0.5 flex-shrink-0" />
+              <div>
+                <h2 className="text-lg font-semibold text-navy-900">
+                  Methodology + practices ({meta.methodologyEntries.length})
+                </h2>
+                <p className="text-sm text-slate-600">
+                  Skills and practices the candidate brought up beyond the
+                  tool stack. <strong>No verdict</strong> — senior signal
+                  the hiring manager reads as context. Round-1 Mei:
+                  &ldquo;senior ICs are differentiated by skills, not
+                  tools.&rdquo;
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {meta.methodologyEntries.map(entry => (
+                <span
+                  key={entry.id}
+                  className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-sm font-medium"
+                >
+                  {entry.label}
+                </span>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Candidate mentioned — out of catalog (Fix C, round-3).
