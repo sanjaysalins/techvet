@@ -88,3 +88,4 @@ simulations/
 | 2026-05-15 | Mid/senior structured screens (ad-hoc, pre-pipeline) | 12 | In `RESUME.md` |
 | 2026-05-16 | Phone screening — diverse seniority | 10 | `rounds/2026-05-16-phone-screening/cross-cut.md` |
 | 2026-05-16 | Multi-channel × underrepresented roles + specialist extremes + non-traditional paths | 10 | `rounds/2026-05-16-multichannel-round-3/cross-cut.md` |
+| 2026-05-16 | Round 4 validation (targeted, 6 sessions, validates K/K2/Q/C/M shipped same day) | 6 | `rounds/2026-05-16-round-4-validation/cross-cut.md` |
