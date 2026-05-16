@@ -110,7 +110,9 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
     data: ['airflow', 'databricks', 'dbt', 'kafka', 'postgresql', 'python', 'spark', 'sql'],
     'data-scientist': ['databricks', 'jupyter', 'numpy', 'pandas', 'python', 'scikit-learn', 'sql'],
     'ai-ml': ['aws', 'docker', 'fastapi', 'huggingface-transformers', 'llm-api-sdk', 'pytorch', 'python', 'vector-db'],
-    mobile: ['expo', 'flutter', 'kotlin', 'react-native', 'swift'],
+    // Round-6 6F (Priya): Compose + SwiftUI promoted to checklist-mode
+    // catalog entries and added to Mobile template preload.
+    mobile: ['expo', 'flutter', 'jetpack-compose', 'kotlin', 'react-native', 'swift', 'swiftui'],
     security: [
       // Fix U (round-4): Security template now preloads actual security
       // tools alongside the infra reviewer-cap stack. If a future agent
@@ -121,6 +123,9 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
       'terraform', 'trivy', 'vault',
     ],
     qa: ['cypress', 'github-actions', 'playwright', 'pytest', 'python', 'selenium', 'typescript', 'vitest'],
+    // Round-6 6F (Owen): new DBA template; preloads the SQL + Oracle
+    // + Postgres + MySQL stack.
+    'database-dba': ['mysql', 'oracle-db', 'plsql', 'postgresql', 'sql'],
     custom: [],
   };
 
@@ -658,5 +663,76 @@ describe('roles.ts — techScopes integrity (Fix K2)', () => {
         `${id} template now has techScopes — if intentional, remove from this guard`
       ).toBeUndefined();
     }
+  });
+});
+
+/**
+ * Round-6 6F: catalog + template refresh closing Owen (DBA) and Priya
+ * (Mobile) gaps. Pin the new catalog entries and template additions so
+ * a future agent who renames or drops them has to update this guard
+ * intentionally.
+ */
+describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
+  it('Oracle Database catalog entry exists and is checklist-mode with ≥10 services', () => {
+    const t = TECH_BY_ID.get('oracle-db');
+    expect(t, 'oracle-db missing — DBA template would lose its anchor tech').toBeDefined();
+    expect(t!.vetMode).toBe('checklist');
+    expect(t!.services?.length ?? 0).toBeGreaterThanOrEqual(10);
+    // Load-bearing services for an Oracle DBA — RMAN + Data Guard + RAC
+    // are the canonical "you operate this in prod" signal cluster.
+    const ids = new Set((t!.services ?? []).map(s => s.id));
+    expect(ids.has('rman-backup')).toBe(true);
+    expect(ids.has('data-guard-ha')).toBe(true);
+    expect(ids.has('rac-clustering')).toBe(true);
+    expect(t!.enterpriseStillUsed).toBe(true);
+  });
+
+  it('PL/SQL catalog entry exists and is checklist-mode with ≥8 services', () => {
+    const t = TECH_BY_ID.get('plsql');
+    expect(t, 'plsql missing').toBeDefined();
+    expect(t!.vetMode).toBe('checklist');
+    expect(t!.services?.length ?? 0).toBeGreaterThanOrEqual(8);
+    expect(t!.category).toBe('Language');
+  });
+
+  it('Jetpack Compose catalog entry exists and is checklist-mode with ≥10 services', () => {
+    const t = TECH_BY_ID.get('jetpack-compose');
+    expect(t, 'jetpack-compose missing — Mobile template would lose its modern Android anchor').toBeDefined();
+    expect(t!.vetMode).toBe('checklist');
+    expect(t!.services?.length ?? 0).toBeGreaterThanOrEqual(10);
+    expect(t!.category).toBe('Mobile');
+  });
+
+  it('SwiftUI catalog entry exists and is checklist-mode with ≥8 services', () => {
+    const t = TECH_BY_ID.get('swiftui');
+    expect(t, 'swiftui missing').toBeDefined();
+    expect(t!.vetMode).toBe('checklist');
+    expect(t!.services?.length ?? 0).toBeGreaterThanOrEqual(8);
+    expect(t!.category).toBe('Mobile');
+  });
+
+  it('Mobile template preloads Jetpack Compose AND SwiftUI', () => {
+    const mobile = ROLE_TEMPLATES.find(r => r.id === 'mobile');
+    expect(mobile?.techIds).toContain('jetpack-compose');
+    expect(mobile?.techIds).toContain('swiftui');
+  });
+
+  it('Mobile template carries ≥4 methodologyChips (closes Priya methodology-absent finding)', () => {
+    const mobile = ROLE_TEMPLATES.find(r => r.id === 'mobile');
+    expect(mobile?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
+  });
+
+  it('Frontend template carries ≥4 methodologyChips (closes Maya/Mei chip-absent finding)', () => {
+    const fe = ROLE_TEMPLATES.find(r => r.id === 'frontend');
+    expect(fe?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
+  });
+
+  it('Database / DBA template exists, preloads the Oracle stack + SQL, carries methodologyChips', () => {
+    const dba = ROLE_TEMPLATES.find(r => r.id === 'database-dba');
+    expect(dba, 'database-dba template missing — Owen-shape recruiter loses the template anchor').toBeDefined();
+    expect(dba!.techIds).toContain('oracle-db');
+    expect(dba!.techIds).toContain('plsql');
+    expect(dba!.techIds).toContain('sql');
+    expect(dba!.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
   });
 });

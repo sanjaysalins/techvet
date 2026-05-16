@@ -45,6 +45,18 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'Frontend Engineer',
     description: 'Web UI specialist (React, modern tooling).',
     techIds: ['react', 'typescript', 'nextjs', 'tailwind', 'vite'],
+    // Round-6 6F (Mei round-6 + Maya round-1): frontend candidates carry
+    // signal beyond library versions — performance budgets, a11y discipline,
+    // design-system ownership. Chips give the recruiter a 30-second way to
+    // capture senior FE signal without typing.
+    methodologyChips: [
+      { id: 'a11y-wcag', label: 'Accessibility (WCAG 2.x)' },
+      { id: 'core-web-vitals', label: 'Core Web Vitals / performance budgets' },
+      { id: 'design-system-ownership', label: 'Design system ownership' },
+      { id: 'rsc-ssr', label: 'RSC / SSR / streaming patterns' },
+      { id: 'progressive-enhancement', label: 'Progressive enhancement' },
+      { id: 'visual-regression', label: 'Visual regression testing' },
+    ],
   },
   {
     id: 'backend',
@@ -150,6 +162,24 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     ],
   },
   {
+    // Round-6 6F (Owen): no template fit a DBA specialist; recruiter ended
+    // up on Custom and lost the methodology chip-set. This template
+    // preloads the SQL + Oracle stack and gives the DBA-shape its own
+    // chip-set (data modeling, backup discipline, HA design).
+    id: 'database-dba',
+    name: 'Database / DBA',
+    description: 'Database administration + data modelling specialist.',
+    techIds: ['sql', 'plsql', 'oracle-db', 'postgresql', 'mysql'],
+    methodologyChips: [
+      { id: 'dimensional-modeling', label: 'Dimensional / Kimball modeling' },
+      { id: 'normalization-3nf', label: 'Normalization (3NF / BCNF)' },
+      { id: 'backup-recovery-discipline', label: 'Backup & recovery discipline (PITR / drills)' },
+      { id: 'ha-design', label: 'HA design (replication / failover topology)' },
+      { id: 'query-plan-tuning', label: 'Query-plan reading + index strategy' },
+      { id: 'capacity-planning-storage', label: 'Capacity planning + storage layout' },
+    ],
+  },
+  {
     id: 'data-scientist',
     name: 'Data Scientist',
     description: 'Analysis, modelling, experimentation.',
@@ -196,7 +226,20 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'mobile',
     name: 'Mobile Engineer',
     description: 'iOS / Android / cross-platform.',
-    techIds: ['swift', 'kotlin', 'react-native', 'expo', 'flutter'],
+    // Round-6 6F (Priya): Compose + SwiftUI promoted to first-class
+    // checklist-mode catalog entries. Mobile-2026 signal lives there.
+    techIds: ['swift', 'kotlin', 'jetpack-compose', 'swiftui', 'react-native', 'expo', 'flutter'],
+    // Round-6 6F: Mobile differentiators are heavily methodology — store
+    // submission discipline, crash-triage workflows, MVVM/MVI patterns,
+    // ABI/screen-density management. Chips capture this in ~30s on phone.
+    methodologyChips: [
+      { id: 'release-automation', label: 'Release automation (Fastlane / GitHub Actions)' },
+      { id: 'mvvm-mvi', label: 'MVVM / MVI architecture' },
+      { id: 'ab-feature-flags', label: 'A/B testing + feature flags' },
+      { id: 'crashlytics-triage', label: 'Crashlytics / triage workflow' },
+      { id: 'abi-splits', label: 'ABI / screen-density / size optimization' },
+      { id: 'offline-first', label: 'Offline-first / sync patterns' },
+    ],
   },
   {
     id: 'security',

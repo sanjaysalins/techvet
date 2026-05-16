@@ -4211,5 +4211,113 @@
       "How do you tune false-positives at scale?"
     ],
     "checklistGuidance": "Default rules + alerting is baseline; custom rule authoring + plugin ecosystem + audit-log integration + Falcosidekick separate operators from people who installed the helm chart."
+  },
+  {
+    "id": "oracle-db",
+    "name": "Oracle Database",
+    "category": "Database",
+    "vetMode": "checklist",
+    "enterpriseStillUsed": true,
+    "services": [
+      { "id": "partitioning", "name": "Partitioning (range / list / hash / composite)" },
+      { "id": "indexes-btree-bitmap", "name": "Indexes (B-tree, bitmap, function-based)" },
+      { "id": "query-tuning-awr", "name": "Query tuning with AWR / ADDM reports" },
+      { "id": "explain-plan-hints", "name": "EXPLAIN PLAN + optimizer hints" },
+      { "id": "rac-clustering", "name": "RAC (Real Application Clusters)" },
+      { "id": "data-guard-ha", "name": "Data Guard (physical / logical standby)" },
+      { "id": "rman-backup", "name": "RMAN backup & recovery" },
+      { "id": "materialized-views", "name": "Materialized views + refresh strategies" },
+      { "id": "plsql-procedures", "name": "PL/SQL procedures / packages / triggers" },
+      { "id": "sequences-triggers", "name": "Sequences & triggers (DML / DDL / system)" },
+      { "id": "transactions-read-consistency", "name": "Transactions & multi-version read consistency" },
+      { "id": "asm-storage", "name": "ASM (Automatic Storage Management)" },
+      { "id": "exadata-platform", "name": "Exadata / Engineered Systems experience" },
+      { "id": "statspack-addm-tuning", "name": "Statspack / ADDM / SQL Plan Management" }
+    ],
+    "suggestedProbes": [
+      "What's the largest Oracle fleet you've operated — versions, RAC nodes, Data Guard tiers?",
+      "Walk me through an RMAN restore you actually ran in prod (not a drill).",
+      "Most-recent AWR report you read end-to-end — what did you change after?",
+      "Partitioning strategy on your largest table — range vs hash vs composite, and why?"
+    ],
+    "checklistGuidance": "Oracle DBAs split sharply by what they actually operate. RMAN / Data Guard / RAC together signal a production DBA; PL/SQL + tuning together signal a developer-DBA; partitioning + AWR alone signal an analytics-DBA. Ask which cluster they live in."
+  },
+  {
+    "id": "plsql",
+    "name": "PL/SQL",
+    "category": "Language",
+    "vetMode": "checklist",
+    "enterpriseStillUsed": true,
+    "services": [
+      { "id": "stored-procedures", "name": "Stored procedures & functions" },
+      { "id": "packages", "name": "Packages (spec + body + state)" },
+      { "id": "triggers", "name": "Triggers (DML / instead-of / system)" },
+      { "id": "cursors", "name": "Cursors (implicit / explicit / ref cursors)" },
+      { "id": "bulk-collect-forall", "name": "Bulk collect & FORALL bulk binding" },
+      { "id": "exception-handling", "name": "Exception handling (PRAGMA EXCEPTION_INIT)" },
+      { "id": "collections", "name": "Collections (VARRAY / nested table / associative array)" },
+      { "id": "pipelined-functions", "name": "Pipelined table functions" },
+      { "id": "dynamic-sql", "name": "Dynamic SQL (EXECUTE IMMEDIATE / DBMS_SQL)" },
+      { "id": "performance-tuning", "name": "Performance tuning (DBMS_PROFILER / hierarchical profiler)" }
+    ],
+    "suggestedProbes": [
+      "Largest PL/SQL package you've owned — line count, callers, last refactor?",
+      "When do you reach for bulk-collect vs cursor-loop?",
+      "Dynamic SQL — when justified, and how do you prevent injection?",
+      "Pipelined functions — have you actually used them in prod, or only seen them in docs?"
+    ],
+    "checklistGuidance": "PL/SQL maturity tracks with bulk-binding patterns and disciplined exception handling. Candidates who only check cursors + triggers are usually app-side; bulk-collect + packages + dynamic SQL signals real backend ownership."
+  },
+  {
+    "id": "jetpack-compose",
+    "name": "Jetpack Compose",
+    "category": "Mobile",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "state-management", "name": "State management (remember / mutableStateOf / derivedState)" },
+      { "id": "side-effects", "name": "Side effects (LaunchedEffect / DisposableEffect / SideEffect)" },
+      { "id": "layouts", "name": "Layouts (Row / Column / Box / ConstraintLayout)" },
+      { "id": "navigation", "name": "Navigation (compose-navigation, type-safe routes)" },
+      { "id": "material3", "name": "Material 3 components & theming" },
+      { "id": "canvas-drawing", "name": "Custom drawing & Canvas APIs" },
+      { "id": "animation", "name": "Animation APIs (animateAsState / Transition / Animatable)" },
+      { "id": "performance-stable", "name": "Performance (@Stable / @Immutable / skippable composables)" },
+      { "id": "previews-inspector", "name": "Compose Previews + Layout Inspector" },
+      { "id": "testing", "name": "Testing (createComposeRule / semantics tree)" },
+      { "id": "multiplatform", "name": "Compose Multiplatform (KMP UI)" },
+      { "id": "view-interop", "name": "Interop with Views (AndroidView / ComposeView)" }
+    ],
+    "suggestedProbes": [
+      "Last screen you wrote — Compose-only or mixed with View / XML?",
+      "Recomposition issue you debugged — how did you find it?",
+      "Navigation library — compose-navigation, type-safe routes, or something custom?",
+      "Compose Multiplatform — production code, or experimental only?"
+    ],
+    "checklistGuidance": "Compose mid-2026 maturity tracks with side-effects discipline and performance instrumentation. Layouts + Material 3 is tutorial-level; state + side effects + performance + interop signals a real Android engineer who shipped past the easy screens."
+  },
+  {
+    "id": "swiftui",
+    "name": "SwiftUI",
+    "category": "Mobile",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "state-binding", "name": "State (@State / @Binding / @ObservedObject / @StateObject)" },
+      { "id": "observation-framework", "name": "Observation framework (@Observable, iOS 17+)" },
+      { "id": "viewbuilder", "name": "Views & ViewBuilder composition" },
+      { "id": "layouts", "name": "Layouts (HStack / VStack / Grid / LazyStack)" },
+      { "id": "navigation-stack", "name": "Navigation (NavigationStack / NavigationSplitView)" },
+      { "id": "environment", "name": "@Environment + EnvironmentObject + preference keys" },
+      { "id": "animations", "name": "Animations (.animation / withAnimation / matched geometry)" },
+      { "id": "previews", "name": "Preview Provider + Xcode Previews" },
+      { "id": "async-await-integration", "name": "async/await + Combine integration" },
+      { "id": "uikit-interop", "name": "UIKit interop (UIViewRepresentable)" }
+    ],
+    "suggestedProbes": [
+      "@Observable vs @ObservedObject — when have you used each?",
+      "Navigation pre-iOS-16 NavigationView vs NavigationStack — migration story?",
+      "Performance issue you debugged in SwiftUI — what was the cause?",
+      "UIKit interop — what couldn't you do in pure SwiftUI?"
+    ],
+    "checklistGuidance": "SwiftUI maturity in 2026 splits on iOS-17 Observation adoption and Navigation v2 patterns. Older projects still live on @ObservedObject + NavigationView — that's legacy, not wrong, but worth flagging for a senior role."
   }
 ]
