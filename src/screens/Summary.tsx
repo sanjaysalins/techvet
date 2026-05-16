@@ -223,52 +223,70 @@ export default function Summary() {
           )}
         </header>
 
-        {/* Headline stats — scored buckets + methodology when present.
-            Round-5 5ι (Yasmin): bucket headline alone read "weak senior"
-            for an async DS whose evidence lived in the methodology
-            section. Methodology promoted to a 4th card so senior signal
-            is visible at headline glance. 3-col default; 2x2 on mobile,
-            4-col on md+ when methodology fires. */}
-        <section
-          className={
-            'grid gap-4 mb-3 ' +
-            (meta.methodologyEntries.length > 0
-              ? 'grid-cols-2 md:grid-cols-4'
-              : 'grid-cols-3')
-          }
-        >
-          <StatCard
-            color="green"
-            count={buckets.green.length}
-            label="Good"
-            icon={<CheckCircle2 className="w-5 h-5" />}
-          />
-          <StatCard
-            color="yellow"
-            count={buckets.yellow.length}
-            label="Review / Probe"
-            icon={<AlertTriangle className="w-5 h-5" />}
-          />
-          <StatCard
-            color="red"
-            count={buckets.red.length}
-            label="Concern"
-            icon={<AlertCircle className="w-5 h-5" />}
-          />
-          {meta.methodologyEntries.length > 0 && (
-            <div className="rounded-xl border-2 p-4 bg-emerald-100 text-emerald-900 border-emerald-300">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="w-5 h-5" />
-                <div className="text-xs font-semibold uppercase tracking-wider">
-                  Methodology
+        {/* Headline stats — scored buckets + methodology + off-catalog when
+            present. Round-5 5ι promoted methodology to a 4th card so senior
+            signal (Yasmin async DS) wasn't invisible at headline glance.
+            Round-6 6E promotes off-catalog named-only to a 5th card: Owen's
+            18-yr Oracle DBA had 2 Good / 0 Yellow / 0 Red and 5 enriched
+            named-only chips below the fold — HM read "thin mid-level" when
+            the evidence was clearly senior-specialist. Card scales:
+            3 cards (none) → 4 cards (one extension) → 5 cards (both).
+            On mobile: stacks to 2-col regardless to keep cards readable. */}
+        {(() => {
+          const methCount = meta.methodologyEntries.length;
+          const offCount = meta.namedNotInCatalog.length;
+          const extras = (methCount > 0 ? 1 : 0) + (offCount > 0 ? 1 : 0);
+          const gridClass =
+            extras === 0
+              ? 'grid-cols-3'
+              : extras === 1
+                ? 'grid-cols-2 md:grid-cols-4'
+                : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-5';
+          return (
+            <section className={`grid gap-4 mb-3 ${gridClass}`}>
+              <StatCard
+                color="green"
+                count={buckets.green.length}
+                label="Good"
+                icon={<CheckCircle2 className="w-5 h-5" />}
+              />
+              <StatCard
+                color="yellow"
+                count={buckets.yellow.length}
+                label="Review / Probe"
+                icon={<AlertTriangle className="w-5 h-5" />}
+              />
+              <StatCard
+                color="red"
+                count={buckets.red.length}
+                label="Concern"
+                icon={<AlertCircle className="w-5 h-5" />}
+              />
+              {methCount > 0 && (
+                <div className="rounded-xl border-2 p-4 bg-emerald-100 text-emerald-900 border-emerald-300">
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5" />
+                    <div className="text-xs font-semibold uppercase tracking-wider">
+                      Methodology
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold mt-1">{methCount}</div>
                 </div>
-              </div>
-              <div className="text-3xl font-bold mt-1">
-                {meta.methodologyEntries.length}
-              </div>
-            </div>
-          )}
-        </section>
+              )}
+              {offCount > 0 && (
+                <div className="rounded-xl border-2 p-4 bg-sky-100 text-sky-900 border-sky-300">
+                  <div className="flex items-center gap-2">
+                    <MessageSquarePlus className="w-5 h-5" />
+                    <div className="text-xs font-semibold uppercase tracking-wider">
+                      Off-catalog
+                    </div>
+                  </div>
+                  <div className="text-3xl font-bold mt-1">{offCount}</div>
+                </div>
+              )}
+            </section>
+          );
+        })()}
         {/* Coverage chips — confirmed-absent and not-discussed counts. Fix L
             (round-2 cross-cut): hiring managers asked to distinguish "asked &
             confirmed not in stack" from "ran out of time" — both used to be
@@ -313,100 +331,119 @@ export default function Summary() {
           </div>
         </section>
 
-        {/* Strengths */}
-        {buckets.green.length > 0 && (
-          <TierSection
-            title="Strengths"
-            subtitle="Versions are current or recent; depth supports it."
-            items={buckets.green}
-            color="green"
-          />
-        )}
-
-        {/* Review */}
-        {buckets.yellow.length > 0 && (
-          <TierSection
-            title="Probe Further"
-            subtitle="Older versions or unknown version — worth confirming with the team."
-            items={buckets.yellow}
-            color="yellow"
-          />
-        )}
-
-        {/* Concerns */}
-        {buckets.red.length > 0 && (
-          <TierSection
-            title="Concerns"
-            subtitle="Significantly outdated; verify before progressing the candidate."
-            items={buckets.red}
-            color="red"
-          />
-        )}
-
-        {/* Methodology + practices (Fix D4, round-1+3+4). Display-only:
-            senior signal the hiring manager reads. No verdict; capture is
-            on Assessment. Empty → section hidden. */}
-        {meta.methodologyEntries.length > 0 && (
-          <section className="mb-6">
-            <div className="mb-3 flex items-start gap-2">
-              <Lightbulb className="w-5 h-5 text-emerald-700 mt-0.5 flex-shrink-0" />
-              <div>
-                <h2 className="text-lg font-semibold text-navy-900">
-                  Methodology + practices ({meta.methodologyEntries.length})
-                </h2>
-                <p className="text-sm text-slate-600">
-                  Skills and practices the candidate brought up beyond the
-                  tool stack. <strong>No verdict</strong> — senior signal
-                  the hiring manager reads as context. Round-1 Mei:
-                  &ldquo;senior ICs are differentiated by skills, not
-                  tools.&rdquo;
-                </p>
+        {/* Round-6 6E-b: when off-catalog evidence outweighs scored evidence,
+            promote the named-only section above Strengths so visual order
+            matches evidence weight (Owen-shape: 5 enriched DBA chips
+            outweigh 2 scored Greens — recruiter shouldn't have to scroll
+            past Strengths/Yellow/Red/Methodology to find the actual stack). */}
+        {(() => {
+          const scoredTotal = buckets.green.length + buckets.yellow.length + buckets.red.length;
+          const promoteNamedOnly = meta.namedNotInCatalog.length > scoredTotal;
+          const namedOnlySection = meta.namedNotInCatalog.length > 0 ? (
+            <section className="mb-6">
+              <div className="mb-3 flex items-start gap-2">
+                <MessageSquarePlus className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h2 className="text-lg font-semibold text-navy-900">
+                    Candidate mentioned — out of catalog ({meta.namedNotInCatalog.length})
+                    {promoteNamedOnly && (
+                      <span className="ml-2 text-xs font-normal text-amber-700">
+                        (promoted — off-catalog evidence outweighs scored)
+                      </span>
+                    )}
+                  </h2>
+                  <p className="text-sm text-slate-600">
+                    Names heard during the screening that aren&rsquo;t in
+                    TechVet&rsquo;s catalog. <strong>No verdict</strong> — these
+                    are probe targets for the technical interviewer. Bug 4 (round-4):
+                    add <em>depth</em> and <em>last used</em> inline below so the
+                    recruiter&rsquo;s "Burp daily, deep" isn&rsquo;t lost as bare
+                    "Burp".
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {meta.methodologyEntries.map(entry => (
-                <span
-                  key={entry.id}
-                  className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-sm font-medium"
-                >
-                  {entry.label}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Candidate mentioned — out of catalog (Fix C, round-3).
-            Round-3 sessions (Lou-Oracle, Devon-Tokio, Tomi-Vault,
-            Dmitri-Ruby) had named techs vanish to sticky notes because
-            the catalog didn't have them. Now captured via the no-results
-            search CTA and rendered here as probe targets — the technical
-            interviewer reads this section to know what to dig in on. */}
-        {meta.namedNotInCatalog.length > 0 && (
-          <section className="mb-6">
-            <div className="mb-3 flex items-start gap-2">
-              <MessageSquarePlus className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
-              <div>
-                <h2 className="text-lg font-semibold text-navy-900">
-                  Candidate mentioned — out of catalog ({meta.namedNotInCatalog.length})
-                </h2>
-                <p className="text-sm text-slate-600">
-                  Names heard during the screening that aren&rsquo;t in
-                  TechVet&rsquo;s catalog. <strong>No verdict</strong> — these
-                  are probe targets for the technical interviewer. Bug 4 (round-4):
-                  add <em>depth</em> and <em>last used</em> inline below so the
-                  recruiter&rsquo;s "Burp daily, deep" isn&rsquo;t lost as bare
-                  "Burp".
-                </p>
+              <div className="space-y-2">
+                {meta.namedNotInCatalog.map(entry => (
+                  <NamedOnlyEditor key={entry.name} entry={entry} />
+                ))}
               </div>
-            </div>
-            <div className="space-y-2">
-              {meta.namedNotInCatalog.map(entry => (
-                <NamedOnlyEditor key={entry.name} entry={entry} />
-              ))}
-            </div>
-          </section>
-        )}
+            </section>
+          ) : null;
+
+          return (
+            <>
+              {promoteNamedOnly && namedOnlySection}
+
+              {/* Strengths */}
+              {buckets.green.length > 0 && (
+                <TierSection
+                  title="Strengths"
+                  subtitle="Versions are current or recent; depth supports it."
+                  items={buckets.green}
+                  color="green"
+                />
+              )}
+
+              {/* Review */}
+              {buckets.yellow.length > 0 && (
+                <TierSection
+                  title="Probe Further"
+                  subtitle="Older versions or unknown version — worth confirming with the team."
+                  items={buckets.yellow}
+                  color="yellow"
+                />
+              )}
+
+              {/* Concerns */}
+              {buckets.red.length > 0 && (
+                <TierSection
+                  title="Concerns"
+                  subtitle="Significantly outdated; verify before progressing the candidate."
+                  items={buckets.red}
+                  color="red"
+                />
+              )}
+
+              {/* Methodology + practices (Fix D4, round-1+3+4). Display-only:
+                  senior signal the hiring manager reads. No verdict; capture is
+                  on Assessment. Empty → section hidden. */}
+              {meta.methodologyEntries.length > 0 && (
+                <section className="mb-6">
+                  <div className="mb-3 flex items-start gap-2">
+                    <Lightbulb className="w-5 h-5 text-emerald-700 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h2 className="text-lg font-semibold text-navy-900">
+                        Methodology + practices ({meta.methodologyEntries.length})
+                      </h2>
+                      <p className="text-sm text-slate-600">
+                        Skills and practices the candidate brought up beyond the
+                        tool stack. <strong>No verdict</strong> — senior signal
+                        the hiring manager reads as context. Round-1 Mei:
+                        &ldquo;senior ICs are differentiated by skills, not
+                        tools.&rdquo;
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {meta.methodologyEntries.map(entry => (
+                      <span
+                        key={entry.id}
+                        className="inline-flex items-center px-3 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-sm font-medium"
+                      >
+                        {entry.label}
+                      </span>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Candidate mentioned — out of catalog (default position, after
+                  Methodology). Promoted above Strengths when 6E-b condition
+                  fires (handled at the top of this fragment). */}
+              {!promoteNamedOnly && namedOnlySection}
+            </>
+          );
+        })()}
 
         {/* Confirmed not in stack — first-class section, not a footer note.
             Fix L (round-2): agents asked for "asked and confirmed absent" to
