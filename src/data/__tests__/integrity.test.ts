@@ -289,3 +289,91 @@ describe('technologies.json — AI/ML libraries carry defaultScope=author (Fix K
     ).toEqual([]);
   });
 });
+
+/**
+ * Fix K2 (round-3 cross-cut): template-keyed scope defaults. Per Riya's
+ * design, the recruiter's choice of role template IS a scope signal:
+ * Solution Architect screening defaults to architect on the infra/DB
+ * stack; Security screening defaults to reviewer on infra; SRE splits
+ * cluster-build (reviewer) from workload-layer (operator-implied).
+ *
+ * The closest catch: every key in `techScopes` must be present in
+ * `techIds`, otherwise the hint silently dies. This test fails loud.
+ */
+describe('roles.ts — techScopes integrity (Fix K2)', () => {
+  it('every techScopes key is present in the role\'s techIds', () => {
+    const orphans: string[] = [];
+    for (const role of ROLE_TEMPLATES) {
+      if (!role.techScopes) continue;
+      const techIdSet = new Set(role.techIds);
+      for (const key of Object.keys(role.techScopes)) {
+        if (!techIdSet.has(key)) {
+          orphans.push(`${role.id}: techScopes["${key}"] not in techIds`);
+        }
+      }
+    }
+    expect(
+      orphans,
+      'techScopes keys must match a tech in techIds — orphans dropped silently'
+    ).toEqual([]);
+  });
+
+  it('Solution Architect template sets architect on all preloaded techs (Aaron round-3)', () => {
+    const sa = ROLE_TEMPLATES.find(r => r.id === 'solution-architect');
+    expect(sa, 'SA template missing').toBeDefined();
+    expect(sa!.techScopes).toEqual({
+      kubernetes: 'architect',
+      terraform: 'architect',
+      aws: 'architect',
+      kafka: 'architect',
+      postgresql: 'architect',
+    });
+  });
+
+  it('SRE template sets reviewer on cluster-build (Terraform, AWS) only (Cara round-3)', () => {
+    const sre = ROLE_TEMPLATES.find(r => r.id === 'sre');
+    expect(sre, 'SRE template missing').toBeDefined();
+    expect(sre!.techScopes).toEqual({
+      terraform: 'reviewer',
+      aws: 'reviewer',
+    });
+    // Workload-layer techs MUST stay unset so operator-implied default fires.
+    const workloadLayer = ['kubernetes', 'helm', 'go', 'python', 'observability'];
+    for (const tech of workloadLayer) {
+      expect(
+        sre!.techScopes![tech],
+        `SRE workload-layer ${tech} should NOT have a scope hint — keep operator-implied`
+      ).toBeUndefined();
+    }
+  });
+
+  it('Security template sets reviewer on infra (AWS / K8s / Docker / Terraform / Observability) only (Tomi round-3)', () => {
+    const sec = ROLE_TEMPLATES.find(r => r.id === 'security');
+    expect(sec, 'Security template missing').toBeDefined();
+    expect(sec!.techScopes).toEqual({
+      aws: 'reviewer',
+      kubernetes: 'reviewer',
+      docker: 'reviewer',
+      terraform: 'reviewer',
+      observability: 'reviewer',
+    });
+    // Python/SQL/OAuth stay unset — AppSec engineers operate these.
+    expect(sec!.techScopes!.python).toBeUndefined();
+    expect(sec!.techScopes!.sql).toBeUndefined();
+    expect(sec!.techScopes!['oauth-identity']).toBeUndefined();
+  });
+
+  it('templates without techScopes (full-stack, frontend, etc.) preserve pre-K2 behavior', () => {
+    // Pin which templates intentionally don't have techScopes so future drift
+    // is visible. If a template gains one, update this list.
+    const noScopesYet = ['fullstack', 'frontend', 'backend', 'devops', 'data', 'data-scientist', 'ai-ml', 'mobile', 'qa', 'custom'];
+    for (const id of noScopesYet) {
+      const role = ROLE_TEMPLATES.find(r => r.id === id);
+      expect(role, `${id} template missing`).toBeDefined();
+      expect(
+        role!.techScopes,
+        `${id} template now has techScopes — if intentional, remove from this guard`
+      ).toBeUndefined();
+    }
+  });
+});

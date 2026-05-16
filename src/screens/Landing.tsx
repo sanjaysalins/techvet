@@ -20,7 +20,11 @@ export default function Landing() {
       role: role?.name ?? 'Custom',
       startedAt: new Date().toISOString(),
     });
-    role?.techIds.forEach(t => addTech(t));
+    // Fix K2: pass the template's per-tech scope hint so the cap fires
+    // automatically (e.g. SA template → architect on Terraform). Templates
+    // without `techScopes` (or specific techs without an entry) pass
+    // undefined here, falling through to catalog defaultScope (Fix K).
+    role?.techIds.forEach(t => addTech(t, role.techScopes?.[t]));
     navigate('/assess');
   }
 

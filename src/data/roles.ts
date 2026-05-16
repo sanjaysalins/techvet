@@ -1,8 +1,20 @@
+import type { Scope } from '../types';
+
 export interface RoleTemplate {
   id: string;
   name: string;
   description: string;
   techIds: string[];
+  /** Fix K2 (round-3 cross-cut): per-template scope hints. Applied at
+   *  template-pick time as the explicit scope on each preloaded item —
+   *  the recruiter's choice of template IS a scope signal. Example: SA
+   *  template applies `architect` to all preloaded infra/DB techs so a
+   *  Solution Architect screening doesn't quietly get the same Excellent
+   *  verdicts an operator would. Keys must be in `techIds`. Templates
+   *  without `techScopes` (or specific techs without an entry) fall
+   *  through to catalog `defaultScope` (Fix K) and then to operator-
+   *  implied — pre-K2 behavior preserved. */
+  techScopes?: Partial<Record<string, Scope>>;
 }
 
 export const ROLE_TEMPLATES: RoleTemplate[] = [
@@ -29,6 +41,16 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'Solution Architect',
     description: 'Cloud architecture, services, infra.',
     techIds: ['kubernetes', 'terraform', 'aws', 'kafka', 'postgresql'],
+    // SA designs how infra gets used; doesn't operate it day-to-day.
+    // Round-3 Aaron session: SA on Terraform/K8s without this cap was
+    // identical to a hands-on operator's verdict.
+    techScopes: {
+      kubernetes: 'architect',
+      terraform: 'architect',
+      aws: 'architect',
+      kafka: 'architect',
+      postgresql: 'architect',
+    },
   },
   {
     id: 'devops',
@@ -41,6 +63,15 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'SRE / Platform Engineer',
     description: 'Reliability, observability, automation at scale.',
     techIds: ['kubernetes', 'terraform', 'observability', 'helm', 'go', 'python', 'aws'],
+    // SRE typically operates the workload layer (K8s/Helm/obs/code) but
+    // reviews cluster-build artifacts (Terraform, cloud) owned by a
+    // platform team. Round-3 Cara session: deep K8s operator AND Terraform
+    // PR-reviewer needed two different scopes simultaneously.
+    techScopes: {
+      terraform: 'reviewer',
+      aws: 'reviewer',
+      // kubernetes/helm/observability/go/python: operator-implied (default)
+    },
   },
   {
     id: 'data',
@@ -71,6 +102,18 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'Security Engineer (AppSec)',
     description: 'Application and cloud security.',
     techIds: ['python', 'oauth-identity', 'aws', 'kubernetes', 'docker', 'terraform', 'sql', 'observability'],
+    // AppSec reviews infra for security posture; doesn't run it.
+    // Round-3 Tomi session: lead AppSec at a bank, infra knowledge is
+    // reviewer-shaped (threat-models, audits, IR) not operator-shaped.
+    // Python stays operator-implied — AppSec engineers write Python tools.
+    techScopes: {
+      aws: 'reviewer',
+      kubernetes: 'reviewer',
+      docker: 'reviewer',
+      terraform: 'reviewer',
+      observability: 'reviewer',
+      // python/oauth-identity/sql: operator-implied (default)
+    },
   },
   {
     id: 'qa',

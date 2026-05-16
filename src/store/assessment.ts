@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { AssessmentItem, AssessmentMeta, Depth } from '../types';
+import type { AssessmentItem, AssessmentMeta, Depth, Scope } from '../types';
 
 interface AssessmentState {
   meta: AssessmentMeta;
@@ -8,7 +8,11 @@ interface AssessmentState {
   focusedTechId: string | null;
 
   setMeta: (patch: Partial<AssessmentMeta>) => void;
-  addTech: (techId: string) => void;
+  /** Fix K2: optional `scope` lets template-pick set a per-tech scope
+   *  hint at item-creation time (e.g. SA template → architect on
+   *  Terraform). When omitted, scoring falls back to catalog
+   *  `defaultScope` and then operator-implied — pre-K2 behavior. */
+  addTech: (techId: string, scope?: Scope) => void;
   removeTech: (techId: string) => void;
   updateItem: (techId: string, patch: Partial<AssessmentItem>) => void;
   setFocused: (techId: string | null) => void;
@@ -38,7 +42,7 @@ export const useAssessment = create<AssessmentState>()(
       setMeta: patch =>
         set(state => ({ meta: { ...state.meta, ...patch } })),
 
-      addTech: techId =>
+      addTech: (techId, scope) =>
         set(state => {
           if (state.items.some(i => i.techId === techId)) return state;
           const newItem: AssessmentItem = {
@@ -52,7 +56,7 @@ export const useAssessment = create<AssessmentState>()(
             checklistTouched: false,
             checklistUnsure: false,
             notUsed: false,
-            scope: undefined,
+            scope,
           };
           return {
             items: [...state.items, newItem],
