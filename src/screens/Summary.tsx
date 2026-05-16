@@ -11,7 +11,7 @@ import {
 } from '../lib/scoring';
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
-import { notDiscussedCopy, channelLabel } from '../lib/channel';
+import { notDiscussedCopy, channelLabel, confirmedNotInStackCopy } from '../lib/channel';
 import { formatCandidateContext } from '../lib/candidateContext';
 import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders, MessageSquarePlus } from 'lucide-react';
 
@@ -200,8 +200,10 @@ export default function Summary() {
               {/* Fix Q: channel chip in report header so the hiring
                   manager knows whether this was a phone screen, a video
                   panel, or async CV review — meaningfully different
-                  evidence levels. */}
-              <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-semibold uppercase tracking-wider">
+                  evidence levels. Round-4 Bug 2: uppercase styling was
+                  mangling "Async (CV-only)" to "ASYNC (CV-ONLY)"; chip
+                  now sentence-case so the parens stay legible. */}
+              <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold">
                 Channel: {channelLabel(meta.channel)}
               </div>
             </div>
@@ -359,18 +361,25 @@ export default function Summary() {
           <section className="mb-6">
             <div className="mb-3 flex items-start gap-2">
               <Slash className="w-5 h-5 text-slate-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h2 className="text-lg font-semibold text-navy-900">
-                  Confirmed not in candidate&rsquo;s stack ({skipped.length})
-                </h2>
-                <p className="text-sm text-slate-600">
-                  The recruiter asked; the candidate confirmed they do not
-                  work with these. Excluded from the score and radar but{' '}
-                  <strong>positive coverage signal</strong> — for the right
-                  role this is a clean fit; for the wrong role this is the
-                  ramp-up flag.
-                </p>
-              </div>
+              {(() => {
+                // Round-4 Bug 1 (Marisol async session): channel-aware
+                // title + 3-part body so async doesn't claim "the
+                // recruiter asked the candidate" when no call happened.
+                const copy = confirmedNotInStackCopy(meta.channel);
+                const Emphasis = copy.emphasisStyle === 'strong' ? 'strong' : 'em';
+                return (
+                  <div>
+                    <h2 className="text-lg font-semibold text-navy-900">
+                      {copy.title(skipped.length)}
+                    </h2>
+                    <p className="text-sm text-slate-600">
+                      {copy.lead}
+                      <Emphasis>{copy.emphasis}</Emphasis>
+                      {copy.tail}
+                    </p>
+                  </div>
+                );
+              })()}
             </div>
             <div className="space-y-2">
               {skipped.map(({ tech, item }) => (

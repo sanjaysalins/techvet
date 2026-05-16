@@ -193,7 +193,7 @@ export default function Assessment() {
               type="text"
               value={meta.yearsInIndustry}
               onChange={e => setMeta({ yearsInIndustry: e.target.value })}
-              placeholder="e.g. 8 or 10+"
+              placeholder="e.g. 8, 0.3, 10+"
               className="input"
             />
           </div>

@@ -263,6 +263,29 @@ describe('technologies.json — no single-tier `min: "0"` rubber-stamps (Fix J)'
     expect(grpc!.vetMode).toBe('checklist');
     expect((grpc!.services ?? []).length).toBeGreaterThanOrEqual(8);
   });
+
+  /**
+   * Fix O (round-4 Bashir validation): LangChain was version-mode with
+   * `min: "1.0"` Green — Bashir source-traced `scoring.ts:75` and
+   * confirmed the `author` cap can't fire on a natural Green tier match
+   * (cap requires `adjusted.adjusted === true`). Result: 6 weeks of
+   * tutorials read as Senior GenAI Engineer because LangChain 1.x hit
+   * the Green tier directly. Now checklist-mode with services that the
+   * candidate must have actually exercised (LangGraph agents / RAG /
+   * tool use / etc.). Same shape as Snowflake/GraphQL/gRPC under Fix J.
+   */
+  it('LangChain is checklist-mode with curated services (post-Fix-O)', () => {
+    const lc = TECH_BY_ID.get('langchain');
+    expect(lc, 'langchain missing from catalog').toBeDefined();
+    expect(lc!.vetMode).toBe('checklist');
+    expect((lc!.services ?? []).length).toBeGreaterThanOrEqual(8);
+    // Spot-check the load-bearing services Bashir's recommendation called out.
+    const serviceIds = new Set((lc!.services ?? []).map(s => s.id));
+    expect(serviceIds.has('langgraph-agents')).toBe(true);
+    expect(serviceIds.has('rag-retrieval')).toBe(true);
+    expect(serviceIds.has('tool-use')).toBe(true);
+    expect(serviceIds.has('evals-langsmith')).toBe(true);
+  });
 });
 
 /**

@@ -59,6 +59,29 @@ describe('formatCandidateContext — single-line header builder', () => {
     expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '1.5' })).toBe('1.5 yr in industry');
   });
 
+  // Round-4 Bug 5 (Eli junior session): sub-1 bare numbers used to render
+  // as "0.3 yr in industry" which reads awkwardly. Now flips to months.
+  it('renders sub-1 bare numbers as months (Eli 4-month-in case)', () => {
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '0.3' })).toBe('4 mo in industry');
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '0.5' })).toBe('6 mo in industry');
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '0.08' })).toBe('1 mo in industry');
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '0.99' })).toBe('12 mo in industry');
+  });
+
+  it('months floor is 1 (zero / negative inputs fall through cleanly)', () => {
+    // "0" trims to a parseable 0 — the >0 guard skips the months branch
+    // and falls through to bare "0 yr in industry" via the else branch.
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '0' })).toBe('0 yr in industry');
+    // Tiny positive fractions still floor to 1 month so the line is sensible.
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '0.01' })).toBe('1 mo in industry');
+  });
+
+  it('keeps "yr in industry" suffix for ≥1 bare numbers', () => {
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '1' })).toBe('1 yr in industry');
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '1.5' })).toBe('1.5 yr in industry');
+    expect(formatCandidateContext({ ...baseMeta, yearsInIndustry: '12' })).toBe('12 yr in industry');
+  });
+
   it('only seniority set → renders just the seniority label', () => {
     expect(formatCandidateContext({ ...baseMeta, seniority: 'staff' })).toBe('Staff+');
   });

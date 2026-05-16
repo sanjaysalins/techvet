@@ -56,8 +56,18 @@ export default function TechSearch({ technologies, alreadyAdded, onAdd, onAddNam
     setOpen(false);
   }
 
+  // Round-4 Bug 3 (Marisol DS-async session): single-letter queries like
+  // "R" (the language) match every tech with `r` in its id (react/rust/
+  // redis/...) so the no-results CTA never fires and Fix C is unreachable
+  // for catalog-extreme languages. Fix: also surface the CTA when there
+  // are substring matches but no exact name match — recruiter can still
+  // pick a near-match OR park the bare string as named-only.
   const hasQuery = q.trim().length > 0;
-  const showNamedOnlyCta = hasQuery && matches.length === 0 && !!onAddNamedOnly;
+  const trimmedLower = q.trim().toLowerCase();
+  const hasExactNameMatch = matches.some(
+    t => t.name.toLowerCase() === trimmedLower || t.id === trimmedLower
+  );
+  const showNamedOnlyCta = hasQuery && !hasExactNameMatch && !!onAddNamedOnly;
 
   return (
     <div ref={wrapRef} className="relative">

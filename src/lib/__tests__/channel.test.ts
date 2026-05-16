@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { notDiscussedCopy, channelLabel } from '../channel';
+import { notDiscussedCopy, channelLabel, confirmedNotInStackCopy } from '../channel';
 
 /**
  * Fix Q (round-3 cross-cut): per-channel framing for empty/not-touched
@@ -56,5 +56,48 @@ describe('channelLabel — human-readable channel name', () => {
   it('phone and video render as their lowercase id (header context already capitalizes them)', () => {
     expect(channelLabel('phone')).toBe('phone');
     expect(channelLabel('video')).toBe('video');
+  });
+});
+
+/**
+ * Round-4 Bug 1 (Marisol DS-async): the "Confirmed not in stack" section
+ * was hard-coded with phone-only framing ("the recruiter asked"), which
+ * is structurally wrong in async — the recruiter never spoke to the
+ * candidate. Per-channel helper closes the loop on Fix Q.
+ */
+describe('confirmedNotInStackCopy — per-channel framing', () => {
+  it('phone framing references "the recruiter asked"', () => {
+    const c = confirmedNotInStackCopy('phone');
+    expect(c.title(3)).toMatch(/Confirmed not/);
+    expect(c.lead).toMatch(/recruiter asked/);
+    expect(c.emphasis).toBe('positive coverage signal');
+    expect(c.emphasisStyle).toBe('strong');
+  });
+
+  it('video framing references "the panel asked"', () => {
+    const c = confirmedNotInStackCopy('video');
+    expect(c.title(3)).toMatch(/Confirmed not/);
+    expect(c.lead).toMatch(/panel asked/);
+    expect(c.lead).not.toMatch(/recruiter asked/);
+  });
+
+  it('async framing does NOT claim a candidate was asked (none was)', () => {
+    const c = confirmedNotInStackCopy('async');
+    expect(c.title(3)).toMatch(/Marked not/);
+    expect(c.lead).toMatch(/CV \/ JD/);
+    expect(c.lead).not.toMatch(/asked/);
+    expect(c.emphasis).toBe('not');
+    expect(c.emphasisStyle).toBe('em');
+    expect(c.tail).toMatch(/verify on the next step/);
+  });
+
+  it('every channel returns a callable title + non-empty lead/emphasis/tail', () => {
+    for (const ch of ['phone', 'video', 'async'] as const) {
+      const c = confirmedNotInStackCopy(ch);
+      expect(c.title(5)).toMatch(/\(5\)/);
+      expect(c.lead.length).toBeGreaterThan(20);
+      expect(c.emphasis.length).toBeGreaterThan(0);
+      expect(c.tail.length).toBeGreaterThan(10);
+    }
   });
 });

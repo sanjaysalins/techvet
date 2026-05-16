@@ -1856,32 +1856,25 @@
     "name": "LangChain / LangGraph",
     "category": "AI/ML",
     "defaultScope": "author",
-    "currentVersion": "1.3",
-    "versionTiers": [
-      {
-        "min": "1.0",
-        "label": "Excellent",
-        "color": "green",
-        "note": "LangChain 1.x / LangGraph era — agentic patterns."
-      },
-      {
-        "min": "0.2",
-        "label": "Good",
-        "color": "green"
-      },
-      {
-        "min": "0",
-        "label": "Review / Probe",
-        "color": "yellow"
-      }
+    "vetMode": "checklist",
+    "services": [
+      { "id": "langgraph-agents", "name": "LangGraph — agent workflows & state graphs" },
+      { "id": "rag-retrieval", "name": "RAG retrieval pipelines (loaders / splitters / vector ops)" },
+      { "id": "tool-use", "name": "Tool use / function calling end-to-end" },
+      { "id": "structured-output", "name": "Structured output (Pydantic / JSON schema)" },
+      { "id": "streaming", "name": "Streaming + partial-output handling" },
+      { "id": "memory-state", "name": "Memory + conversation state management" },
+      { "id": "prompt-caching", "name": "Prompt caching + token cost control" },
+      { "id": "evals-langsmith", "name": "Evals (LangSmith / custom eval loops)" },
+      { "id": "callbacks-observability", "name": "Callbacks / tracing / observability" },
+      { "id": "production-deploy", "name": "Production deploy + retries / rate-limit handling" }
     ],
-    "enterpriseStillUsed": false,
     "suggestedProbes": [
       "LangGraph for agent workflows?",
       "Retrieval (RAG) pipeline you've built?",
       "Why LangChain over direct SDK calls?"
     ],
-    "guidanceForUnknownVersion": "Yellow — ecosystem moves fast, probe recent usage."
+    "checklistGuidance": "LangChain moves fast — the version isn't the signal, the *services exercised* are. Round-4 Bashir validation: version-mode let a 6-week tutorial user score Excellent at v1.x. Coverage of LangGraph agents, RAG retrieval, tool use, structured output, and evals separates 'I built a hobby RAG' from 'I run an agentic feature in prod'."
   },
   {
     "id": "graphql",

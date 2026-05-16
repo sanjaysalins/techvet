@@ -15,10 +15,22 @@ export function formatCandidateContext(meta: AssessmentMeta): string {
 
   const years = meta.yearsInIndustry.trim();
   if (years) {
-    // If recruiter typed a bare number, suffix " yr"; otherwise use as-is
+    // If recruiter typed a bare number, format it. Otherwise use as-is
     // so "10+ yr" / "since 2018" / etc. don't double up the unit.
+    // Round-4 Bug 5: sub-1 bare numbers (Eli typed "0.3" for 4 months)
+    // rendered awkwardly as "0.3 yr in industry"; switch to months.
     const looksLikeBareNumber = /^[\d.]+$/.test(years);
-    parts.push(looksLikeBareNumber ? `${years} yr in industry` : years);
+    if (looksLikeBareNumber) {
+      const n = parseFloat(years);
+      if (n > 0 && n < 1) {
+        const months = Math.max(1, Math.round(n * 12));
+        parts.push(`${months} mo in industry`);
+      } else {
+        parts.push(`${years} yr in industry`);
+      }
+    } else {
+      parts.push(years);
+    }
   }
 
   if (meta.pathType !== 'unspecified') {

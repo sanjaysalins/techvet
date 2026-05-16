@@ -58,3 +58,50 @@ export function notDiscussedCopy(channel: Channel): {
 export function channelLabel(channel: Channel): string {
   return channel === 'async' ? 'Async (CV-only)' : channel;
 }
+
+/**
+ * Round-4 Bug 1 (Marisol DS-async session): the "Confirmed not in
+ * candidate's stack" section was hard-coded with phone-only framing
+ * ("the recruiter asked; the candidate confirmed"), which is wrong
+ * in async — the recruiter never spoke to the candidate. Same per-
+ * channel helper pattern as `notDiscussedCopy`.
+ *
+ * Returns `title` + a 3-part body (`lead` / `emphasis` / `tail`) so the
+ * caller can render the emphasized middle fragment as `<strong>` /
+ * `<em>` without resorting to dangerouslySetInnerHTML.
+ */
+export function confirmedNotInStackCopy(channel: Channel): {
+  title: (n: number) => string;
+  lead: string;
+  emphasis: string;
+  emphasisStyle: 'strong' | 'em';
+  tail: string;
+} {
+  switch (channel) {
+    case 'video':
+      return {
+        title: n => `Confirmed not in candidate's stack (${n})`,
+        lead: 'The panel asked; the candidate confirmed they do not work with these. Excluded from the score and radar but ',
+        emphasis: 'positive coverage signal',
+        emphasisStyle: 'strong',
+        tail: ' — for the right role this is a clean fit; for the wrong role this is the ramp-up flag.',
+      };
+    case 'async':
+      return {
+        title: n => `Marked not in candidate's stack (${n})`,
+        lead: 'Marked as not in the candidate’s stack based on the CV / JD evaluation — ',
+        emphasis: 'not',
+        emphasisStyle: 'em',
+        tail: ' directly confirmed with the candidate. Excluded from the score and radar; verify on the next step before treating as a coverage signal either way.',
+      };
+    case 'phone':
+    default:
+      return {
+        title: n => `Confirmed not in candidate's stack (${n})`,
+        lead: 'The recruiter asked; the candidate confirmed they do not work with these. Excluded from the score and radar but ',
+        emphasis: 'positive coverage signal',
+        emphasisStyle: 'strong',
+        tail: ' — for the right role this is a clean fit; for the wrong role this is the ramp-up flag.',
+      };
+  }
+}
