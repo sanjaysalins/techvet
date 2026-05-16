@@ -385,3 +385,155 @@ describe('resolveTier — adversarial regressions (5-bug fix)', () => {
     });
   });
 });
+
+/**
+ * Priority #4 — scope-of-use axis. Closes the cluster of misreadings where
+ * reviewers, architects, and notebook-authors get scored like operators.
+ * See RESUME.md "scope-of-use" plan: reviewer/architect cap at Yellow,
+ * author disallows Yellow→Green depth lift, operator and undefined preserve
+ * pre-scope behavior.
+ */
+describe('resolveTier — scope-of-use axis', () => {
+  describe('backward compatibility', () => {
+    it('scope=undefined is identical to current behavior across all paths', () => {
+      const a = resolveTier(versionTech(), item({ version: '19', depth: 'working' }));
+      const b = resolveTier(versionTech(), item({ version: '17', depth: 'deep' }));
+      const c = resolveTier(versionTech(), item({ version: '', depth: 'working' }));
+      expect(a.color).toBe('green');
+      expect(a.scopeCapped).toBeFalsy();
+      expect(b.color).toBe('green'); // depth-lifted
+      expect(b.scopeCapped).toBeFalsy();
+      expect(c.color).toBe('yellow');
+      expect(c.scopeCapped).toBeFalsy();
+    });
+
+    it('scope=operator preserves current behavior (default-implied)', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep', scope: 'operator' }));
+      expect(r.color).toBe('green');
+      expect(r.depthAdjusted).toBe(true);
+      expect(r.scopeCapped).toBeFalsy();
+    });
+  });
+
+  describe('reviewer scope caps at Yellow', () => {
+    it('scope=reviewer + depth=very-deep + Green version → caps to Yellow', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', depth: 'very-deep', scope: 'reviewer' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+      expect(r.depthAdjusted).toBe(false);
+      expect(r.label).toMatch(/capped — reviewer scope/);
+    });
+
+    it('scope=reviewer + Yellow version stays Yellow (no cap fires — already there)', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'working', scope: 'reviewer' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(false);
+    });
+
+    it('scope=reviewer + Red version stays Red (cap is a ceiling, not a floor)', () => {
+      const r = resolveTier(versionTech(), item({ version: '12', depth: 'working', scope: 'reviewer' }));
+      expect(r.color).toBe('red');
+      expect(r.scopeCapped).toBe(false);
+    });
+
+    it('scope=reviewer overrides depth-lift: Yellow + deep would be Green, but caps back to Yellow', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep', scope: 'reviewer' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+      expect(r.depthAdjusted).toBe(false);
+    });
+  });
+
+  describe('architect scope behaves identically to reviewer', () => {
+    it('scope=architect + depth=very-deep + Green → caps to Yellow', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', depth: 'very-deep', scope: 'architect' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+      expect(r.label).toMatch(/capped — architect scope/);
+    });
+  });
+
+  describe('author scope restricts depth lift', () => {
+    it('scope=author + depth=deep + Yellow version → STAYS Yellow (no lift to Green)', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep', scope: 'author' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('scope=author + depth=very-deep + Red version → still lifts to Yellow', () => {
+      const r = resolveTier(versionTech(), item({ version: '12', depth: 'very-deep', scope: 'author' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(false);
+      expect(r.depthAdjusted).toBe(true);
+    });
+
+    it('scope=author + natural Green version → STAYS Green (no overall cap)', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', depth: 'working', scope: 'author' }));
+      expect(r.color).toBe('green');
+      expect(r.scopeCapped).toBe(false);
+    });
+
+    it('scope=author + working depth + Yellow stays Yellow (no lift attempted)', () => {
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'working', scope: 'author' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(false);
+    });
+  });
+
+  describe('scope in checklist mode', () => {
+    it('scope=reviewer caps a Green coverage verdict to Yellow', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({
+          selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5', 'svc-6', 'svc-7'],
+          checklistTouched: true,
+          scope: 'reviewer',
+        })
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+      expect(r.label).toMatch(/capped — reviewer scope/);
+      // Coverage suffix still appears.
+      expect(r.label).toMatch(/7\/10 services/);
+    });
+
+    it('scope=author + depth=deep + Yellow coverage stays Yellow (no lift to Green)', () => {
+      const r = resolveTier(
+        checklistTech(),
+        item({
+          selectedServices: ['svc-1', 'svc-2', 'svc-3'], // 3/10 = Yellow band
+          checklistTouched: true,
+          depth: 'deep',
+          scope: 'author',
+        })
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+    });
+  });
+
+  describe('scope interacts with other flags correctly', () => {
+    it('notUsed takes precedence over scope (no scoring happens at all)', () => {
+      const r = resolveTier(versionTech(), item({ version: '19', notUsed: true, scope: 'reviewer' }));
+      expect(r.skipped).toBe(true);
+      expect(r.scopeCapped).toBeFalsy();
+    });
+
+    it('unknownVersion + scope=reviewer + meaningful depth → cap kicks in even though base is already Yellow', () => {
+      // Yellow base + deep would lift to Green; reviewer caps it back to Yellow.
+      const r = resolveTier(versionTech(), item({ version: '', depth: 'deep', scope: 'reviewer' }));
+      expect(r.color).toBe('yellow');
+      expect(r.scopeCapped).toBe(true);
+      expect(r.depthAdjusted).toBe(false);
+    });
+
+    it('scope=reviewer + Yellow tier + enterpriseStillUsed → still shows enterprise note', () => {
+      // Cap doesn't change the tier color in this case (already Yellow), so the
+      // Yellow-only enterprise note continues to fire.
+      const r = resolveTier(versionTech(), item({ version: '17', depth: 'working', scope: 'reviewer' }));
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toMatch(/widely used/);
+    });
+  });
+});

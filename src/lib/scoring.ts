@@ -2,6 +2,7 @@ import type {
   AssessmentItem,
   Depth,
   ResolvedTier,
+  Scope,
   Technology,
   TierColor,
 } from '../types';
@@ -31,6 +32,54 @@ function adjustForDepth(color: TierColor, depth: Depth): {
   if (sev === 0) return { color, adjusted: false };
   const improved = COLOR_ORDER[sev - 1];
   return { color: improved, adjusted: true };
+}
+
+/**
+ * Scope-of-use post-processing. Runs *after* depth adjustment and may revert
+ * or cap it. Closes the cluster of misreadings where reviewers, architects,
+ * and notebook-authors get scored like operators.
+ *
+ * - operator / undefined → no-op (pre-scope behavior)
+ * - reviewer / architect → ceiling at Yellow. Knowing the shape without running
+ *   it in prod cannot be Green, regardless of how deep the depth claim is.
+ * - author              → no overall ceiling, but the depth lift cannot push
+ *   Yellow → Green. Red → Yellow lifts still go through (they have hands-on
+ *   *with the code*; they just don't operate it).
+ */
+function applyScope(
+  baseColor: TierColor,
+  adjusted: { color: TierColor; adjusted: boolean },
+  scope: Scope | undefined
+): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean } {
+  if (!scope || scope === 'operator') {
+    return {
+      color: adjusted.color,
+      depthAdjusted: adjusted.adjusted,
+      scopeCapped: false,
+    };
+  }
+  if (scope === 'reviewer' || scope === 'architect') {
+    if (SEVERITY[adjusted.color] < SEVERITY.yellow) {
+      // Whether the Green came from a natural tier match or a depth-lift,
+      // the cap erases it — depthAdjusted reset to false so callers don't
+      // claim credit for a lift the cap removed.
+      return { color: 'yellow', depthAdjusted: false, scopeCapped: true };
+    }
+    return {
+      color: adjusted.color,
+      depthAdjusted: adjusted.adjusted,
+      scopeCapped: false,
+    };
+  }
+  // scope === 'author'
+  if (adjusted.adjusted && baseColor === 'yellow' && adjusted.color === 'green') {
+    return { color: 'yellow', depthAdjusted: false, scopeCapped: true };
+  }
+  return {
+    color: adjusted.color,
+    depthAdjusted: adjusted.adjusted,
+    scopeCapped: false,
+  };
 }
 
 const LABEL_MAP: Record<TierColor, string> = {
@@ -72,6 +121,7 @@ function resolveVersionTier(
   if (item.unknownVersion || !item.version || !looksLikeVersion(item.version)) {
     const baseColor: TierColor = 'yellow';
     const adjusted = adjustForDepth(baseColor, item.depth);
+    const scoped = applyScope(baseColor, adjusted, item.scope);
     // Suppress the "still widely used in enterprise" reassurance when the
     // candidate has neither a version NOR meaningful depth. The note is
     // designed for "they're on Cypress 10 because the org won't migrate" —
@@ -81,27 +131,28 @@ function resolveVersionTier(
     const candidateHasMeaningfulDepth =
       item.depth === 'working' || item.depth === 'deep' || item.depth === 'very-deep';
     return {
-      color: adjusted.color,
-      label: adjusted.adjusted
-        ? 'Good (lifted from Review / Probe by depth)'
-        : 'Review / Probe',
+      color: scoped.color,
+      label: composeLabel({
+        finalColor: scoped.color,
+        baseLabel: 'Review / Probe',
+        depthAdjusted: scoped.depthAdjusted,
+        scopeCapped: scoped.scopeCapped,
+        scope: item.scope,
+      }),
       note: tech.guidanceForUnknownVersion,
       enterpriseNote:
         tech.enterpriseStillUsed && candidateHasMeaningfulDepth
           ? 'Still widely used in many enterprise applications.'
           : undefined,
       unknownVersion: true,
-      depthAdjusted: adjusted.adjusted,
+      depthAdjusted: scoped.depthAdjusted,
+      scopeCapped: scoped.scopeCapped,
     };
   }
 
   const tier = findTier(tech, item.version);
   const adjusted = adjustForDepth(tier.color, item.depth);
-
-  let label = tier.label;
-  if (adjusted.adjusted) {
-    label = `${LABEL_MAP[adjusted.color]} (lifted from ${tier.label} by depth)`;
-  }
+  const scoped = applyScope(tier.color, adjusted, item.scope);
 
   // Tier-level flag overrides root. ~20 catalog entries declare the flag at
   // tier level (e.g. Selenium 3, Cypress 10–11) — those want the reassurance
@@ -109,16 +160,43 @@ function resolveVersionTier(
   const enterpriseFlag = tier.enterpriseStillUsed ?? tech.enterpriseStillUsed;
 
   return {
-    color: adjusted.color,
-    label,
+    color: scoped.color,
+    label: composeLabel({
+      finalColor: scoped.color,
+      baseLabel: tier.label,
+      depthAdjusted: scoped.depthAdjusted,
+      scopeCapped: scoped.scopeCapped,
+      scope: item.scope,
+    }),
     note: tier.note,
     enterpriseNote:
       tier.color === 'yellow' && enterpriseFlag
         ? 'Still widely used in many enterprise applications.'
         : undefined,
     unknownVersion: false,
-    depthAdjusted: adjusted.adjusted,
+    depthAdjusted: scoped.depthAdjusted,
+    scopeCapped: scoped.scopeCapped,
   };
+}
+
+/** Centralized label composition: final-tier name, plus parenthetical when
+ *  depth lifted it or scope capped it. Scope cap takes precedence in the
+ *  label — if the cap fired, the lift was either net-zero or erased. */
+function composeLabel(opts: {
+  finalColor: TierColor;
+  baseLabel: string;
+  depthAdjusted: boolean;
+  scopeCapped: boolean;
+  scope: Scope | undefined;
+}): string {
+  const finalLabel = LABEL_MAP[opts.finalColor];
+  if (opts.scopeCapped) {
+    return `${finalLabel} (capped — ${opts.scope} scope)`;
+  }
+  if (opts.depthAdjusted) {
+    return `${finalLabel} (lifted from ${opts.baseLabel} by depth)`;
+  }
+  return opts.baseLabel;
 }
 
 function findTier(tech: Technology, version: string) {
@@ -177,12 +255,18 @@ function resolveChecklistTier(
   else baseColor = 'green';
 
   const adjusted = adjustForDepth(baseColor, item.depth);
+  const scoped = applyScope(baseColor, adjusted, item.scope);
   const ratioPct = Math.round(ratio * 100);
+  const coverageSuffix = ` — ${coverage.selected}/${coverage.total} services`;
 
-  const baseLabel = `${LABEL_MAP[baseColor]} — ${coverage.selected}/${coverage.total} services`;
-  const label = adjusted.adjusted
-    ? `${LABEL_MAP[adjusted.color]} (lifted from ${LABEL_MAP[baseColor]} by depth) — ${coverage.selected}/${coverage.total} services`
-    : baseLabel;
+  const labelCore = composeLabel({
+    finalColor: scoped.color,
+    baseLabel: LABEL_MAP[baseColor],
+    depthAdjusted: scoped.depthAdjusted,
+    scopeCapped: scoped.scopeCapped,
+    scope: item.scope,
+  });
+  const label = `${labelCore}${coverageSuffix}`;
 
   const note =
     coverage.selected === 0
@@ -191,12 +275,13 @@ function resolveChecklistTier(
         `Coverage: ${ratioPct}% of curated services. Depth and last-used context matter — verify production scope, not tutorial scope.`;
 
   return {
-    color: adjusted.color,
+    color: scoped.color,
     label,
     note,
     enterpriseNote: undefined,
     unknownVersion: false,
-    depthAdjusted: adjusted.adjusted,
+    depthAdjusted: scoped.depthAdjusted,
+    scopeCapped: scoped.scopeCapped,
     coverage,
   };
 }
@@ -229,4 +314,13 @@ export function depthLabel(d: Depth): string {
     deep: 'Deep (built features end-to-end)',
     'very-deep': 'Very deep (architected / led)',
   }[d];
+}
+
+export function scopeLabel(s: Scope): string {
+  return {
+    operator: 'Operator (runs in prod)',
+    author: 'Author (writes code that uses it)',
+    reviewer: 'Reviewer (reviews / audits)',
+    architect: 'Architect (designs how it gets used)',
+  }[s];
 }

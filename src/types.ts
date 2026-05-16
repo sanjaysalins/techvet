@@ -37,6 +37,15 @@ export interface Technology {
 
 export type Depth = 'unknown' | 'shallow' | 'working' | 'deep' | 'very-deep';
 
+/** Orthogonal to Depth. Describes *how* the candidate engages with the tech,
+ *  not how deep they've gone. Closes the cluster of misreadings where a
+ *  reviewer / architect / notebook-author scores like an operator:
+ *  - operator  → runs it in prod / manages it (current implicit default)
+ *  - author    → writes code that uses it (Spark in notebooks, not Spark in prod)
+ *  - reviewer  → reviews PRs / policies / audits (Diego on Terraform)
+ *  - architect → designed how it gets used (Aliyah on K8s topology) */
+export type Scope = 'operator' | 'author' | 'reviewer' | 'architect';
+
 export interface AssessmentItem {
   techId: string;
   version: string;
@@ -59,6 +68,9 @@ export interface AssessmentItem {
    *  scoring buckets and the radar; the report renders it in a separate
    *  "Not in candidate's stack" section. */
   notUsed?: boolean;
+  /** Scope of use — orthogonal to Depth. Undefined preserves pre-scope
+   *  behavior (= operator-implied). See `Scope` type for semantics. */
+  scope?: Scope;
 }
 
 export interface ResolvedTier {
@@ -74,6 +86,11 @@ export interface ResolvedTier {
    *  stack" section. The `color` field on a skipped tier is a sentinel
    *  ('yellow') and should not be displayed via the normal tier badge. */
   skipped?: boolean;
+  /** Scope cap fired — the verdict is lower than it would be at this depth
+   *  alone (reviewer/architect ceiling at Yellow, or author depth-lift
+   *  restricted to Red→Yellow only). Surfaces a small caveat in the UI so
+   *  the recruiter sees *why* a deep-experience reviewer didn't land Green. */
+  scopeCapped?: boolean;
 }
 
 export interface AssessmentMeta {

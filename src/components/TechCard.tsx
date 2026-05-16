@@ -1,5 +1,5 @@
-import type { AssessmentItem, Depth, Technology } from '../types';
-import { resolveTier, depthLabel, tierBadgeClass } from '../lib/scoring';
+import type { AssessmentItem, Depth, Scope, Technology } from '../types';
+import { resolveTier, depthLabel, scopeLabel, tierBadgeClass } from '../lib/scoring';
 import { useAssessment } from '../store/assessment';
 import { X, HelpCircle, Slash } from 'lucide-react';
 import { cn } from '../lib/cn';
@@ -12,6 +12,7 @@ interface Props {
 }
 
 const DEPTH_OPTIONS: Depth[] = ['unknown', 'shallow', 'working', 'deep', 'very-deep'];
+const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
 
 export default function TechCard({ tech, item, focused, onFocus }: Props) {
   const { updateItem, removeTech } = useAssessment();
@@ -67,7 +68,7 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
         <VersionBody tech={tech} item={item} />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
         <div>
           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
             Depth
@@ -90,6 +91,29 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
 
         <div>
           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+            Scope of use
+          </label>
+          <select
+            value={item.scope ?? ''}
+            onChange={e =>
+              updateItem(tech.id, {
+                scope: (e.target.value || undefined) as Scope | undefined,
+              })
+            }
+            onClick={e => e.stopPropagation()}
+            className="input"
+          >
+            <option value="">— Not specified</option>
+            {SCOPE_OPTIONS.map(s => (
+              <option key={s} value={s}>
+                {scopeLabel(s)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
             Last used
           </label>
           <input
@@ -104,7 +128,7 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
           />
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-3">
           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
             Notes
           </label>
@@ -119,7 +143,13 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
         </div>
       </div>
 
-      {resolved.depthAdjusted && (
+      {resolved.scopeCapped && (
+        <div className="mt-3 text-xs text-amber-700 dark:text-amber-300 italic">
+          Verdict capped by scope — {item.scope} scope can't earn the higher tier
+          on operating signals alone.
+        </div>
+      )}
+      {!resolved.scopeCapped && resolved.depthAdjusted && (
         <div className="mt-3 text-xs text-emerald-700 dark:text-emerald-300 italic">
           Depth raised this one tier — credit given for hands-on experience.
         </div>

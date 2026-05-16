@@ -8,6 +8,7 @@ import {
   colorScore,
   tierBadgeClass,
   depthLabel,
+  scopeLabel,
 } from '../lib/scoring';
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
@@ -362,12 +363,22 @@ function TierSection({
                   </span>
                 )}
               </div>
-              <div className="text-xs text-slate-600 mt-1">
-                Depth: {depthLabel(item.depth)}
-                {item.lastUsed ? ` · last used ${item.lastUsed}` : ''}
+              <div className="text-xs text-slate-600 mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <span>Depth: {depthLabel(item.depth)}</span>
+                {item.scope && (
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-navy-50 text-navy-700 border border-navy-200 font-medium">
+                    {scopeLabel(item.scope)}
+                  </span>
+                )}
+                {item.lastUsed && <span>· last used {item.lastUsed}</span>}
               </div>
               {tech.vetMode === 'checklist' && (
                 <ServicesList tech={tech} item={item} />
+              )}
+              {tier.scopeCapped && (
+                <div className="text-xs italic text-amber-700 mt-1">
+                  Capped by {item.scope} scope — operates differently than an operator-level signal would imply.
+                </div>
               )}
               {tier.note && (
                 <div className="text-xs text-slate-700 mt-1.5">{tier.note}</div>
