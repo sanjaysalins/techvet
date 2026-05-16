@@ -1,10 +1,11 @@
-# Resume point — TechVet (2026-05-16 EOD — priority #4 + round-2 top-5 fixes (A/B/G/J/L) all shipped)
+# Resume point — TechVet (2026-05-16 EOD — priority #4 + round-2 fixes A/B/G/J/L + K all shipped)
 
-**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **107/107** (was 86 this morning; +21 round-2 regression tests); `npx vite build` clean (1.24 MB / **364.8 KB gzipped**, +1.2 KB). Three things today:
+**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **114/114** (was 86 this morning; +28 regression tests today); `npx vite build` clean (1.24 MB / **365.5 KB gzipped**, +2 KB net). Four things today:
 
 1. **Priority #4 shipped** — scope-of-use axis. Closes the *named* half of yesterday's 12-session cluster.
 2. **Built `simulations/` pipeline + ran 10-session phone-screening round.** 10 independent agents wrote ~19k words of findings into `simulations/rounds/2026-05-16-phone-screening/`. Surfaced **6 code bugs, 10 structural defects, 13+ catalog gaps, 4 substantive pushbacks on shipped work**. Cross-cut + 16-item priority list (A–P) in `cross-cut.md`.
-3. **Shipped round-2 top-5 fixes (A/B/G/J/L)** in ~2 hours (estimate was 2.5 days). The two highest-precision scoring bugs (depth-lift undoing checklist coverage signal; depth-lift on unknown-version) are now closed; the Snowflake/GraphQL/gRPC "Green rubber-stamp" single-tier entries are now checklist-mode; untouched template cards no longer pollute the Probe Further bucket; confirmed-absent + not-discussed sections are now first-class headline chips + prominent report sections.
+3. **Shipped round-2 top-5 fixes (A/B/G/J/L)** in ~2 hours. The two highest-precision scoring bugs closed; Snowflake/GraphQL/gRPC "Green rubber-stamp" single-tier entries now checklist-mode; untouched template cards excluded from buckets; confirmed-absent + not-discussed are headline chips + prominent sections.
+4. **Shipped Fix K — scope-axis UX redesign (hybrid).** Catalog-side `defaultScope: "author"` on all 10 AI/ML libraries so the cap fires automatically without the recruiter touching the dropdown. Interactive `<select>` chip on Summary lets the recruiter tune scope post-call — live verdict update, buckets shift, can move techs between Strengths and Probe Further with one click. Closes the round-2 "scope axis unreachable on phone" finding (10 of 10 sessions). What it does NOT close: Vikram-shape natural-Green over-rate (LangChain 1.x hits Green tier directly, no lift to cap) — that needs Fix O (fast-moving libs max at Yellow without checklist services).
 
 ## Today's commit (2026-05-16)
 
@@ -110,7 +111,7 @@ Tests: **70 → 86** (+16). Build: **363 → 363.6 KB gzipped** (+0.6 KB).
 | **H** | Backend template = JVM-aware (or stack-family chooser) | 1 day | ⏳ — Sarah + Lin + prior round Hiroshi |
 | **I** | Catalog refresh — Vault, Vercel, Stripe, Prisma, SwiftUI, UIKit, Combine, Xcode Cloud, TanStack Query, RTK, Zustand, MLflow, SageMaker-as-AWS-service, Bedrock, Spring Framework, Hibernate, Mockito, Testcontainers, Maven, Gradle, Git, Docker Compose | 3 days | ⏳ — spans 8 of 10 sessions |
 | **J** | Snowflake → checklist mode (and audit other `min: "0"` single-tier entries) | 0.5 day | ✅ today — Snowflake/GraphQL/gRPC all converted (audit found 3, not 1). 12 / 10 / 10 services respectively. +4 integrity tests including a global guard against future single-tier `min:0` regressions |
-| **K** | **Scope-axis UX redesign** — move to post-call enrichment OR auto-default per category | 2 days | ⏳ — **recommended next priority.** 10/10 round 2 sessions found scope unreachable on phone |
+| **K** | Scope-axis UX redesign (hybrid: defaults + post-call chip) | 2 days | ✅ today — `defaultScope` on all 10 AI/ML libs (depth-game now caps automatically); interactive scope chip on Summary with live verdict update. +7 regression tests + 1 integrity guard. Closes 10/10 phone-screening sessions' "scope unreachable" finding. NOTE: does NOT close Vikram natural-Green LangChain — needs Fix O |
 | **L** | Surface "Confirmed not in stack" more prominently on Summary + count chip | 0.5 day | ✅ today — first-class h2 sections + headline chip-row for both confirmed-absent and not-discussed |
 | **M** | Candidate-context block on report (junior/mid/senior/returner/contractor + years) | 1 day | ⏳ — Marcus/Sarah/Janelle/Priya |
 | **N** | `scope=consumer / triggered-by` 5th option for orchestration tools | 0.5 day | ⏳ — do after K |
@@ -119,17 +120,24 @@ Tests: **70 → 86** (+16). Build: **363 → 363.6 KB gzipped** (+0.6 KB).
 
 ## What's next — start here tomorrow
 
-**Recommended next: Fix K — scope-axis UX redesign (2 days).** All 10 round-2 sessions found the dropdown unreachable on phone calls. With A/B/G/J/L now shipped, this is the highest-signal open round-2 item. Concrete options to evaluate:
+**Recommended next: Fix E — `lastUsed` in scoring (1.5 days).** With Fix K shipped, this is the next-highest-signal open round-2 item. Sarah and Dmitri are the canonical cases. Design must be **asymmetric** per Sarah's session: penalize stale Greens (Sam-Ansible from prior round) AND *soften* stale Reds when the version was contemporary at last-use time (Sarah's Spring Boot 2.5 was current when she left in 2022). Same axis, opposite signs depending on whether the version was current-at-the-time.
 
-- **Option 1: Auto-default per category.** AI/ML libs default `author`; cloud + K8s + observability default `operator`; recruiter only flips when the candidate explicitly contradicts. Closes Vikram (`author` default on LangChain caps it). Cheapest; preserves the axis as-is.
-- **Option 2: Post-call enrichment.** Move scope out of TechCard; show it only on Summary as a per-tech chip that defaults from depth, with one-click re-tagging. Recruiter does it AFTER the call when they have a second. Tomás/Sarah/Vikram all argued for this independently.
-- **Option 3: Hybrid.** Default per category (Option 1) + post-call chip (Option 2). Recruiter never has to think about it mid-call; corrections are one click on Summary.
+Implementation outline:
+- Parse `item.lastUsed` (free-text today: "current role", "2 years ago", "2022") in new `lib/lastUsed.ts` → coarse bucket `current | recent (≤1yr) | stale (≥2yr) | ancient (≥5yr) | unknown`.
+- Add `versionTier.firstAvailable` (year) to catalog tiers so the scorer can compute "was this version current when last used?"
+- Plumb into `scoring.ts` after scope (order: tier → depth → scope → recency):
+  - `stale` Green + version-current-at-the-time → no penalty
+  - `stale` Green + version-was-already-old-at-the-time → −1 tier
+  - `stale|ancient` Red + version-was-current-at-last-use → +1 tier (Red→Yellow softener with "Returner: ramp-up expected" note)
+  - All else: no change
+- New `recencyAdjusted: boolean` + `recencyNote?: string` on ResolvedTier.
+- Interactions: scope cap precedes recency (no double-discount); notUsed still short-circuits.
+- UI: small recency chip on TechCard + Summary; lastUsed parser feedback in the input.
+- Tests: 8-10 — current parsing, stale parsing, ancient parsing, contemporary-version softening, stale-version penalty, interactions with scope cap.
 
-I'd recommend prototyping Option 3 — costs an extra ~0.5d but closes both the "didn't reach the dropdown" failure (Option 1's contribution) and the "wrong default in edge cases" failure (Option 2's contribution).
+**After E:** Fix I (catalog refresh, 3 days — Vault, Vercel, Stripe, Prisma, SwiftUI/UIKit/Combine/Xcode Cloud, MLflow, SageMaker-as-AWS-service, TanStack Query, Spring Framework, Hibernate, etc.). Ongoing in parallel.
 
-**After K:** Fix E (`lastUsed` in scoring, **asymmetric design** per Sarah — penalize stale Greens AND soften stale Reds when version was contemporary). 1.5 days.
-
-**Then ongoing in parallel:** Fix I (catalog refresh, 3 days).
+**Then Fix O** (1 day) — fast-moving libs (LangChain, vector DBs, llm-api-sdk) max at Yellow without checklist services. Closes the Vikram natural-Green case that Fix K cannot reach.
 
 ### Reference: original priority #5 plan (PRE-Sarah's design wrinkle, kept for diff)
 
@@ -175,7 +183,16 @@ I'd recommend prototyping Option 3 — costs an extra ~0.5d but closes both the 
 - `src/lib/__tests__/scoring.test.ts` — updated 5 tests for changed behavior (depth-lift no longer fires); +19 new regression tests across Fix A (checklist no lift), Fix B (unknown-version no lift), Fix G (notDiscussed flag transitions).
 - `src/data/__tests__/integrity.test.ts` — +4 Fix J tests including a global guard (no single-tier `min:"0"` entries ever again) + per-tech checklist-shape pins for Snowflake/GraphQL/gRPC.
 
-**Test totals:** 70 → 86 (scope) → **107** (round-2 fixes). +21 regression tests today total.
+**Test totals:** 70 → 86 (scope) → 107 (round-2 fixes A/B/G/J) → **114** (Fix K). +28 regression tests today total.
+
+**EOD-2 (round-2 Fix K — scope-axis UX redesign):**
+- `src/types.ts` — added `defaultScope?: Scope` to `Technology` (catalog-level scope default).
+- `src/lib/scoring.ts` — `resolveTier` computes `effectiveScope = item.scope ?? tech.defaultScope` and passes through `itemWithEffectiveScope` to the version/checklist paths. Explicit user choice always wins; the existing applyScope logic doesn't need to change.
+- `src/data/technologies.json` — added `"defaultScope": "author"` to all 10 AI/ML category libs (pytorch/tensorflow/langchain/huggingface-transformers/llm-api-sdk/vector-db/scikit-learn/pandas/numpy/jupyter). Surgical sed insertion preserved the existing per-entry formatting.
+- `src/components/TechCard.tsx` — scope dropdown's empty option shows `— Use default: author` when a catalog default exists. Amber cap-explanation note uses `item.scope ?? tech.defaultScope` and adds a "catalog default; override in Scope dropdown above" hint when the cap came from the default.
+- `src/screens/Summary.tsx` — new `ScopeChip` component: interactive `<select>` styled as a chip; reads/writes via `useAssessment.updateItem`; verdict re-resolves and buckets shift live as the recruiter changes scope post-call. New "Tune scope before exporting" banner above `#report-root` (outside the PDF capture area) when any scored tech has implicit scope.
+- `src/lib/__tests__/scoring.test.ts` — +6 Fix K regression tests covering default-applies, explicit-overrides, natural-Green-unaffected (Vikram non-closure documented), reviewer-default-caps-natural-Green, backward-compat, and checklist-mode parity.
+- `src/data/__tests__/integrity.test.ts` — +1 integrity guard: every AI/ML category tech must carry `defaultScope: "author"`. Loud regression if a future agent adds a lib without it.
 
 ## Code state — yesterday's changes (2026-05-15, reference)
 
