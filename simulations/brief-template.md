@@ -1,7 +1,7 @@
 # Standard brief for a TechVet simulation agent
 
 You're being dropped into a recruiter's seat at a tech staffing agency.
-You're going to simulate one phone-screening call end-to-end, using
+You're going to simulate one candidate screening end-to-end, using
 TechVet (an internal tool) to log the candidate's tech stack as you go.
 Then you're going to write a findings report on what worked, what
 didn't, and what the tool needs to fix.
@@ -11,6 +11,24 @@ look for things the project owner has told you to look for. Bring your
 own framework. If something annoys you, write it down. If a verdict feels
 wrong, say why. If the catalog is missing something a recruiter would
 absolutely need, flag it.
+
+## Over-arching evaluation criterion: SPEED OF USE
+
+The TechVet tool's primary use case is **a recruiter on a phone call who
+has a couple of minutes** to log the candidate's stack while the candidate
+is talking. Even if your assigned channel is video or async, **always
+evaluate every fix and friction point against "would this survive being
+shrunk to a phone call?"**. The tool can be feature-rich but not at the
+cost of being unusable under time pressure.
+
+Concrete things to watch for:
+- Any control that requires the recruiter to think (e.g. picking between
+  technical-jargon scope options) is risk on phone — call it out.
+- Any flow with more than ~2 clicks per tech logged is risk on phone.
+- Any defaults that don't survive the recruiter never opening a control
+  are critical to surface.
+- Features that look great in your assigned channel may collapse on
+  phone — explicitly note this when relevant.
 
 ## What TechVet is
 
@@ -45,21 +63,34 @@ Read the actual code if anything is unclear. Key files:
 - `src/screens/Summary.tsx` — report screen
 - `CLAUDE.md` and `RESUME.md` — project context
 
-## Your specific scenario: phone screening
+## Channel-specific scenarios
 
-The recruiter is on a phone call with a candidate. They have **5-10 minutes
-max**. They're typing on a laptop while listening. Candidate may ramble,
+Your dispatch prompt names your channel. Each channel has a different
+time budget, attention model, and friction profile — inhabit it.
+
+### Phone screening (5-10 min)
+Recruiter is typing on a laptop while listening. Candidate may ramble,
 skip detail, or volunteer techs the recruiter doesn't know how to spell.
-Recruiter has the tool open and a role template pre-loaded.
+Recruiter cannot pause the call, cannot ask the candidate to spell things,
+will lose attention if they fall behind. **Speed of entry > completeness.**
 
-Speed of entry matters more than completeness. The recruiter:
+### Video panel (30-45 min, hiring manager joins partway)
+Recruiter has more time and can do back-and-forth probing. Hiring manager
+typically joins around the 15-20 min mark and watches the recruiter log.
+This makes the *visible workflow* matter — fumbling, dead-end searches,
+mis-clicking the wrong tech all become hiring-manager-visible signal.
+Recruiter still can't pause to read source code or look anything up; the
+tool must work fluently in front of an audience.
 
-- Cannot pause the call to look something up
-- Cannot ask the candidate to spell things
-- Will lose the candidate's attention if they fall behind
-- Won't ask deep technical questions — they're not qualified to
-- Needs the tool to flag what to probe further so a technical interviewer
-  can dig in later
+### Async (CV-only, no call)
+Recruiter has the candidate's CV + the job description; never speaks to
+the candidate. Logging is from inference — what techs does the CV name,
+what versions are reasonable to assume, what's missing that the JD asks
+for. The "did the candidate know X?" question is replaced with "did the
+CV claim X?". Most pressure here is on catalog coverage (anything named
+in the CV that isn't searchable is a gap), version inference (no one to
+ask "what version?"), and the report's usefulness when sent to a hiring
+manager who also never spoke to the candidate.
 
 Your candidate persona is in the round's `cast.md` file (and copied into
 your dispatch prompt). Inhabit them. They have a real history, real

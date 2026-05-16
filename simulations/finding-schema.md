@@ -77,6 +77,27 @@ Numbered list. For each:
 **Title.** What. Why it matters. Evidence (file:line where useful). Severity
 (your call — Critical / High / Medium / Low).
 
+## 6b. Speed-of-use rating (REQUIRED — added 2026-05-16 round 3)
+
+The tool's primary use case is a phone call where the recruiter has a
+couple of minutes total. Rate this session's workflow against that
+constraint, **even if your assigned channel was video or async**.
+
+- **Entry time (estimate).** Roughly how many seconds did it take to log a
+  typical tech with the controls the recruiter used? Add up search +
+  click-add + type-version + pick-depth + (optional) pick-scope. Phone
+  budget is ~10-15 seconds per tech to stay in flight.
+- **Phone-shrink test.** If this exact workflow were run on a phone
+  (5-10 min, recruiter typing while listening, no time to look anything
+  up), what specifically breaks? Name the controls / paths.
+- **Friction that vanishes on phone.** Things the recruiter did *because
+  they had time* (e.g. reading checklist items aloud, opening the scope
+  dropdown to think) that they couldn't do on a phone call.
+- **Risk / safe rating.** Your call — Safe (would survive a phone call) /
+  At-risk (needs at least one fix) / Unworkable (would fail outright).
+
+This section feeds the cross-cut's prioritization. Be concrete.
+
 ## 7. Catalog gaps
 
 Techs the candidate named that aren't in `technologies.json`, or are there
