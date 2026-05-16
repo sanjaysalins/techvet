@@ -910,7 +910,13 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
       expect(r.recencyAdjusted).toBeFalsy();
     });
 
-    it('checklist mode + stale → no recency adjustment (coverage is the signal, not version freshness)', () => {
+    // Round-6 6A: recency now applies to checklist mode too. The previous
+    // "coverage is the signal, not version freshness" rationale held until
+    // Margarethe surfaced that an AWS-checklist tick from 2022 carries the
+    // same staleness story as a version-mode 2022 match. Green coverage +
+    // ancient lastUsed → Green penalty (symmetric with version mode), so the
+    // tick can't impersonate live production knowledge.
+    it('checklist mode + Green coverage + ancient lastUsed → Green-stale penalty fires', () => {
       const r = resolveTier(
         checklistTech(),
         item({
@@ -919,8 +925,46 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
           lastUsed: '2020',
         })
       );
-      expect(r.color).toBe('green');
-      expect(r.recencyAdjusted).toBeFalsy();
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.recencyNote).toMatch(/Stale/);
+      expect(r.recencyNote).toMatch(/verify currency/);
+    });
+
+    // Round-6 6A: Red coverage + enterpriseStillUsed + stale → softener fires
+    // (Margarethe's AWS at 3/14 = 21% lastUsed=2022). Symmetric with version
+    // mode's Red softener.
+    it('checklist mode + Red coverage + enterpriseStillUsed + stale → softens to Yellow with returner note', () => {
+      const tech = checklistTech({ id: 'aws-mock', name: 'AWS', enterpriseStillUsed: true });
+      const r = resolveTier(
+        tech,
+        item({
+          techId: 'aws-mock',
+          selectedServices: ['svc-1', 'svc-2'], // 2/10 = 20% Red
+          checklistTouched: true,
+          lastUsed: '2022',
+        })
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.recencyNote).toMatch(/contemporary at last-use/);
+      expect(r.recencyNote).toMatch(/returner shape/);
+    });
+
+    // Round-6 6A: checklist coverage suffix still appears alongside softener.
+    it('checklist softener composes with coverage suffix in label', () => {
+      const tech = checklistTech({ id: 'aws-mock', name: 'AWS', enterpriseStillUsed: true });
+      const r = resolveTier(
+        tech,
+        item({
+          techId: 'aws-mock',
+          selectedServices: ['svc-1', 'svc-2'],
+          checklistTouched: true,
+          lastUsed: '2022',
+        })
+      );
+      expect(r.label).toMatch(/softened from Concern/);
+      expect(r.label).toMatch(/2\/10 services/);
     });
 
     it('unknown-version + stale → no recency adjustment (no version to anchor)', () => {
@@ -933,6 +977,108 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
       const r = resolveTier(versionTech(), item({ version: '19', notUsed: true, lastUsed: '2018' }));
       expect(r.skipped).toBe(true);
       expect(r.recencyAdjusted).toBeFalsy();
+    });
+  });
+
+  // Round-6 6C: gate the enterpriseStillUsed softener on `seniority !== 'junior'`.
+  // Mei's Next.js 12 on a team-hasn't-upgraded stack should NOT read as
+  // "defensible legacy" — it should read as a probe target so the recruiter
+  // surfaces the App Router / RSC gap. Penalty branch still fires for juniors
+  // (stale Greens still penalize regardless of seniority). Only the softener
+  // direction is gated.
+  describe('seniority gate on enterpriseStillUsed softener (6C)', () => {
+    it('version mode: Yellow + enterpriseStillUsed + stale + seniority=junior → NO softener (stays Yellow, no recencyAdjusted)', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '17', lastUsed: '2022' }),
+        { seniority: 'junior' }
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('version mode: Red + enterpriseStillUsed + stale + seniority=junior → NO softener (stays Red — probe target, not defensible legacy)', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '12', lastUsed: '2022' }),
+        { seniority: 'junior' }
+      );
+      expect(r.color).toBe('red');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('checklist mode: Red coverage + enterpriseStillUsed + stale + seniority=junior → NO softener (stays Red)', () => {
+      const tech = checklistTech({ id: 'aws-mock', name: 'AWS', enterpriseStillUsed: true });
+      const r = resolveTier(
+        tech,
+        item({
+          techId: 'aws-mock',
+          selectedServices: ['svc-1', 'svc-2'],
+          checklistTouched: true,
+          lastUsed: '2022',
+        }),
+        { seniority: 'junior' }
+      );
+      expect(r.color).toBe('red');
+      expect(r.recencyAdjusted).toBeFalsy();
+    });
+
+    it('Green-stale penalty still fires for juniors (penalty side is NOT gated)', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '19', lastUsed: '2022' }),
+        { seniority: 'junior' }
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.recencyNote).toMatch(/verify currency/);
+    });
+
+    it('seniority=mid: softener still fires (only junior is gated)', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '12', lastUsed: '2022' }),
+        { seniority: 'mid' }
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+      expect(r.recencyNote).toMatch(/contemporary/);
+    });
+
+    it('seniority undefined (back-compat): softener still fires', () => {
+      const r = resolveTier(versionTech(), item({ version: '12', lastUsed: '2022' }));
+      expect(r.color).toBe('yellow');
+      expect(r.recencyAdjusted).toBe(true);
+    });
+
+    it('unknown-version + enterpriseStillUsed + seniority=junior → NO enterpriseNote', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '', depth: 'working' }),
+        { seniority: 'junior' }
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+
+    it('Yellow tier-match + enterpriseStillUsed + seniority=junior → NO enterpriseNote (Mei Next.js 12 scenario)', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '17' }), // Yellow tier
+        { seniority: 'junior' }
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toBeUndefined();
+    });
+
+    it('Yellow tier-match + enterpriseStillUsed + seniority=mid → enterpriseNote still fires (only junior gated)', () => {
+      const r = resolveTier(
+        versionTech(),
+        item({ version: '17' }),
+        { seniority: 'mid' }
+      );
+      expect(r.color).toBe('yellow');
+      expect(r.enterpriseNote).toMatch(/widely used/);
     });
   });
 

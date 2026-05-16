@@ -3,6 +3,7 @@ import type {
   Depth,
   ResolvedTier,
   Scope,
+  Seniority,
   Technology,
   TierColor,
 } from '../types';
@@ -118,7 +119,8 @@ const LABEL_MAP: Record<TierColor, string> = {
 function applyRecency(
   current: { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean },
   lastUsed: string,
-  tech: Technology
+  tech: Technology,
+  seniority?: Seniority
 ): { color: TierColor; depthAdjusted: boolean; scopeCapped: boolean; recencyAdjusted: boolean; recencyNote?: string; recencyDirection?: 'softener' | 'penalty' } {
   const { bucket } = parseLastUsed(lastUsed);
 
@@ -142,20 +144,14 @@ function applyRecency(
     };
   }
 
-  // Soften stale non-Greens for enterprise-still-used techs. The flag is
-  // the catalog's signal that the tech is still around AND old versions
-  // are defensible (e.g. Spring Boot 2.x, Selenium 3, Cypress 10, PG 13).
-  // Round-5 Margarethe surfaced that the pre-fix guard `=== 'red'` skipped
-  // Yellow-tier stale (PG 13 + Java 11), so a Sarah-shape returner with
-  // mixed Red+Yellow legacy got half-soothed. Broadened to `!== 'green'`
-  // so both buckets soften. For Yellow→Yellow the COLOR doesn't change
-  // but the label + sky note carry the returner story to the HM (otherwise
-  // the report reads "currently on PG 13" instead of "PG 13 in 2022").
-  // After the Green-penalty branch above, current.color is narrowed to
-  // 'yellow' | 'red'. Round-5 5α: both buckets soften if the catalog
-  // marks the tech as enterpriseStillUsed (Margarethe's PG 13 Yellow-tier
-  // stale was getting skipped pre-5α and reading as "currently on PG 13").
-  if (tech.enterpriseStillUsed) {
+  // Soften stale non-Greens for enterprise-still-used techs. Round-6 Mei
+  // surfaced that this reassurance misfires for juniors on "team hasn't
+  // upgraded" stacks (Next.js 12 reads as defensible-legacy, masking a
+  // real junior gap on App Router). Round-6 6C: skip the softener when
+  // `seniority === 'junior'`; let juniors stay Yellow/Red so the recruiter
+  // probes the gap rather than soothing past it. Returner / mid / senior
+  // shapes still soften.
+  if (tech.enterpriseStillUsed && seniority !== 'junior') {
     return {
       color: 'yellow',
       // Preserve upstream flags so the scope-cap note can still render
@@ -176,7 +172,8 @@ function applyRecency(
 
 export function resolveTier(
   tech: Technology,
-  item: AssessmentItem
+  item: AssessmentItem,
+  opts?: { seniority?: Seniority }
 ): ResolvedTier {
   // Candidate explicitly does not work with this tech. Excluded from
   // scoring entirely — buckets and radar must filter on `skipped`.
@@ -205,14 +202,15 @@ export function resolveTier(
       : item;
 
   if (tech.vetMode === 'checklist') {
-    return resolveChecklistTier(tech, itemWithEffectiveScope);
+    return resolveChecklistTier(tech, itemWithEffectiveScope, opts?.seniority);
   }
-  return resolveVersionTier(tech, itemWithEffectiveScope);
+  return resolveVersionTier(tech, itemWithEffectiveScope, opts?.seniority);
 }
 
 function resolveVersionTier(
   tech: Technology,
-  item: AssessmentItem
+  item: AssessmentItem,
+  seniority?: Seniority
 ): ResolvedTier {
   if (item.unknownVersion || !item.version || !looksLikeVersion(item.version)) {
     const baseColor: TierColor = 'yellow';
@@ -247,8 +245,12 @@ function resolveVersionTier(
         scope: item.scope,
       }),
       note: tech.guidanceForUnknownVersion,
+      // Round-6 6C: same juniors-misfire gate as the recency softener.
+      // "Still widely used in enterprise" reassures the HM that a stale
+      // version is defensible — exactly the wrong framing for a junior on
+      // a stack the team hasn't upgraded (Mei/Next.js 12 vs App Router gap).
       enterpriseNote:
-        tech.enterpriseStillUsed && candidateHasMeaningfulDepth
+        tech.enterpriseStillUsed && candidateHasMeaningfulDepth && seniority !== 'junior'
           ? 'Still widely used in many enterprise applications.'
           : undefined,
       unknownVersion: true,
@@ -264,7 +266,7 @@ function resolveVersionTier(
   // Fix E: recency runs AFTER scope so its asymmetric softener/penalty
   // applies to the post-scope verdict (not the raw tier match). Order
   // matters: tier → depth → scope → recency.
-  const withRecency = applyRecency(scoped, item.lastUsed, tech);
+  const withRecency = applyRecency(scoped, item.lastUsed, tech, seniority);
 
   // Tier-level flag overrides root. ~20 catalog entries declare the flag at
   // tier level (e.g. Selenium 3, Cypress 10–11) — those want the reassurance
@@ -283,8 +285,10 @@ function resolveVersionTier(
       recencyDirection: withRecency.recencyDirection,
     }),
     note: tier.note,
+    // Round-6 6C: gate enterpriseNote on seniority !== 'junior' (see
+    // unknown-version branch comment above for rationale).
     enterpriseNote:
-      tier.color === 'yellow' && enterpriseFlag && !withRecency.recencyAdjusted
+      tier.color === 'yellow' && enterpriseFlag && !withRecency.recencyAdjusted && seniority !== 'junior'
         ? 'Still widely used in many enterprise applications.'
         : undefined,
     unknownVersion: false,
@@ -336,7 +340,8 @@ function findTier(tech: Technology, version: string) {
 
 function resolveChecklistTier(
   tech: Technology,
-  item: AssessmentItem
+  item: AssessmentItem,
+  seniority?: Seniority
 ): ResolvedTier {
   const services = tech.services ?? [];
   const validIds = new Set(services.map(s => s.id));
@@ -390,15 +395,25 @@ function resolveChecklistTier(
   // architect caps continue to fire (Aliyah-style reviewers on K8s checklists).
   const noLift = { color: baseColor, adjusted: false };
   const scoped = applyScope(baseColor, noLift, item.scope);
+  // Round-6 6A (was round-5 5κ, deferred): apply Fix E recency to checklist
+  // mode too. Margarethe's AWS at 3/14 = 21% reads Red (correct on raw
+  // coverage), but her lastUsed=2022 + enterpriseStillUsed AWS catalog flag
+  // tells the returner story — Red → Yellow softened with "returner shape"
+  // note. Stale Greens (Green coverage but ancient) also penalize via the
+  // same asymmetric logic. Order matches version-mode: coverage → scope →
+  // recency. The 6C seniority gate inside applyRecency also applies here.
+  const withRecency = applyRecency(scoped, item.lastUsed, tech, seniority);
   const ratioPct = Math.round(ratio * 100);
   const coverageSuffix = ` — ${coverage.selected}/${coverage.total} services`;
 
   const labelCore = composeLabel({
-    finalColor: scoped.color,
+    finalColor: withRecency.color,
     baseLabel: LABEL_MAP[baseColor],
-    depthAdjusted: scoped.depthAdjusted,
-    scopeCapped: scoped.scopeCapped,
+    depthAdjusted: withRecency.depthAdjusted,
+    scopeCapped: withRecency.scopeCapped,
     scope: item.scope,
+    recencyAdjusted: withRecency.recencyAdjusted,
+    recencyDirection: withRecency.recencyDirection,
   });
   const label = `${labelCore}${coverageSuffix}`;
 
@@ -409,14 +424,16 @@ function resolveChecklistTier(
         `Coverage: ${ratioPct}% of curated services. Depth and last-used context matter — verify production scope, not tutorial scope.`;
 
   return {
-    color: scoped.color,
+    color: withRecency.color,
     label,
     note,
     enterpriseNote: undefined,
     unknownVersion: false,
-    depthAdjusted: scoped.depthAdjusted,
-    scopeCapped: scoped.scopeCapped,
+    depthAdjusted: withRecency.depthAdjusted,
+    scopeCapped: withRecency.scopeCapped,
     coverage,
+    recencyAdjusted: withRecency.recencyAdjusted,
+    recencyNote: withRecency.recencyNote,
   };
 }
 

@@ -1929,6 +1929,7 @@
     "name": "AWS (Amazon Web Services)",
     "category": "Cloud",
     "defaultScope": "operator",
+    "enterpriseStillUsed": true,
     "vetMode": "checklist",
     "services": [
       { "id": "ec2", "name": "EC2 (Compute / VMs)", "tags": ["general", "container"] },
@@ -1972,6 +1973,7 @@
     "name": "Microsoft Azure",
     "category": "Cloud",
     "defaultScope": "operator",
+    "enterpriseStillUsed": true,
     "vetMode": "checklist",
     "services": [
       {
@@ -2041,6 +2043,7 @@
     "name": "Google Cloud Platform (GCP)",
     "category": "Cloud",
     "defaultScope": "operator",
+    "enterpriseStillUsed": true,
     "vetMode": "checklist",
     "services": [
       {

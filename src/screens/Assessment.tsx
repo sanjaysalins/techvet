@@ -64,7 +64,7 @@ export default function Assessment() {
   const focusedTech = focusedTechId ? TECH_BY_ID.get(focusedTechId) : null;
   const focusedItem = items.find(i => i.techId === focusedTechId) ?? null;
   const focusedResolved =
-    focusedTech && focusedItem ? resolveTier(focusedTech, focusedItem) : null;
+    focusedTech && focusedItem ? resolveTier(focusedTech, focusedItem, { seniority: meta.seniority }) : null;
 
   const alreadyAdded = new Set(items.map(i => i.techId));
 
@@ -403,9 +403,14 @@ function MethodologySection() {
     setFreeText('');
   }
 
-  // Hide entirely if no template chips AND no entries yet (Custom + nothing
-  // typed): keeps the Assessment screen clean for the no-methodology case.
-  if (chips.length === 0 && meta.methodologyEntries.length === 0) return null;
+  // Round-6 6B (was round-5 bug 6β): always render the section. The prior
+  // early-return on `chips.length === 0 && entries.length === 0` silently
+  // hid methodology capture from Mobile / Frontend / Backend / Custom
+  // templates — recruiter never discovered free-text entry exists, dropping
+  // signal like "I run A/B feature-flag rollouts" (Priya) and "I own
+  // STRIDE threat-models" on shapes without curated chips. When chips=[]
+  // we show the free-text input + a hint instead.
+  const hasNoChips = chips.length === 0;
 
   return (
     <div className="card p-5 mb-6">
@@ -435,6 +440,11 @@ function MethodologySection() {
               </button>
             ))}
           </div>
+        </div>
+      )}
+      {hasNoChips && meta.methodologyEntries.length === 0 && (
+        <div className="mb-3 text-xs text-slate-500 dark:text-slate-400 italic">
+          No template chips — type any methodology / practice and press Enter to add (e.g. release automation, A/B feature flags, MVVM, threat modelling).
         </div>
       )}
       <div className="mb-3 flex gap-2">

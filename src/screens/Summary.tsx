@@ -38,9 +38,9 @@ export default function Summary() {
     return items.flatMap(item => {
       const tech = TECH_BY_ID.get(item.techId);
       if (!tech) return [];
-      return [{ tech, item, tier: resolveTier(tech, item) }];
+      return [{ tech, item, tier: resolveTier(tech, item, { seniority: meta.seniority }) }];
     });
-  }, [items]);
+  }, [items, meta.seniority]);
 
   // Three exclusion buckets, in order of precedence:
   //   - skipped       (notUsed=true)        — candidate confirmed absent
