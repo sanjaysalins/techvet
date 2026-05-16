@@ -223,8 +223,20 @@ export default function Summary() {
           )}
         </header>
 
-        {/* Headline stats — three scored buckets up top */}
-        <section className="grid grid-cols-3 gap-4 mb-3">
+        {/* Headline stats — scored buckets + methodology when present.
+            Round-5 5ι (Yasmin): bucket headline alone read "weak senior"
+            for an async DS whose evidence lived in the methodology
+            section. Methodology promoted to a 4th card so senior signal
+            is visible at headline glance. 3-col default; 2x2 on mobile,
+            4-col on md+ when methodology fires. */}
+        <section
+          className={
+            'grid gap-4 mb-3 ' +
+            (meta.methodologyEntries.length > 0
+              ? 'grid-cols-2 md:grid-cols-4'
+              : 'grid-cols-3')
+          }
+        >
           <StatCard
             color="green"
             count={buckets.green.length}
@@ -243,6 +255,19 @@ export default function Summary() {
             label="Concern"
             icon={<AlertCircle className="w-5 h-5" />}
           />
+          {meta.methodologyEntries.length > 0 && (
+            <div className="rounded-xl border-2 p-4 bg-emerald-100 text-emerald-900 border-emerald-300">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="w-5 h-5" />
+                <div className="text-xs font-semibold uppercase tracking-wider">
+                  Methodology
+                </div>
+              </div>
+              <div className="text-3xl font-bold mt-1">
+                {meta.methodologyEntries.length}
+              </div>
+            </div>
+          )}
         </section>
         {/* Coverage chips — confirmed-absent and not-discussed counts. Fix L
             (round-2 cross-cut): hiring managers asked to distinguish "asked &
@@ -664,12 +689,41 @@ function ScopeChip({ tech, item }: { tech: Technology; item: AssessmentItem }) {
  * entries. Pre-Bug-4 entries were bare strings — "Burp daily, deep"
  * flattened to "Burp." Now the recruiter can attach depth + lastUsed
  * inline on Summary (same post-call pattern as Fix K's ScopeChip).
- * Stays compact: name + remove on the top row; depth select +
- * lastUsed input on the second row. Defaults rendered as placeholder
- * hints so unset fields don't look like data.
+ *
+ * Round-5 5θ (Yasmin async): in async mode the editor's depth +
+ * lastUsed fields sit empty (no candidate to ask) and render as
+ * cluttered half-empty editors. Now collapse to a compact chip in
+ * async when both fields are empty; expand once either has a value.
+ * Phone/video keep the full editor visible — recruiter captures live.
  */
 function NamedOnlyEditor({ entry }: { entry: NamedOnlyEntry }) {
-  const { updateNamedOnly, removeNamedOnly } = useAssessment();
+  const { updateNamedOnly, removeNamedOnly, meta } = useAssessment();
+
+  const hasEnrichment = entry.depth !== undefined || (entry.lastUsed?.trim().length ?? 0) > 0;
+  const compactAsync = meta.channel === 'async' && !hasEnrichment;
+
+  if (compactAsync) {
+    return (
+      <div className="rounded-md border border-amber-200 bg-amber-50 p-2.5">
+        <div className="flex items-center gap-2">
+          <strong className="text-navy-900 text-sm flex-1 min-w-0 truncate">
+            {entry.name}
+          </strong>
+          <span className="text-xs text-amber-700 italic mr-1">
+            no enrichment (async; verify on next step)
+          </span>
+          <button
+            onClick={() => removeNamedOnly(entry.name)}
+            className="text-amber-700 hover:bg-amber-100 rounded p-0.5"
+            aria-label={`Remove ${entry.name}`}
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border border-amber-200 bg-amber-50 p-2.5">
       <div className="flex items-center gap-2 mb-1.5">

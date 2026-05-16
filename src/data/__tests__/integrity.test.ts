@@ -516,12 +516,19 @@ describe('roles.ts — methodology chip catalogs (Fix D4)', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('Data Scientist surfaces causal-inference + Bayesian (Yara/Marisol canonical case)', () => {
+  it('Data Scientist surfaces the 4 causal-inference primitives + Bayesian + A/B (round-5 5η: chip split from aggregated label)', () => {
     const ds = ROLE_TEMPLATES.find(r => r.id === 'data-scientist');
     const ids = new Set((ds?.methodologyChips ?? []).map(c => c.id));
-    expect(ids.has('causal-inference')).toBe(true);
+    // 4 separate causal-inference chips (was 1 aggregated `causal-inference`)
+    expect(ids.has('difference-in-differences')).toBe(true);
+    expect(ids.has('instrumental-variables')).toBe(true);
+    expect(ids.has('regression-discontinuity')).toBe(true);
+    expect(ids.has('propensity-scoring')).toBe(true);
+    // The other DS pillars still present
     expect(ids.has('bayesian-inference')).toBe(true);
     expect(ids.has('ab-testing')).toBe(true);
+    // Pre-5η aggregated id is gone
+    expect(ids.has('causal-inference')).toBe(false);
   });
 
   it('SRE surfaces SLOs + error budgets (Robin/Cara canonical case)', () => {

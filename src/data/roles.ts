@@ -157,9 +157,18 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     // Round-3 Yara + round-4 Marisol canonical case: senior DS is
     // differentiated by methodology, not tools. DiD/IV/Bayesian/A/B is
     // the entire signal for causal-inference shops.
+    //
+    // Round-5 5η (Yasmin): the original aggregated chip
+    // "Causal inference (DiD / IV / RDD / propensity)" caused recruiters
+    // reading a CV to free-text DiD and IV separately — three chips for
+    // the same thing. Split into 4 narrower chips so each one ticks
+    // cleanly from a CV mention.
     methodologyChips: [
       { id: 'ab-testing', label: 'A/B testing' },
-      { id: 'causal-inference', label: 'Causal inference (DiD / IV / RDD / propensity)' },
+      { id: 'difference-in-differences', label: 'Difference-in-Differences (DiD)' },
+      { id: 'instrumental-variables', label: 'Instrumental Variables (IV)' },
+      { id: 'regression-discontinuity', label: 'Regression Discontinuity (RDD)' },
+      { id: 'propensity-scoring', label: 'Propensity scoring / matching' },
       { id: 'bayesian-inference', label: 'Bayesian inference' },
       { id: 'experimental-design', label: 'Experimental design + power analysis' },
       { id: 'mcmc', label: 'MCMC / probabilistic programming' },
