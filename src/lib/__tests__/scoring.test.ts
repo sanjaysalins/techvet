@@ -225,6 +225,194 @@ describe('resolveTier — checklist mode', () => {
 });
 
 /**
+ * Round-6 6D (5λ coverage redesign): qualified checklist depth-lift.
+ * Owen / Robin / Cara / Brigit / Tanvir under-rated for 5 rounds — deep-
+ * narrow specialists with mid-Yellow coverage. Fix: lift Yellow → Green
+ * when coverage ≥ 40% AND depth ∈ {deep, very-deep} AND seniority !== junior.
+ * Fix A's 25% floor still holds (Vikram protection); reviewer/architect
+ * scope still caps; junior gate matches 6C's pattern.
+ */
+describe('resolveTier — checklist 6D qualified depth-lift', () => {
+  it('Owen-shape: 8/14 (57%, Yellow) + very-deep + senior → lifts to Green', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 14 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4', 's-5', 's-6', 's-7'],
+        checklistTouched: true,
+        depth: 'very-deep',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(true);
+    expect(r.label).toMatch(/lifted from Review \/ Probe by depth/);
+    expect(r.label).toMatch(/8\/14 services/);
+  });
+
+  it('Robin-shape: 5/12 (42%, Yellow) + deep + senior → lifts to Green', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 12 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4'],
+        checklistTouched: true,
+        depth: 'deep',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(true);
+  });
+
+  it('under coverage floor: 3/10 (30%, Yellow) + very-deep + senior → stays Yellow (under 40%)', () => {
+    const r = resolveTier(
+      checklistTech(),
+      item({
+        selectedServices: ['svc-1', 'svc-2', 'svc-3'],
+        checklistTouched: true,
+        depth: 'very-deep',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('Vikram protection (Fix A floor): 2/10 (20%, Red) + very-deep + senior → stays Red', () => {
+    const r = resolveTier(
+      checklistTech(),
+      item({
+        selectedServices: ['svc-1', 'svc-2'],
+        checklistTouched: true,
+        depth: 'very-deep',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('red');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('insufficient depth: 5/10 (50%, Yellow) + working depth → stays Yellow (no lift without deep claim)', () => {
+    const r = resolveTier(
+      checklistTech(),
+      item({
+        selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5'],
+        checklistTouched: true,
+        depth: 'working',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('junior gate: 8/14 (57%) + very-deep + JUNIOR → stays Yellow (junior depth claims unreliable)', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 14 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4', 's-5', 's-6', 's-7'],
+        checklistTouched: true,
+        depth: 'very-deep',
+      }),
+      { seniority: 'junior' }
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('seniority undefined (back-compat): depth-lift still fires (treats as non-junior)', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 14 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4', 's-5', 's-6', 's-7'],
+        checklistTouched: true,
+        depth: 'very-deep',
+      })
+    );
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(true);
+  });
+
+  it('scope cap still wins: 8/14 + very-deep + reviewer scope → Yellow (scope-cap-from-lifted-Green)', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 14 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4', 's-5', 's-6', 's-7'],
+        checklistTouched: true,
+        depth: 'very-deep',
+        scope: 'reviewer',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.label).toMatch(/capped — reviewer scope/);
+  });
+
+  it('already-Green coverage (10/10) + very-deep → stays Green, no lift fires (already at top)', () => {
+    const r = resolveTier(
+      checklistTech(),
+      item({
+        selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5', 'svc-6', 'svc-7', 'svc-8', 'svc-9', 'svc-10'],
+        checklistTouched: true,
+        depth: 'very-deep',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('green');
+    // Not lifted *via depth* — was already Green from coverage; depthAdjusted false.
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('boundary: exactly 40% (4/10) + deep + senior → lifts (inclusive floor)', () => {
+    const r = resolveTier(
+      checklistTech(),
+      item({
+        selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4'],
+        checklistTouched: true,
+        depth: 'deep',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(true);
+  });
+
+  it('lifted Green + ancient lastUsed → recency penalty fires (composition with 6A)', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 14 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4', 's-5', 's-6', 's-7'],
+        checklistTouched: true,
+        depth: 'very-deep',
+        lastUsed: '2018',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.recencyAdjusted).toBe(true);
+    expect(r.recencyNote).toMatch(/Stale/);
+  });
+});
+
+/**
  * Regression tests for the 5 code bugs surfaced by the 12-session adversarial
  * simulation. Each test pins a specific behavioral fix; do not change without
  * the matching scoring.ts / version.ts / catalog edit.

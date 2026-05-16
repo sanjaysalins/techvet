@@ -388,13 +388,37 @@ function resolveChecklistTier(
   else if (ratio < 0.66) baseColor = 'yellow';
   else baseColor = 'green';
 
-  // Fix A (2026-05-16 round-2 cross-cut): no depth-lift on checklist mode.
-  // Coverage IS the signal in checklist mode — letting a self-reported "deep"
-  // override 17% coverage turns Red→Yellow and 36%→Green just by typing into
-  // the depth dropdown (Vikram/LangChain). Scope still runs so reviewer/
-  // architect caps continue to fire (Aliyah-style reviewers on K8s checklists).
-  const noLift = { color: baseColor, adjusted: false };
-  const scoped = applyScope(baseColor, noLift, item.scope);
+  // Round-6 6D (was deferred 5λ): qualified depth-lift on checklist mode.
+  // Original Fix A (round-2) forbade ANY depth-lift on checklist because
+  // "coverage IS the signal" — Vikram-style over-claiming (2/12 LangChain
+  // services + 'very-deep' should not become Green from a self-report).
+  // That guard still holds for low coverage. But round-1→6 surfaced 5
+  // separate sessions (Robin / Cara / Brigit / Tanvir / Owen) where
+  // deep-narrow specialists with mid-band Yellow coverage (40–66%) were
+  // structurally under-rated — an 18-yr Oracle DBA at 8/14 services +
+  // very-deep reads as "Review / Probe" when he's clearly Green-shape in
+  // his lane.
+  //
+  // Resolution: keep Fix A's floor protection (Red stays Red even with
+  // deep claim — protects Vikram case) but lift Yellow → Green when
+  // ALL of: coverage ≥ 40%, depth ∈ {deep, very-deep}, seniority !==
+  // 'junior'. The 40% floor splits the Yellow band: 25–40% is surface
+  // (Vikram territory) where depth claims can't move the needle, 40–66%
+  // is focused-specialist territory where a deep claim is defensible
+  // and matches Owen's "mutually constraining" recommendation. Junior
+  // gate matches 6C's pattern (junior depth claims unreliable; require
+  // probe rather than soothe via lift). Reviewer/architect scope still
+  // caps the lift, recency still runs after.
+  const COVERAGE_LIFT_FLOOR = 0.4;
+  const depthQualifies = item.depth === 'deep' || item.depth === 'very-deep';
+  const coverageQualifies = ratio >= COVERAGE_LIFT_FLOOR;
+  const seniorityQualifies = seniority !== 'junior';
+  const shouldLift =
+    baseColor === 'yellow' && depthQualifies && coverageQualifies && seniorityQualifies;
+  const adjusted = shouldLift
+    ? { color: 'green' as TierColor, adjusted: true }
+    : { color: baseColor, adjusted: false };
+  const scoped = applyScope(baseColor, adjusted, item.scope);
   // Round-6 6A (was round-5 5κ, deferred): apply Fix E recency to checklist
   // mode too. Margarethe's AWS at 3/14 = 21% reads Red (correct on raw
   // coverage), but her lastUsed=2022 + enterpriseStillUsed AWS catalog flag
