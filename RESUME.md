@@ -1,6 +1,9 @@
-# Resume point — TechVet (2026-05-16 EOD — priority #4 shipped: scope-of-use axis)
+# Resume point — TechVet (2026-05-16 EOD — priority #4 shipped + 10-session phone-screening adversarial round complete, pipeline now in-repo)
 
-**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **86/86** (was 70 yesterday; +16 scope regression tests); `npx vite build` clean (1.23 MB / **363.6 KB gzipped**, +0.6 KB). Today's work: priority #4 from the 12-session adversarial cross-cut. Closes the cluster of misreadings where reviewers, architects, and notebook-authors got scored like operators (Diego/Aliyah/Robin/Jordan/Sam — 9 of 12 sessions). Five priority items remain — see "What's next" at the bottom.
+**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **86/86**; `npx vite build` clean (1.23 MB / **363.6 KB gzipped**). Two big things today:
+
+1. **Priority #4 shipped** — scope-of-use axis (operator / author / reviewer / architect). Closes the *named* half of the cluster from yesterday's 12-session round.
+2. **Built `simulations/` pipeline + ran 10-session phone-screening round.** 10 independent agents played fictional candidates from junior bootcamp grad to 12-year contractor on simulated 5-10 min phone calls; wrote findings into `simulations/rounds/2026-05-16-phone-screening/`. The round surfaced **6 code bugs, 10 structural defects, 13+ catalog gaps, and 4 substantive pushbacks on shipped work** including: **scope axis shipped today does not fire on phone calls** (10 of 10 sessions). Cross-cut and 16-item priority list in `simulations/rounds/2026-05-16-phone-screening/cross-cut.md`. Top-5 fixes total 2.5 days and would clear the worst over/under-rates from the round.
 
 ## Today's commit (2026-05-16)
 
@@ -83,19 +86,43 @@ Tests: **70 → 86** (+16). Build: **363 → 363.6 KB gzipped** (+0.6 KB).
 | 1 | 5 code bugs from 12-session sim | 1 day | ✅ `f2001c6` (2026-05-15) |
 | 2 | "What else in this category?" prompt before Summary | 0.5 day | ✅ `72f6810` (2026-05-15) |
 | 3 | Tri-state for tech relevance | 1 day | ✅ `7d574aa` (2026-05-15) |
-| 4 | `scope-of-use` axis (operator / author / reviewer / architect) | 2-3 days | ✅ today — shipped in ~1 hr; orthogonal-flag design kept the scoring change to ~30 lines as predicted |
-| **5** | **Use `lastUsed` in scoring** (stale ≥ 2yr → −1 tier) | **1 day** | **⏳ Recommended next — see below** |
+| 4 | `scope-of-use` axis (operator / author / reviewer / architect) | 2-3 days | ✅ today — but **phone-screen round found it unreachable in this channel** (see fix K) |
+| 5 | Use `lastUsed` in scoring | 1 day | ⏳ — REDESIGN per round 2: must be **asymmetric** (penalize stale Greens + soften stale Reds when version was contemporary). +0.5d = 1.5d total. See cross-cut fix E. |
 | 6 | Methodology section with per-role tag list + radar axis | 3-5 days | ⏳ — biggest single open item |
 | 7 | "Senior" tier above Green (depth + recency + coverage) | 2 days | ⏳ |
 | 8 | Role-aware AWS checklists (or persona-tagged services) | 2 days | ⏳ |
 | 9 | Add Security category (SAST/DAST/SCA/IaC/Runtime/Secrets/Frameworks) | 3 days | ⏳ — Security template currently decorative |
-| 10 | Catalog refresh round 3 — Snowflake-as-Data, MLflow, W&B, Modal, Vault, Karpenter, Cilium, Linkerd, Chaos Mesh, SwiftUI, Stripe, Prisma, Drizzle, statsmodels, scipy, matplotlib | 2-3 days | ⏳ |
+| 10 | Catalog refresh round 3 (see fix I for reprioritized order from round 2) | 2-3 days | ⏳ |
 | 11 | Multi-cloud meta-skill + Azure in SA template | 0.5 day | ⏳ — small, high-signal |
 | 12 | Single-category radar fallback | 1 day | ⏳ |
 
+### Round 2 additions (2026-05-16 phone-screening — see `simulations/rounds/2026-05-16-phone-screening/cross-cut.md` for full evidence)
+
+| # | Fix | Effort | Why |
+|---|-----|--------|-----|
+| **A** | **Drop depth-lift on checklist mode** (or gate behind ≥50% coverage) | 0.5 day | Closes Vikram Green-from-tutorial; 1-line scoring change |
+| **B** | **Suppress depth-LIFT (not just enterprise note) when `unknownVersion=true`** | 0.5 day | Closes Helm/Storybook/Swift/Docker over-rates from 6 sessions |
+| **C** | Search aliases + "named-but-not-in-catalog" capture | 1.5 day | Highest-frequency friction (6 sessions); Dmitri's vanished techs |
+| **D** | `phoneScreenPivot: true` flag on top 3-5 services per checklist | 1.5 day | Closes Aisha's 4-of-7-checklist-techs-unworkable |
+| **F** | "Managed-platform / toolchain-pinned" as 4th version-axis state | 1.5 day | Closes Tomás-Supabase, Hana-Swift, Aisha-Helm; cleaner than B once shipped |
+| **G** | Auto-exclude untouched template cards from buckets/radar | 0.5 day | Closes Priya-Databricks PDF pollution |
+| **H** | Backend template = JVM-aware (or stack-family chooser) | 1 day | Sarah + Lin + prior round Hiroshi |
+| **I** | Catalog refresh — reprioritized: Vault, Vercel, Stripe, Prisma, SwiftUI, UIKit, Combine, Xcode Cloud, TanStack Query, RTK, Zustand, MLflow, SageMaker-as-AWS-service, Bedrock, Spring Framework, Hibernate, Mockito, Testcontainers, Maven, Gradle, Git, Docker Compose | 3 days | Spans 8 of 10 sessions |
+| **J** | Snowflake → checklist mode (and audit other `min: "0"` single-tier entries) | 0.5 day | Bug 3 — structural Green rubber-stamp |
+| **K** | **Scope-axis UX redesign** — move to post-call enrichment OR auto-default per category | 2 days | **10/10 round 2 sessions found scope dropdown unreachable on phone calls.** Don't ship v2, redesign |
+| **L** | Surface "Confirmed not in stack" more prominently on Summary + count chip | 0.5 day | Lin/Tomás — section exists but visually de-emphasized |
+| **M** | Candidate-context block on report (junior/mid/senior/returner/contractor + years) | 1 day | Marcus/Sarah/Janelle/Priya — junior reads like mid |
+| **N** | `scope=consumer / triggered-by` 5th option for orchestration tools | 0.5 day | Priya/Airflow — do after K |
+| **O** | Self-overclaim guard: fast-moving libs (LangChain, vector DBs, llm-api-sdk) max at Yellow without checklist services | 1 day | Vikram natural-Green LangChain after 6 weeks of tutorials |
+| **P** | Per-tech depth tooltips (what "working" / "deep" means in this category) | 1 day | Dmitri-Kafka + Sarah scope-confusion |
+
 ## What's next — start here tomorrow
 
-**Recommended next: priority #5 — use `lastUsed` in scoring.** Smallest open item (1 day), closes the Sam-Ansible / Maya-RN-2022-hackathon "stale tech still scoring Green" failure mode. With scope shipped, this is the highest-signal small fix left.
+**RECOMMENDED PIVOT after the round 2 cross-cut: ship fixes A + B + G + J + L = 2.5 days total ("Week 1 quick wins").** These are 1-line-to-30-line scoring/data changes that close the highest-precision failure modes from the phone-screening round. After that, redesign scope (fix K, 2 days) before doing fix E (`lastUsed`), because the round changed the design from "penalize stale" to "asymmetric stale-aware". Full sequencing in `simulations/rounds/2026-05-16-phone-screening/cross-cut.md`.
+
+The previous "next: priority #5" plan below is **superseded but kept for reference** — it didn't account for the asymmetric design feedback Sarah's session surfaced.
+
+### Superseded plan: priority #5 — use `lastUsed` in scoring (1 day)
 
 **Concrete plan:**
 
