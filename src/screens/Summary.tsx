@@ -2,17 +2,18 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import technologiesData from '../data/technologies.json';
-import type { Technology, TierColor } from '../types';
+import type { AssessmentItem, Scope, Technology, TierColor } from '../types';
 import {
   resolveTier,
   colorScore,
   tierBadgeClass,
   depthLabel,
-  scopeLabel,
 } from '../lib/scoring';
 import CategoryRadar from '../components/CategoryRadar';
 import { exportPdf } from '../lib/pdf';
-import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle } from 'lucide-react';
+import { Download, ArrowLeft, CheckCircle2, AlertTriangle, AlertCircle, Slash, Circle, Sliders } from 'lucide-react';
+
+const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
 
 const TECHS = technologiesData as unknown as Technology[];
 const TECH_BY_ID = new Map(TECHS.map(t => [t.id, t]));
@@ -113,6 +114,11 @@ export default function Summary() {
     }
   }
 
+  // Fix K (round-2): post-call enrichment hint. Surface when there's at
+  // least one scored tech whose scope is implicit (no explicit user choice).
+  // The recruiter didn't have time to set it mid-call — fix it here.
+  const hasUnsetScopes = scored.some(r => r.item.scope === undefined);
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="no-print flex flex-wrap gap-3 justify-between items-center mb-6">
@@ -145,6 +151,19 @@ export default function Summary() {
           </button>
         </div>
       </div>
+
+      {hasUnsetScopes && (
+        <div className="no-print flex items-start gap-3 p-3 mb-4 rounded-lg border border-navy-200 bg-navy-50 text-sm text-navy-800">
+          <Sliders className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <div>
+            <strong>Tune scope before exporting.</strong> Click any{' '}
+            <span className="font-mono text-xs">Scope:</span> chip below to
+            mark a tech as operator / author / reviewer / architect. AI/ML
+            libraries default to <em>author</em>; everything else defaults to
+            operator-implied. Adjustments update the verdict live.
+          </div>
+        </div>
+      )}
 
       <div id="report-root" className="bg-white text-slate-900 p-8 rounded-2xl border border-slate-200 shadow-soft">
         {/* Report header */}
@@ -449,11 +468,7 @@ function TierSection({
               </div>
               <div className="text-xs text-slate-600 mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1">
                 <span>Depth: {depthLabel(item.depth)}</span>
-                {item.scope && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-navy-50 text-navy-700 border border-navy-200 font-medium">
-                    {scopeLabel(item.scope)}
-                  </span>
-                )}
+                <ScopeChip tech={tech} item={item} />
                 {item.lastUsed && <span>· last used {item.lastUsed}</span>}
               </div>
               {tech.vetMode === 'checklist' && (
@@ -461,7 +476,7 @@ function TierSection({
               )}
               {tier.scopeCapped && (
                 <div className="text-xs italic text-amber-700 mt-1">
-                  Capped by {item.scope} scope — operates differently than an operator-level signal would imply.
+                  Capped by {item.scope ?? tech.defaultScope} scope — operates differently than an operator-level signal would imply.
                 </div>
               )}
               {tier.note && (
@@ -482,6 +497,58 @@ function TierSection({
         ))}
       </div>
     </section>
+  );
+}
+
+/**
+ * Fix K (round-2 cross-cut): post-call scope enrichment chip. Renders a
+ * compact native select that lets the recruiter set or change scope from
+ * the Summary screen — solving the "scope dropdown unreachable on phone"
+ * problem flagged by all 10 phone-screening sessions.
+ *
+ * - Empty option = "Use catalog default" (when tech.defaultScope is set)
+ *   or "Operator (implied)" (when no default). The first option both
+ *   communicates the current effective scope and lets the recruiter
+ *   revert from an explicit choice back to the default.
+ * - Italic "via default" hint appears when the effective scope comes
+ *   from the catalog rather than from an explicit user choice.
+ * - Stops click propagation so the chip doesn't bubble to the parent
+ *   tier row, and updates the store immediately so verdicts re-resolve
+ *   and buckets shift live.
+ */
+function ScopeChip({ tech, item }: { tech: Technology; item: AssessmentItem }) {
+  const { updateItem } = useAssessment();
+  const effective = item.scope ?? tech.defaultScope;
+  const isExplicit = item.scope !== undefined;
+  const placeholder = tech.defaultScope
+    ? `— default: ${tech.defaultScope}`
+    : '— operator implied';
+  return (
+    <span className="inline-flex items-center gap-1">
+      <select
+        value={item.scope ?? ''}
+        onChange={e =>
+          updateItem(tech.id, {
+            scope: (e.target.value || undefined) as Scope | undefined,
+          })
+        }
+        onClick={e => e.stopPropagation()}
+        className="text-xs px-1.5 py-0.5 rounded bg-navy-50 text-navy-700 border border-navy-200 font-medium cursor-pointer hover:bg-navy-100"
+        aria-label={`Scope for ${tech.name}`}
+      >
+        <option value="">
+          Scope: {effective ?? 'operator'} {placeholder}
+        </option>
+        {SCOPE_OPTIONS.map(s => (
+          <option key={s} value={s}>
+            Scope: {s}
+          </option>
+        ))}
+      </select>
+      {!isExplicit && tech.defaultScope && (
+        <span className="text-xs italic text-slate-500">via default</span>
+      )}
+    </span>
   );
 }
 

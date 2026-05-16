@@ -108,10 +108,20 @@ export function resolveTier(
     };
   }
 
+  // Fix K (2026-05-16 round-2): when the recruiter hasn't set scope
+  // explicitly, fall back to the catalog default (e.g. AI/ML libs default
+  // to `author` because they're used as libraries, not operated as
+  // services). Explicit user choice always wins. Pass the effective scope
+  // through `item` so the downstream paths get a consistent view.
+  const itemWithEffectiveScope: AssessmentItem =
+    item.scope === undefined && tech.defaultScope !== undefined
+      ? { ...item, scope: tech.defaultScope }
+      : item;
+
   if (tech.vetMode === 'checklist') {
-    return resolveChecklistTier(tech, item);
+    return resolveChecklistTier(tech, itemWithEffectiveScope);
   }
-  return resolveVersionTier(tech, item);
+  return resolveVersionTier(tech, itemWithEffectiveScope);
 }
 
 function resolveVersionTier(

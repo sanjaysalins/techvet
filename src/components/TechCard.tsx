@@ -103,7 +103,14 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
             onClick={e => e.stopPropagation()}
             className="input"
           >
-            <option value="">— Not specified</option>
+            {/* Fix K: surface the catalog default so the recruiter knows
+                the chosen scope without opening the dropdown. AI/ML libs
+                default to "author" so the depth-game stops earning Green. */}
+            <option value="">
+              {tech.defaultScope
+                ? `— Use default: ${tech.defaultScope}`
+                : '— Not specified'}
+            </option>
             {SCOPE_OPTIONS.map(s => (
               <option key={s} value={s}>
                 {scopeLabel(s)}
@@ -145,8 +152,9 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
 
       {resolved.scopeCapped && (
         <div className="mt-3 text-xs text-amber-700 dark:text-amber-300 italic">
-          Verdict capped by scope — {item.scope} scope can't earn the higher tier
-          on operating signals alone.
+          Verdict capped by scope — {item.scope ?? tech.defaultScope} scope
+          can't earn the higher tier on operating signals alone
+          {item.scope === undefined && tech.defaultScope ? ' (catalog default; override in Scope dropdown above)' : ''}.
         </div>
       )}
       {!resolved.scopeCapped && resolved.depthAdjusted && (

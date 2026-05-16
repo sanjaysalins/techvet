@@ -33,6 +33,14 @@ export interface Technology {
   suggestedProbes: string[];
   guidanceForUnknownVersion?: string;
   checklistGuidance?: string;
+  /** Catalog-supplied default for the scope axis when the recruiter hasn't
+   *  picked one explicitly. Fix K (round-2 cross-cut): recruiters on phone
+   *  calls don't reach the scope dropdown, so a category-aware default
+   *  applies the right cap automatically. AI/ML and data-science libs
+   *  default to `author` (used as a library, not operated as a service);
+   *  most other techs leave this undefined (operator-implied current
+   *  behavior). Explicit `item.scope` always overrides the default. */
+  defaultScope?: Scope;
 }
 
 export type Depth = 'unknown' | 'shallow' | 'working' | 'deep' | 'very-deep';

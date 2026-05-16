@@ -714,3 +714,100 @@ describe('resolveTier — round 2 fixes (A, B, G)', () => {
     });
   });
 });
+
+/**
+ * Fix K (round-2 cross-cut): scope-axis UX redesign — catalog-side smart
+ * defaults so the right cap fires even when the recruiter doesn't reach
+ * the dropdown on a phone call. AI/ML libs default to `author` so the
+ * depth-game stops earning Green for tutorial-grade users.
+ *
+ * The interactive Summary chip (the other half of Fix K) is a UI change
+ * covered by the browser smoke test, not a unit test.
+ */
+describe('resolveTier — Fix K: defaultScope from catalog', () => {
+  it('applies catalog defaultScope when item.scope is undefined', () => {
+    const tech: Technology = {
+      ...versionTech(),
+      id: 'aiml-lib',
+      defaultScope: 'author',
+    };
+    // Yellow tier + deep would normally lift to Green; author default
+    // blocks the lift just like an explicit scope=author would.
+    const r = resolveTier(tech, item({ techId: 'aiml-lib', version: '17', depth: 'deep' }));
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.depthAdjusted).toBe(false);
+  });
+
+  it('explicit item.scope overrides catalog defaultScope', () => {
+    const tech: Technology = {
+      ...versionTech(),
+      id: 'aiml-lib-override',
+      defaultScope: 'author',
+    };
+    // Default would be author (caps the lift). Explicit operator releases the lift.
+    const r = resolveTier(
+      tech,
+      item({ techId: 'aiml-lib-override', version: '17', depth: 'deep', scope: 'operator' })
+    );
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(true);
+    expect(r.scopeCapped).toBe(false);
+  });
+
+  it('catalog defaultScope does not affect natural-Green verdicts (author semantics)', () => {
+    // The author cap only blocks Yellow→Green depth lifts; natural Green
+    // from the version tier stays Green. This is the Vikram LangChain case
+    // that Fix K does NOT close — Fix O is the catalog-side guard for that.
+    const tech: Technology = {
+      ...versionTech(),
+      id: 'aiml-natural-green',
+      defaultScope: 'author',
+    };
+    const r = resolveTier(tech, item({ techId: 'aiml-natural-green', version: '19', depth: 'working' }));
+    expect(r.color).toBe('green');
+    expect(r.scopeCapped).toBe(false);
+  });
+
+  it('catalog defaultScope=reviewer would cap a natural Green to Yellow', () => {
+    // Hypothetical — no catalog entry uses reviewer as default today, but
+    // pin the behavior in case one is added (e.g. a Security tool where
+    // the typical relationship is audit/review, not operation).
+    const tech: Technology = {
+      ...versionTech(),
+      id: 'reviewer-default',
+      defaultScope: 'reviewer',
+    };
+    const r = resolveTier(tech, item({ techId: 'reviewer-default', version: '19', depth: 'working' }));
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+  });
+
+  it('no defaultScope + no explicit scope → operator-implied behavior unchanged', () => {
+    // Backward compat: techs without defaultScope continue to behave as
+    // they did pre-Fix-K (operator implied, no cap).
+    const r = resolveTier(versionTech(), item({ version: '17', depth: 'deep' }));
+    expect(r.color).toBe('green'); // depth lifts Yellow→Green, no cap
+    expect(r.depthAdjusted).toBe(true);
+    expect(r.scopeCapped).toBe(false);
+  });
+
+  it('defaultScope applies on checklist-mode techs too', () => {
+    const tech: Technology = {
+      ...checklistTech(),
+      id: 'checklist-with-default',
+      defaultScope: 'reviewer',
+    };
+    // 7/10 = Green; reviewer default caps to Yellow.
+    const r = resolveTier(
+      tech,
+      item({
+        techId: 'checklist-with-default',
+        selectedServices: ['svc-1', 'svc-2', 'svc-3', 'svc-4', 'svc-5', 'svc-6', 'svc-7'],
+        checklistTouched: true,
+      })
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+  });
+});

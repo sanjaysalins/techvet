@@ -1783,6 +1783,7 @@
     "id": "pytorch",
     "name": "PyTorch",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "2.12",
     "versionTiers": [
       {
@@ -1818,6 +1819,7 @@
     "id": "tensorflow",
     "name": "TensorFlow",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "2.21",
     "versionTiers": [
       {
@@ -1853,6 +1855,7 @@
     "id": "langchain",
     "name": "LangChain / LangGraph",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "1.3",
     "versionTiers": [
       {
@@ -2385,6 +2388,7 @@
     "id": "huggingface-transformers",
     "name": "Hugging Face Transformers",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "5.8",
     "releasedYear": 2018,
     "versionTiers": [
@@ -2426,6 +2430,7 @@
     "id": "llm-api-sdk",
     "name": "LLM API Integration (OpenAI / Anthropic / etc.)",
     "category": "AI/ML",
+    "defaultScope": "author",
     "vetMode": "checklist",
     "suggestedProbes": [
       "Which LLM provider's SDK have you shipped against in production?",
@@ -2498,6 +2503,7 @@
     "id": "vector-db",
     "name": "Vector Databases (RAG)",
     "category": "AI/ML",
+    "defaultScope": "author",
     "vetMode": "checklist",
     "suggestedProbes": [
       "Which vector store did you choose for your last RAG system, and why?",
@@ -2562,6 +2568,7 @@
     "id": "scikit-learn",
     "name": "scikit-learn",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "1.8",
     "releasedYear": 2007,
     "versionTiers": [
@@ -3621,6 +3628,7 @@
     "id": "pandas",
     "name": "pandas",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "3.0",
     "releasedYear": 2008,
     "versionTiers": [
@@ -3662,6 +3670,7 @@
     "id": "numpy",
     "name": "NumPy",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "2.4",
     "releasedYear": 2005,
     "versionTiers": [
@@ -3703,6 +3712,7 @@
     "id": "jupyter",
     "name": "JupyterLab / Notebooks",
     "category": "AI/ML",
+    "defaultScope": "author",
     "currentVersion": "4.5",
     "releasedYear": 2014,
     "versionTiers": [

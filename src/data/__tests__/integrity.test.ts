@@ -264,3 +264,28 @@ describe('technologies.json — no single-tier `min: "0"` rubber-stamps (Fix J)'
     expect((grpc!.services ?? []).length).toBeGreaterThanOrEqual(8);
   });
 });
+
+/**
+ * Regression test for Fix K (round-2 cross-cut): AI/ML libraries all carry
+ * `defaultScope: "author"` so the scope axis fires on phone calls where
+ * the recruiter doesn't reach the dropdown. Without this default, every
+ * AI/ML candidate's library work scored like operator (= depth-game earns
+ * Green for tutorial-grade users — Vikram session).
+ *
+ * If a future agent adds an AI/ML library and forgets the default, the
+ * cap silently disappears for that tech and the phone-screening failure
+ * mode returns. This test fails loudly so the omission is intentional.
+ */
+describe('technologies.json — AI/ML libraries carry defaultScope=author (Fix K)', () => {
+  it('every AI/ML category tech has defaultScope set to "author"', () => {
+    const aimlTechs = TECHS.filter(t => t.category === 'AI/ML');
+    expect(aimlTechs.length, 'AI/ML category empty — catalog drift').toBeGreaterThan(0);
+    const missing = aimlTechs
+      .filter(t => t.defaultScope !== 'author')
+      .map(t => `${t.id} (defaultScope=${t.defaultScope ?? 'undefined'})`);
+    expect(
+      missing,
+      `AI/ML libs without defaultScope=author let depth-game earn Green for tutorial-grade users — add "defaultScope": "author" to each, or intentionally remove from this guard if the lib should not default to author`
+    ).toEqual([]);
+  });
+});
