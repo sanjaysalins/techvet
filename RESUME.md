@@ -1,8 +1,14 @@
-# Resume point — TechVet (2026-05-15 EOD — three priority fixes from 12-session adversarial sim shipped)
+# Resume point — TechVet (2026-05-16 EOD — priority #4 shipped: scope-of-use axis)
 
-**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **70/70**; `npx vite build` clean (1.23 MB / **363 KB gzipped**, +3 KB from start-of-day). The big work today was a 12-session multi-agent adversarial simulation across every role template, followed by shipping the three highest-priority fixes from the cross-cut. Six more priority items remain — see "What's next" at the bottom.
+**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **86/86** (was 70 yesterday; +16 scope regression tests); `npx vite build` clean (1.23 MB / **363.6 KB gzipped**, +0.6 KB). Today's work: priority #4 from the 12-session adversarial cross-cut. Closes the cluster of misreadings where reviewers, architects, and notebook-authors got scored like operators (Diego/Aliyah/Robin/Jordan/Sam — 9 of 12 sessions). Five priority items remain — see "What's next" at the bottom.
 
-## Today's commits (2026-05-15, full timeline)
+## Today's commit (2026-05-16)
+
+```
+<new>  Add scope-of-use axis (operator / author / reviewer / architect)
+```
+
+## Yesterday's commits (2026-05-15)
 
 ```
 7d574aa  Add tri-state for tech relevance: knows / forgot / not-used
@@ -16,18 +22,20 @@ dd86cd2  Add Vitest + 41 unit tests for version, scoring, catalog integrity
 20eb852  Add "Candidate unsure" toggle to checklist mode
 ```
 
-## Sequence of the day
+## Sequence of the day (2026-05-16)
 
-1. **Morning** — cleared yesterday's red-team punch list (commits `20eb852`, `dd86cd2`, `f287768`).
-2. **Adversarial self-review** — wrote a critique of own work. Argued today's eng-hygiene didn't move the recruiter-screening-usefulness needle.
-3. **Regression tests for the two red-team bugs** (`c92e326`) — locked `EXPECTED_ROLE_TECHS` and `EXPECTED_FAST_MOVER_TIERS` snapshots; mutation-tested both detectors.
-4. **12-session multi-agent simulation** — 12 parallel general-purpose agents, each playing one fictional candidate + recruiter across one role template (see "Cast" below). Each agent read the source, simulated the 25-min call, predicted scoring output, and reported friction / accuracy / catalog-gap findings.
-5. **Cross-cut synthesis** — distilled patterns by frequency across all 12 sessions. Identified **5 actual code bugs** and **4 structural defects**.
-6. **Shipped Bug-1 through Bug-5** (`f2001c6`) — half-day of code, +16 regression tests.
-7. **Shipped priority #2: Category prompt** (`72f6810`) — new `CategoryPrompt` component renders before Summary, surfaces in-catalog techs in already-represented categories.
-8. **Shipped priority #3: Tri-state for tech relevance** (`7d574aa`) — `notUsed` boolean added; "Not in stack" button on every version-mode card; Summary filters skipped items from buckets/radar and renders a separate gray section.
+1. **Read RESUME.md** — picked up at the recommended priority #4 (scope-of-use axis).
+2. **Designed `applyScope()`** — orthogonal to depth, runs *after* `adjustForDepth()`. Three semantics:
+   - `reviewer | architect` → hard ceiling at Yellow; erases any depth-lift to Green.
+   - `author` → no overall cap, but depth-lift is restricted to Red→Yellow only (Yellow→Green disallowed).
+   - `operator | undefined` → pre-scope behavior preserved (backward compat).
+3. **Plumbed scope through three scoring paths** — version unknown/empty, version tier-match, checklist coverage. New `composeLabel()` helper centralized the label suffix logic so all three paths render "(capped — X scope)" / "(lifted from Y by depth)" consistently.
+4. **UI** — `TechCard.tsx` grid expanded from 2-col → 3-col on `md+` to fit a new "Scope of use" dropdown between Depth and Last used. Amber cap-explanation note replaces the green depth-lift note when the cap fires.
+5. **Summary** — scope chip rendered next to Depth in every tier item; cap-explanation italic note above the tier guidance when `tier.scopeCapped`.
+6. **Tests** — `+16` regression tests across backward compat, reviewer/architect cap, author depth-restriction, checklist-mode scope, and interactions with `notUsed` and `enterpriseStillUsed`.
+7. **Browser smoke** — verified end-to-end: React (v19, very-deep, reviewer) → badge `Review / Probe (capped — reviewer scope)` with amber cap note; Summary shows scope chip + cap explanation in the Probe Further section. TypeScript (v5.0, deep, author) → natural Green stays Green (author cap only blocks Yellow→Green lifts).
 
-Tests went **41 → 49 → 65 → 70** across the day; production build went **361 KB → 363 KB gzipped**.
+Tests: **70 → 86** (+16). Build: **363 → 363.6 KB gzipped** (+0.6 KB).
 
 ## The 12-session adversarial simulation (cast + setup)
 
@@ -70,13 +78,13 @@ Tests went **41 → 49 → 65 → 70** across the day; production build went **3
 
 ### Priority-ordered fix list — status
 
-| # | Fix | Effort | Status |
+| # | Fix | Effort (est) | Status |
 |---|-----|--------|--------|
-| 1 | 5 code bugs (above) | 1 day | ✅ `f2001c6` |
-| 2 | "What else in this category?" prompt before Summary | 0.5 day | ✅ `72f6810` |
-| 3 | Tri-state for tech relevance | 1 day | ✅ `7d574aa` |
-| **4** | **Add `scope-of-use` axis** (operator / author / reviewer / architect) | **2-3 days incl. scoring** | **⏳ Next — see below** |
-| 5 | Use `lastUsed` in scoring (stale ≥ 2yr → −1 tier) | 1 day | ⏳ |
+| 1 | 5 code bugs from 12-session sim | 1 day | ✅ `f2001c6` (2026-05-15) |
+| 2 | "What else in this category?" prompt before Summary | 0.5 day | ✅ `72f6810` (2026-05-15) |
+| 3 | Tri-state for tech relevance | 1 day | ✅ `7d574aa` (2026-05-15) |
+| 4 | `scope-of-use` axis (operator / author / reviewer / architect) | 2-3 days | ✅ today — shipped in ~1 hr; orthogonal-flag design kept the scoring change to ~30 lines as predicted |
+| **5** | **Use `lastUsed` in scoring** (stale ≥ 2yr → −1 tier) | **1 day** | **⏳ Recommended next — see below** |
 | 6 | Methodology section with per-role tag list + radar axis | 3-5 days | ⏳ — biggest single open item |
 | 7 | "Senior" tier above Green (depth + recency + coverage) | 2 days | ⏳ |
 | 8 | Role-aware AWS checklists (or persona-tagged services) | 2 days | ⏳ |
@@ -87,51 +95,44 @@ Tests went **41 → 49 → 65 → 70** across the day; production build went **3
 
 ## What's next — start here tomorrow
 
-**Recommended next: priority #4 — add a `scope-of-use` axis.** This is the highest-leverage open item. Closes the Jordan-Astronomer / Sam-Helm-via-ArgoCD / Diego-reviewer / Aliyah-architect / Robin-half-managed cluster of misreadings — 9 of 12 sessions hit some flavor of this.
+**Recommended next: priority #5 — use `lastUsed` in scoring.** Smallest open item (1 day), closes the Sam-Ansible / Maya-RN-2022-hackathon "stale tech still scoring Green" failure mode. With scope shipped, this is the highest-signal small fix left.
 
 **Concrete plan:**
 
-- Add `scope?: 'operator' | 'author' | 'reviewer' | 'architect' | undefined` to `AssessmentItem` (orthogonal to `depth`).
-  - **operator** = "I run this in prod / manage it / `kubectl apply`" (current default-implied)
-  - **author** = "I write code that uses it" (Jordan/Spark = notebook author, not operator)
-  - **reviewer** = "I review PRs / policies / audit it" (Diego on Terraform; Aliyah on K8s topology)
-  - **architect** = "I designed how this gets used" (Aliyah on EDA; Robin on cluster topology)
-- New UI control on `TechCard.tsx`: small dropdown next to Depth, label "Scope of use". Defaults to undefined → no change to scoring.
-- Plumb into `scoring.ts`:
-  - **reviewer / architect** → cap tier at Yellow (the "Diego/Aliyah cap"). They might know the shape but they don't operate. Override the depth-lift in this case.
-  - **author** → no cap, but the depth-lift only goes Red → Yellow (not Yellow → Green). Knowing how to use Spark in notebooks ≠ knowing how to operate Spark.
-  - **operator** (default) → current behavior unchanged.
-- New tests:
-  - `scope=reviewer` + depth=very-deep + Green version → still Yellow (caps).
-  - `scope=author` + depth=deep + Yellow version → stays Yellow (doesn't lift to Green).
-  - `scope=operator` + depth=deep + Yellow → lifts to Green (current behavior).
-  - `scope=undefined` → exact current behavior (backward compat).
-- PDF: render the scope as a chip next to depth in `Summary.tsx` so the hiring manager sees "Sam — Helm, very-deep, **operator**" vs "Diego — Terraform, deep, **reviewer**". This is the single most decision-relevant fact today.
+- Parse `item.lastUsed` (free-text today, e.g. "current role", "2 years ago", "2021") in `lib/lastUsed.ts` — return a coarse bucket: `current | recent (≤1yr) | stale (≥2yr) | ancient (≥5yr) | unknown`.
+  - Forgiving parser: accept "current", "now", "this role", "today", year strings (2020-2026), relative phrases ("3 years ago", "last year"). Default to `unknown` on anything ambiguous.
+- Plumb into `scoring.ts` after scope (so the order is: tier → depth → scope → recency):
+  - `stale` → −1 tier (Green → Yellow, Yellow → Red).
+  - `ancient` → −1 tier *and* set `recencyConcern: true` for a stronger note.
+  - `current | recent | unknown` → no adjustment (unknown is the safe default; don't penalize for an empty field).
+- New `ResolvedTier.recencyAdjusted: boolean` + `recencyNote?: string` for surface in TechCard and Summary.
+- Interactions:
+  - Scope cap takes precedence: if reviewer caps Green→Yellow, recency doesn't further drop to Red unless `ancient`.
+  - notUsed still short-circuits — recency never runs.
+- Tests (~6-8): "current" stays Green; "2021" (= 5yr ago as of today 2026-05-16) drops Green→Yellow; "2018" drops Yellow→Red and fires `recencyConcern`; empty `lastUsed` → no change; "current role" parses as current; interaction with reviewer cap.
+- UI: small recency badge on TechCard (`Current` / `1yr` / `3yr` / `5yr+`) + the recency note ("Stale — last used 3yr ago, expect ramp-up time") in Summary tier items.
 
-**Estimated effort:** 2-3 days. Touches types, scoring (~30 lines), TechCard UI, Summary chip render, scoring tests, ~5-7 new test cases.
+**Estimated effort:** 1 day. Touches new `lib/lastUsed.ts`, `scoring.ts` (~20 lines), `TechCard.tsx` (badge), `Summary.tsx` (note), `~8` new tests.
 
-**Why not start with priority #5 (`lastUsed` in scoring)?** It's smaller (1 day) but closes only the Sam-Ansible / Maya-RN-2022-hackathon failure mode — a single-session pattern. Scope-of-use closes 9 sessions. If you want a quick warm-up, do #5 in the morning then #4 in the afternoon.
+**Why not jump to #6 (methodology)?** It's the biggest remaining open item (3-5 days) and a structurally new axis — needs a design pass first. Worth doing #5 + maybe #11 (Azure in SA template, 0.5d) as quick wins before opening that scope.
 
 ## Code state — what's where
 
-**New files today:**
-- `src/components/CategoryPrompt.tsx` — surfaces in-category in-catalog techs as one-click chips before Summary.
+**Files modified today (2026-05-16):**
+- `src/types.ts` — new `Scope` type (`'operator' | 'author' | 'reviewer' | 'architect'`); added `scope?: Scope` to `AssessmentItem`; added `scopeCapped?: boolean` to `ResolvedTier`.
+- `src/lib/scoring.ts` — new `applyScope()` (runs after `adjustForDepth`); new `composeLabel()` helper centralizes the depth-lift / scope-cap label suffix; new `scopeLabel()` exported. Three call sites (unknown-version, tier-match, checklist) updated to flow through `applyScope`.
+- `src/store/assessment.ts` — `addTech` defaults `scope: undefined`.
+- `src/components/TechCard.tsx` — grid expanded `md:grid-cols-2` → `md:grid-cols-3` to fit new "Scope of use" dropdown between Depth and Last used. New amber italic note when `resolved.scopeCapped`; existing green depth-lift note now only fires when scope didn't cap.
+- `src/screens/Summary.tsx` — scope chip rendered inline with Depth in every tier item; new amber italic cap-explanation note above tier guidance when `tier.scopeCapped`.
+- `src/lib/__tests__/scoring.test.ts` — +16 regression tests across backward compat, reviewer/architect cap, author depth-restriction, checklist-mode scope, and interactions with `notUsed` / `enterpriseStillUsed`.
 
-**Modified files (today's net changes):**
-- `src/types.ts` — added `enterpriseStillUsed` to `VersionTier`; added `notUsed` to `AssessmentItem`; added `skipped` to `ResolvedTier`.
-- `src/lib/scoring.ts` — Bug 1 (tier-level enterprise flag); Bug 3 (label wording); Bug 5 (empty+shallow suppression); `notUsed` short-circuit (skipped tier).
-- `src/lib/version.ts` — Bug 2 (fleet-hedge minimum-pick), `compareArrays` helper.
-- `src/data/technologies.json` — Bug 4 (Docker 4-tier shape).
-- `src/components/TechCard.tsx` — tri-state controls (Don't remember / Not in stack); gray badge for skipped.
-- `src/screens/Assessment.tsx` — `CategoryPrompt` wired in between cards and action bar.
-- `src/screens/Summary.tsx` — filter skipped from buckets/radar; new "Not in candidate's stack" section.
-- `src/store/assessment.ts` — `addTech` defaults `notUsed: false`.
-- `src/index.css` — `.badge-gray` class for the Not-in-stack badge.
-- `src/lib/__tests__/version.test.ts` — +5 fleet-hedge tests (13 → 18).
-- `src/lib/__tests__/scoring.test.ts` — +5 Bug-1/3/5 tests + 5 Bug-6 (notUsed) tests (20 → 30).
-- `src/data/__tests__/integrity.test.ts` — Docker 4-tier shape test (16 → 17).
+**Test totals:** 70 → **86** (+16 scope regression tests today).
 
-**Test totals:** 49 → **70** (16 new regression tests for the 5 bugs + 5 for notUsed = 21 new tests today).
+## Code state — yesterday's changes (2026-05-15, reference)
+
+**New files:** `src/components/CategoryPrompt.tsx`
+
+**Modified:** `src/types.ts` (`enterpriseStillUsed` on `VersionTier`, `notUsed` on `AssessmentItem`, `skipped` on `ResolvedTier`) · `src/lib/scoring.ts` (Bugs 1, 3, 5, notUsed short-circuit) · `src/lib/version.ts` (Bug 2 fleet-hedge minimum-pick, `compareArrays` helper) · `src/data/technologies.json` (Bug 4 Docker 4-tier shape) · `src/components/TechCard.tsx` (tri-state controls) · `src/screens/Assessment.tsx` (`CategoryPrompt` wired in) · `src/screens/Summary.tsx` (skipped section) · `src/store/assessment.ts` (`notUsed: false` default) · `src/index.css` (`.badge-gray`) · `+11` regression tests across version, scoring, integrity suites.
 
 ## Catalog state — only Docker changed today
 
@@ -171,7 +172,7 @@ TOTAL            96
 ```bash
 cd /home/salinss/devtools/techvet
 npm run dev    # http://localhost:5173 (or 5174 if 5173 was held over)
-npm test       # 70 unit tests, ~2 s
+npm test       # 86 unit tests, ~2 s
 ```
 
 Clear browser session if needed: `sessionStorage['techvet-session']` and `localStorage['techvet-draft']`.
@@ -180,19 +181,25 @@ Clear browser session if needed: `sessionStorage['techvet-session']` and `localS
 
 ```bash
 npx tsc -b && npx vite build   # types + production bundle
-npm test                       # 70/70 should pass
+npm test                       # 86/86 should pass
 npm run dev                    # then in browser:
-                               #   - Add SQL → Yellow "Not yet assessed"
-                               #   - Tick 3/12 → Yellow "Review / Probe — 3/12"
-                               #   - Mobile template + click "Not in stack" on Kotlin
-                               #     → gray badge "Not in candidate's stack", version input disabled
-                               #   - Summary → 2 Good, "3 additional techs flagged not in candidate's stack"
-                               #   - Scroll Summary → "Not in candidate's stack" section with Kotlin/RN/Expo
-                               #   - Hiroshi flight check: add Java, type "21/17/11" → tier matches min=11 (Yellow)
-                               #     [should NOT match 21=Excellent like before today]
-                               #   - Bun "1.3" → Green "Excellent"
-                               #   - Frontend template → scroll down → "Other technologies in these categories"
-                               #     chip row with Storybook / Astro / Webpack / etc.
+                               #   - Frontend template → React → version "19" + depth "Very deep"
+                               #     → badge "Excellent" (Green)
+                               #   - Set scope = "Reviewer (reviews / audits)"
+                               #     → badge flips to "Review / Probe (capped — reviewer scope)"
+                               #     → amber italic note "Verdict capped by scope — reviewer scope can't earn the higher tier..."
+                               #   - Set scope back to "— Not specified" → returns to "Excellent"
+                               #   - Set scope = "Author" + depth "Deep" + version "17"
+                               #     → stays Yellow (author cap blocks Yellow→Green lift)
+                               #   - Review Summary → React row shows scope chip "Reviewer (reviews / audits)"
+                               #     next to Depth, plus amber italic cap explanation under the tier note
+                               #   - Yesterday's regressions also still good:
+                               #     · SQL untouched → Yellow "Not yet assessed"
+                               #     · Tick 3/12 → Yellow "Review / Probe — 3/12"
+                               #     · Java "21/17/11" → matches min=11 (Yellow), not 21
+                               #     · Mobile + "Not in stack" on Kotlin → gray badge + excluded from buckets
+                               #     · Bun "1.3" → Green "Excellent"
+                               #     · Frontend template → "Other technologies in these categories" chip row
 ```
 
 ## Bonus context — the agent IDs for the 12 sims
