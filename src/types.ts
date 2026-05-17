@@ -1,7 +1,14 @@
 export type TierColor = 'green' | 'yellow' | 'red';
 export type TierLabel = 'Excellent' | 'Good' | 'Review / Probe' | 'Concern';
 
-export type VetMode = 'version' | 'checklist';
+/** Round-12 (Sven round-7 R5, deferred): `hybrid` combines version-mode + checklist
+ *  for techs where BOTH axes carry independent senior signal. Kubernetes is the
+ *  canonical case: a candidate's version tier (1.30 modern vs 1.20 legacy) answers
+ *  "era / security posture" while their service coverage (RBAC + NetworkPolicies +
+ *  HPA + CRDs + Operators / etc) answers "depth of operation vs Helm-consumer
+ *  surface." Sven's Helm-consumer shape and Lars's deep-operator shape both need
+ *  the same K8s entry to read honestly; version-mode-only collapsed them. */
+export type VetMode = 'version' | 'checklist' | 'hybrid';
 
 export interface VersionTier {
   min: string;

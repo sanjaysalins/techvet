@@ -91,7 +91,19 @@ export default function GuidancePanel({ tech, resolved }: Props) {
       </div>
 
       <div className="card p-4 text-xs text-slate-500 dark:text-slate-400">
-        {tech.vetMode === 'checklist' ? (
+        {/* Round-12 hybrid mode: render BOTH the current-stable version line
+            AND the coverage line for techs (Kubernetes) that carry signal on
+            both axes. Pre-hybrid this was an either/or per `vetMode`. */}
+        {tech.vetMode === 'hybrid' ? (
+          <>
+            {tech.currentVersion && (
+              <div className="font-semibold mb-1 text-slate-700 dark:text-slate-300">Current stable: {tech.currentVersion}</div>
+            )}
+            <div className="font-semibold mb-1 text-slate-700 dark:text-slate-300">
+              Coverage: {resolved.coverage?.selected ?? 0} of {resolved.coverage?.total ?? (tech.services?.length ?? 0)} services
+            </div>
+          </>
+        ) : tech.vetMode === 'checklist' ? (
           <div className="font-semibold mb-1 text-slate-700 dark:text-slate-300">
             Coverage: {resolved.coverage?.selected ?? 0} of {resolved.coverage?.total ?? 0} services
           </div>

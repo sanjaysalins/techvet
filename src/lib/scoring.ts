@@ -256,6 +256,9 @@ export function resolveTier(
   if (tech.vetMode === 'checklist') {
     return resolveChecklistTier(tech, itemWithEffectiveScope, opts?.seniority);
   }
+  if (tech.vetMode === 'hybrid') {
+    return resolveHybridTier(tech, itemWithEffectiveScope, opts?.seniority);
+  }
   return resolveVersionTier(tech, itemWithEffectiveScope, opts?.seniority);
 }
 
@@ -553,6 +556,166 @@ function resolveChecklistTier(
     coverage,
     recencyAdjusted: withRecency.recencyAdjusted,
     recencyNote: withRecency.recencyNote,
+  };
+}
+
+/**
+ * Round-12 hybrid mode (Sven round-7 R5 + Lars rounds 9-10): some techs carry
+ * independent senior signal on BOTH the version axis (era / security posture)
+ * and the services axis (depth of operation vs surface usage). Kubernetes is
+ * the canonical case — Sven's Helm-consumer shape (works against a cluster but
+ * doesn't operate it) and Lars's deep-platform-engineer shape both need the
+ * same K8s entry to read honestly. Version-mode-only collapsed them; checklist-
+ * only would have erased version-era signal.
+ *
+ * **Resolution model — weakest link.** Combine version-tier color + coverage-
+ * tier color via MIN (severity-max). Then depth + scope + recency apply on top
+ * via the existing version-mode pipeline (adjustForDepth → applyScope →
+ * applyRecency). This means:
+ *   - K8s 1.30 Green + 11/12 services Green → Green clean (Lars shape).
+ *   - K8s 1.28 Green + 3/12 services Red → Red (Sven Helm-consumer — honest).
+ *   - K8s 1.22 Yellow + 11/12 Green → Yellow base + depth=deep+senior lifts
+ *     to Green (legacy-cluster-but-deep-operator — fair).
+ *   - K8s 1.30 Green + services untouched → Green (back-compat: services that
+ *     haven't been interacted with don't drag the verdict; matches existing
+ *     checklist `notDiscussed` semantics).
+ *
+ * **Back-compat: services-untouched gate.** When `selectedServices.length === 0`
+ * AND `!checklistTouched` AND `!checklistUnsure`, the services channel is
+ * treated as "not yet assessed" and contributes nothing — only version drives.
+ * This preserves the existing recruiter UX where a quick version-only K8s
+ * check still produces a sensible Green / Yellow / Red verdict without
+ * forcing a service walkthrough. Once any service is ticked (touched=true)
+ * or `checklistUnsure` is set, the services channel goes live.
+ */
+function resolveHybridTier(
+  tech: Technology,
+  item: AssessmentItem,
+  seniority?: Seniority
+): ResolvedTier {
+  const services = tech.services ?? [];
+  const validIds = new Set(services.map(s => s.id));
+  const selected = (item.selectedServices ?? []).filter(id => validIds.has(id));
+  const total = services.length || 1;
+  const ratio = selected.length / total;
+  const coverage = { selected: selected.length, total: services.length };
+
+  // Services-channel gate. Untouched + no ticks = "not yet assessed" → version-only.
+  // Touched OR explicit-unsure OR any ticks = services channel goes live.
+  const servicesInteracted = (item.checklistTouched ?? false) || (item.checklistUnsure ?? false) || selected.length > 0;
+
+  // Version-channel: unknownVersion / empty / unparseable forces Yellow base
+  // (Fix B: no depth-lift when version is unknown). Same logic as version-mode.
+  const versionUnknown = item.unknownVersion || !item.version || !looksLikeVersion(item.version);
+  let versionBaseColor: TierColor = 'yellow';
+  let versionTier: ReturnType<typeof findTier> | null = null;
+  if (!versionUnknown) {
+    versionTier = findTier(tech, item.version);
+    versionBaseColor = versionTier.color;
+  }
+
+  // Services-channel: if checklistUnsure flips true, parked at Yellow.
+  // Otherwise compute coverage tier (<25 R / 25-66 Y / ≥66 G).
+  let coverageColor: TierColor | null = null;
+  if (item.checklistUnsure) {
+    coverageColor = 'yellow';
+  } else if (servicesInteracted) {
+    if (ratio < 0.25) coverageColor = 'red';
+    else if (ratio < 0.66) coverageColor = 'yellow';
+    else coverageColor = 'green';
+  }
+
+  // Combine — weakest link (max severity = worst).
+  const combinedBaseColor: TierColor = coverageColor === null
+    ? versionBaseColor
+    : SEVERITY[coverageColor] > SEVERITY[versionBaseColor]
+      ? coverageColor
+      : versionBaseColor;
+
+  // Depth + scope + recency apply on the combined base, mirroring version-mode.
+  // Note: Fix B (no depth-lift when version unknown) still holds — pass
+  // depth='unknown' equivalent if versionUnknown so adjustForDepth no-ops on
+  // the lift side. Easier: pass through normally; adjustForDepth's deep/very-
+  // deep lift is honest signal even when version is unknown IF services have
+  // been thoroughly walked. Trade-off discussed in Sven-round-7 cross-cut;
+  // ship the simple version (always run adjustForDepth) and revisit if a sim
+  // surfaces a regression.
+  const adjusted = adjustForDepth(combinedBaseColor, item.depth, seniority);
+  const scoped = applyScope(combinedBaseColor, adjusted, item.scope);
+  const withRecency = applyRecency(scoped, item.lastUsed, tech, seniority);
+
+  // Compose label. baseLabel is the WORSE channel's label so composeLabel's
+  // "(lifted from X by depth)" / "(capped from X by scope)" framing is honest.
+  const baseLabel: string =
+    coverageColor !== null && SEVERITY[coverageColor] > SEVERITY[versionBaseColor]
+      ? LABEL_MAP[coverageColor]
+      : versionTier?.label ?? LABEL_MAP[versionBaseColor];
+
+  const labelCore = composeLabel({
+    finalColor: withRecency.color,
+    baseLabel,
+    baseColor: combinedBaseColor,
+    depthAdjusted: withRecency.depthAdjusted,
+    depthDirection: withRecency.depthDirection,
+    scopeCapped: withRecency.scopeCapped,
+    cappedFromColor: withRecency.cappedFromColor,
+    scope: item.scope,
+    recencyAdjusted: withRecency.recencyAdjusted,
+    recencyDirection: withRecency.recencyDirection,
+  });
+
+  // Coverage suffix renders only when services-channel actually contributed
+  // (otherwise it would imply "3/12 services" on a version-only assessment).
+  const coverageSuffix = servicesInteracted ? ` — ${coverage.selected}/${coverage.total} services` : '';
+  const label = labelCore + coverageSuffix;
+
+  // notDiscussed marker — both channels silent.
+  const notDiscussed = versionUnknown && !item.unknownVersion && !servicesInteracted && !item.notUsed;
+
+  // Build the note. Combine version-tier note + checklist guidance if both
+  // channels active; fall back to the active one otherwise.
+  let note: string | undefined;
+  if (versionTier?.note && servicesInteracted) {
+    const ratioPct = Math.round(ratio * 100);
+    note = `${versionTier.note} Coverage: ${ratioPct}% of curated services.`;
+  } else if (versionTier?.note) {
+    note = versionTier.note;
+  } else if (servicesInteracted) {
+    const ratioPct = Math.round(ratio * 100);
+    note = tech.checklistGuidance ?? `Coverage: ${ratioPct}% of curated services.`;
+  } else if (versionUnknown) {
+    note = tech.guidanceForUnknownVersion;
+  }
+
+  // enterpriseNote: gate on version-tier Yellow (matches version-mode) + 6C
+  // junior gate. Doesn't fire on the unknown-version branch unless the
+  // candidate has meaningful depth (matches version-mode logic).
+  const enterpriseFlag = versionTier?.enterpriseStillUsed ?? tech.enterpriseStillUsed;
+  const candidateHasMeaningfulDepth =
+    item.depth === 'working' || item.depth === 'deep' || item.depth === 'very-deep';
+  const enterpriseNote =
+    !withRecency.recencyAdjusted && seniority !== 'junior' && enterpriseFlag &&
+    (
+      (versionTier && versionTier.color === 'yellow') ||
+      (versionUnknown && candidateHasMeaningfulDepth)
+    )
+      ? 'Still widely used in many enterprise applications.'
+      : undefined;
+
+  return {
+    color: withRecency.color,
+    label,
+    note,
+    enterpriseNote,
+    unknownVersion: versionUnknown,
+    depthAdjusted: withRecency.depthAdjusted,
+    depthDirection: withRecency.depthDirection,
+    scopeCapped: withRecency.scopeCapped,
+    cappedFromColor: withRecency.cappedFromColor,
+    coverage: servicesInteracted ? coverage : undefined,
+    recencyAdjusted: withRecency.recencyAdjusted,
+    recencyNote: withRecency.recencyNote,
+    notDiscussed,
   };
 }
 

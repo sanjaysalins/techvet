@@ -907,6 +907,23 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect((cucumber!.versionTiers ?? []).length).toBeGreaterThanOrEqual(3);
   });
 
+  it('Round-12: Kubernetes is hybrid mode with version tiers AND services (Sven R5 + Lars R9-10)', () => {
+    // K8s converted from version-mode-only to hybrid mode so Helm-consumers
+    // (Sven shape) get a services-channel verdict and deep-platform-engineers
+    // (Lars shape) still get the version-tier signal. If a future agent
+    // reverts vetMode, both personas lose half their honest signal.
+    const k8s = TECH_BY_ID.get('kubernetes');
+    expect(k8s, 'kubernetes missing — catalog drift').toBeDefined();
+    expect(k8s!.vetMode, 'K8s must be hybrid (Round-12 Sven R5 ship)').toBe('hybrid');
+    expect((k8s!.services ?? []).length, 'K8s hybrid needs ≥10 services for coverage signal').toBeGreaterThanOrEqual(10);
+    expect((k8s!.versionTiers ?? []).length, 'K8s hybrid keeps version tiers').toBeGreaterThanOrEqual(3);
+    // Load-bearing services per Sven (Helm consumer) + Lars (operator).
+    const serviceIds = new Set((k8s!.services ?? []).map(s => s.id));
+    expect(serviceIds.has('workloads')).toBe(true);
+    expect(serviceIds.has('rbac')).toBe(true);
+    expect(serviceIds.has('networking')).toBe(true);
+  });
+
   it('Round-11 catalog: UIKit shipped for iOS migration shops (Kenji rounds 7-8 deferred)', () => {
     const uikit = TECH_BY_ID.get('uikit');
     expect(uikit, 'uikit missing — Kenji migration-shop named-only').toBeDefined();

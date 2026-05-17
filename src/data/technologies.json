@@ -1286,6 +1286,7 @@
     "id": "kubernetes",
     "name": "Kubernetes",
     "category": "DevOps",
+    "vetMode": "hybrid",
     "currentVersion": "1.36",
     "versionTiers": [
       {
@@ -1309,12 +1310,29 @@
         "color": "red"
       }
     ],
-    "suggestedProbes": [
-      "Operators / CRDs experience?",
-      "Network policies / service mesh?",
-      "Have you debugged a CrashLoopBackOff under production load?"
+    "services": [
+      { "id": "workloads", "name": "Workloads (Deployments / StatefulSets / DaemonSets / Jobs)" },
+      { "id": "networking", "name": "Networking (Services / Ingress / NetworkPolicies)" },
+      { "id": "rbac", "name": "RBAC (Roles / ClusterRoles / ServiceAccounts)" },
+      { "id": "storage", "name": "Storage (PV / PVC / StorageClass / CSI)" },
+      { "id": "config-secrets", "name": "Config + Secrets (ConfigMap / Secret / external-secrets)" },
+      { "id": "autoscaling", "name": "Autoscaling (HPA / VPA / cluster autoscaler)" },
+      { "id": "scheduling", "name": "Scheduling (nodeAffinity / taints / topologySpreadConstraints)" },
+      { "id": "crds-operators", "name": "CRDs + Operators (authoring or installing)" },
+      { "id": "admission-control", "name": "Admission control (webhooks / ValidatingPolicy)" },
+      { "id": "service-mesh", "name": "Service mesh (Istio / Linkerd / Cilium)" },
+      { "id": "observability-k8s", "name": "Observability hooks (metrics-server / events / readiness)" },
+      { "id": "multi-cluster", "name": "Multi-cluster / federation / cluster API" },
+      { "id": "debugging-prod", "name": "Production debugging (kubectl drift / pod-level forensics)" }
     ],
-    "guidanceForUnknownVersion": "Yellow — version matters for security and features."
+    "suggestedProbes": [
+      "Walk me through a CrashLoopBackOff you debugged in production — what was the root cause?",
+      "Operators / CRDs — have you authored one, or just consumed third-party operators?",
+      "RBAC — who manages cluster-level permissions in your shop, and what's the boundary between app teams and platform team?",
+      "Network policies — turned on by default in your clusters, or opt-in per workload?"
+    ],
+    "guidanceForUnknownVersion": "Yellow — version matters for security and features.",
+    "checklistGuidance": "Round-12 hybrid mode (Sven round-7 + Lars rounds 9-10): the services axis captures depth-of-operation independent from version era. Helm-consumers tick 3-5 services (workloads / config / autoscaling). Platform engineers tick 9-12 (everything except possibly multi-cluster if single-cluster shop). The Yellow band (25-66% coverage) is honest mid-territory — operators who know their workloads but haven't owned cluster-build."
   },
   {
     "id": "terraform",

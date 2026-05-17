@@ -23,6 +23,10 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
   // while the panel showed Yellow on the same screen.
   const resolved = resolveTier(tech, item, { seniority: meta.seniority });
   const isChecklist = tech.vetMode === 'checklist';
+  // Round-12 hybrid mode: render both VersionBody + ChecklistBody for techs
+  // where both axes carry independent senior signal (Kubernetes is the
+  // canonical case). Card header still shows the combined tier badge.
+  const isHybrid = tech.vetMode === 'hybrid';
 
   return (
     <div
@@ -49,9 +53,11 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
             {tech.category}
             {isChecklist
               ? ` · ${(tech.services ?? []).length} services`
-              : tech.currentVersion
-                ? ` · current ${tech.currentVersion}`
-                : ''}
+              : isHybrid
+                ? `${tech.currentVersion ? ` · current ${tech.currentVersion}` : ''} · ${(tech.services ?? []).length} services`
+                : tech.currentVersion
+                  ? ` · current ${tech.currentVersion}`
+                  : ''}
           </div>
         </div>
         <button
@@ -69,6 +75,11 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
 
       {isChecklist ? (
         <ChecklistBody tech={tech} item={item} />
+      ) : isHybrid ? (
+        <>
+          <VersionBody tech={tech} item={item} />
+          <ChecklistBody tech={tech} item={item} />
+        </>
       ) : (
         <VersionBody tech={tech} item={item} />
       )}

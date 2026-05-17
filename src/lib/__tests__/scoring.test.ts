@@ -1513,6 +1513,156 @@ describe('resolveTier — 8A seniority threading parity (Mei)', () => {
  * from-clause when finalLabel === baseLabel. Cosmetic but the tautology
  * read awkward across rounds 5-9.
  */
+/**
+ * Round-12 hybrid mode (Sven round-7 R5 + Lars rounds 9-10): vetMode='hybrid'
+ * combines version-tier + checklist-coverage via MIN/weakest-link. Kubernetes
+ * is the canonical case. Tests cover the four matrix cells (version × services)
+ * plus back-compat (services untouched → version-only).
+ */
+describe('resolveTier — round-12 hybrid mode (K8s shape)', () => {
+  function hybridTech(): Technology {
+    return {
+      id: 'hybrid-test',
+      name: 'Hybrid Test',
+      category: 'DevOps',
+      vetMode: 'hybrid',
+      currentVersion: '1.36',
+      versionTiers: [
+        { min: '1.33', label: 'Excellent', color: 'green' },
+        { min: '1.28', label: 'Good', color: 'green' },
+        { min: '1.24', label: 'Review / Probe', color: 'yellow' },
+        { min: '0', label: 'Concern', color: 'red' },
+      ],
+      services: [
+        { id: 's1', name: 'S1' }, { id: 's2', name: 'S2' }, { id: 's3', name: 'S3' },
+        { id: 's4', name: 'S4' }, { id: 's5', name: 'S5' }, { id: 's6', name: 'S6' },
+        { id: 's7', name: 'S7' }, { id: 's8', name: 'S8' }, { id: 's9', name: 'S9' },
+        { id: 's10', name: 'S10' }, { id: 's11', name: 'S11' }, { id: 's12', name: 'S12' },
+      ],
+      suggestedProbes: [],
+    };
+  }
+
+  it('version Green + services untouched → Green (back-compat: services don\'t drag when not interacted)', () => {
+    const r = resolveTier(hybridTech(), item({ version: '1.30', depth: 'working' }));
+    expect(r.color).toBe('green');
+    // No coverage suffix in label because services-channel didn't contribute.
+    expect(r.label).not.toMatch(/services/);
+  });
+
+  it('version Green + 11/12 services (92%) → Green (Lars deep-operator shape)', () => {
+    const r = resolveTier(
+      hybridTech(),
+      item({
+        version: '1.30',
+        depth: 'deep',
+        selectedServices: ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'],
+        checklistTouched: true,
+      })
+    );
+    expect(r.color).toBe('green');
+    expect(r.label).toMatch(/11\/12 services/);
+  });
+
+  it('version Green + 3/12 services (25%) → Yellow (Sven Helm-consumer at the edge)', () => {
+    const r = resolveTier(
+      hybridTech(),
+      item({
+        version: '1.28',
+        depth: 'working',
+        selectedServices: ['s1', 's2', 's3'],
+        checklistTouched: true,
+      })
+    );
+    // 3/12 = 25% — Yellow tier (≥25%, <66%); MIN(Green, Yellow) = Yellow.
+    expect(r.color).toBe('yellow');
+    expect(r.label).toMatch(/3\/12 services/);
+  });
+
+  it('version Green + 2/12 services (17%) → Red (Sven shallow Helm consumer)', () => {
+    const r = resolveTier(
+      hybridTech(),
+      item({
+        version: '1.28',
+        depth: 'working',
+        selectedServices: ['s1', 's2'],
+        checklistTouched: true,
+      })
+    );
+    // 2/12 = 17% < 25% — Red tier; MIN(Green, Red) = Red.
+    expect(r.color).toBe('red');
+    expect(r.label).toMatch(/2\/12 services/);
+  });
+
+  it('version Yellow (legacy 1.25) + 11/12 services + deep + senior → Green via depth lift', () => {
+    const r = resolveTier(
+      hybridTech(),
+      item({
+        version: '1.25', // ≥ 1.24 Yellow tier (< 1.28 Good)
+        depth: 'deep',
+        selectedServices: ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'],
+        checklistTouched: true,
+      }),
+      { seniority: 'senior' }
+    );
+    // Combined base = Yellow (version drags); depth=deep lifts Yellow→Green.
+    expect(r.color).toBe('green');
+    expect(r.depthAdjusted).toBe(true);
+    expect(r.depthDirection).toBe('lifted');
+    expect(r.label).toMatch(/lifted from .* by depth/);
+    expect(r.label).toMatch(/11\/12 services/);
+  });
+
+  it('version Yellow + 11/12 + reviewer scope → Yellow capped with cappedFromColor (Staff IC shape)', () => {
+    const r = resolveTier(
+      hybridTech(),
+      item({
+        version: '1.25', // Yellow tier
+        depth: 'deep',
+        selectedServices: ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'],
+        checklistTouched: true,
+        scope: 'reviewer',
+      }),
+      { seniority: 'senior' }
+    );
+    // Yellow base + deep lift → Green; reviewer cap returns to Yellow with cappedFromColor=green.
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBe('green');
+    expect(r.label).toMatch(/capped from .* by reviewer scope/);
+  });
+
+  it('unknownVersion + services interacted → uses coverage only', () => {
+    const r = resolveTier(
+      hybridTech(),
+      item({
+        version: '',
+        unknownVersion: true,
+        selectedServices: ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8'],
+        checklistTouched: true,
+      })
+    );
+    // 8/12 = 67% → Green coverage; version unknown forces Yellow on version channel;
+    // MIN(Yellow, Green) = Yellow.
+    expect(r.color).toBe('yellow');
+    expect(r.unknownVersion).toBe(true);
+    expect(r.label).toMatch(/8\/12 services/);
+  });
+
+  it('checklistUnsure parks services-channel at Yellow', () => {
+    const r = resolveTier(
+      hybridTech(),
+      item({ version: '1.30', depth: 'working', checklistUnsure: true })
+    );
+    // Version Green + services Yellow (unsure) = Yellow.
+    expect(r.color).toBe('yellow');
+  });
+
+  // Note: K8s catalog wire-up assertion lives in `src/data/__tests__/integrity.test.ts`
+  // (where TECH_BY_ID is already imported and the project's `noUncheckedSideEffectImports`
+  // / `no-require` rules accept it).
+});
+
 describe('resolveTier — 9C tautological softener label (Pooja)', () => {
   it('softener on Yellow base label suppresses from-clause', () => {
     const r = resolveTier(versionTech(), item({ version: '17', lastUsed: '2022' }));
