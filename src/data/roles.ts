@@ -442,5 +442,15 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'Custom',
     description: 'Start blank and add technologies as you go.',
     techIds: [],
+    // Round-17 (Theo FT-2 round-10): Custom flow had no `serviceTagFilters`,
+    // so AWS / Azure / GCP rendered all 26+ services as denominator. Theo's
+    // generalist Lambda+RDS+S3 = 3/26 = 11.5% → Red, mis-framing a working-
+    // depth generalist as thin. Apply the 'general' tag filter as the
+    // Custom default (matches Backend/Fullstack templates' lens). Recruiters
+    // who want the architect / security / data-ml / CI slice should pick
+    // those templates instead — Custom is the "common-stack default" lens.
+    // Full stack-focus picker UI (per-card chips for changing lens mid-call)
+    // is deferred to a separate UX-redesign session.
+    serviceTagFilters: { aws: ['general'] },
   },
 ];

@@ -907,6 +907,62 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect((cucumber!.versionTiers ?? []).length).toBeGreaterThanOrEqual(3);
   });
 
+  it('Round-15: Catalog adds — Kyverno + Port + GCP Identity Platform + Feast materialization split', () => {
+    // Kyverno (Lars R11 F7): policy engine for K8s admission control.
+    const kyv = TECH_BY_ID.get('kyverno');
+    expect(kyv?.vetMode).toBe('checklist');
+    expect(kyv?.category).toBe('DevOps');
+    expect((kyv?.services ?? []).length).toBeGreaterThanOrEqual(6);
+
+    // Port (round-10 deferred): SaaS IDP alternative to Backstage.
+    const port = TECH_BY_ID.get('port');
+    expect(port?.vetMode).toBe('checklist');
+    expect(port?.category).toBe('DevOps');
+    expect((port?.services ?? []).length).toBeGreaterThanOrEqual(6);
+
+    // GCP Identity Platform (round-10 Lina F2 parallel): closes the
+    // AWS Cognito / Azure Entra ID / GCP Identity Platform triangle.
+    const gcp = TECH_BY_ID.get('gcp');
+    const gcpServiceIds = new Set((gcp?.services ?? []).map(s => s.id));
+    expect(gcpServiceIds.has('identity-platform')).toBe(true);
+
+    // Feast materialization split (Esme R11 F5): single chip undercredited
+    // batch-only vs stream-only DEs. Split into two services.
+    const feast = TECH_BY_ID.get('feast');
+    const feastServiceIds = new Set((feast?.services ?? []).map(s => s.id));
+    expect(feastServiceIds.has('batch-materialization')).toBe(true);
+    expect(feastServiceIds.has('stream-materialization')).toBe(true);
+    expect(feastServiceIds.has('materialization'), 'old combined chip removed').toBe(false);
+  });
+
+  it('Round-14: Storybook is hybrid mode (Maya M2 round-8)', () => {
+    const sb = TECH_BY_ID.get('storybook');
+    expect(sb, 'storybook missing — catalog drift').toBeDefined();
+    expect(sb!.vetMode, 'Storybook must be hybrid (Round-14 Maya M2 ship)').toBe('hybrid');
+    expect((sb!.services ?? []).length, 'Storybook hybrid needs ≥6 services for governance signal').toBeGreaterThanOrEqual(6);
+    expect((sb!.versionTiers ?? []).length, 'Storybook hybrid keeps version tiers').toBeGreaterThanOrEqual(3);
+    const serviceIds = new Set((sb!.services ?? []).map(s => s.id));
+    expect(serviceIds.has('governance')).toBe(true);
+    expect(serviceIds.has('visual-regression')).toBe(true);
+  });
+
+  it('Round-13: PostgreSQL is hybrid mode with version tiers AND services (Lina F3 round-10)', () => {
+    // Postgres converted from version-mode to hybrid so app-developers
+    // (5-6 services) and DBAs / data engineers (12-13 services) read
+    // distinctly. Pre-hybrid the version-mode-only entry erased the
+    // senior DB signal (schema design / indexing / partitioning / etc).
+    const pg = TECH_BY_ID.get('postgresql');
+    expect(pg, 'postgresql missing — catalog drift').toBeDefined();
+    expect(pg!.vetMode, 'Postgres must be hybrid (Round-13 Lina F3 ship)').toBe('hybrid');
+    expect((pg!.services ?? []).length, 'Postgres hybrid needs ≥10 services for senior-DB signal').toBeGreaterThanOrEqual(10);
+    expect((pg!.versionTiers ?? []).length, 'Postgres hybrid keeps version tiers').toBeGreaterThanOrEqual(3);
+    const serviceIds = new Set((pg!.services ?? []).map(s => s.id));
+    // Load-bearing services per Lina round-10 + Pooja round-9 + Owen round-6.
+    expect(serviceIds.has('schema-design')).toBe(true);
+    expect(serviceIds.has('indexing')).toBe(true);
+    expect(serviceIds.has('replication')).toBe(true);
+  });
+
   it('Round-12: Kubernetes is hybrid mode with version tiers AND services (Sven R5 + Lars R9-10)', () => {
     // K8s converted from version-mode-only to hybrid mode so Helm-consumers
     // (Sven shape) get a services-channel verdict and deep-platform-engineers

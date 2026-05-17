@@ -1049,6 +1049,7 @@
     "id": "postgresql",
     "name": "PostgreSQL",
     "category": "Database",
+    "vetMode": "hybrid",
     "currentVersion": "18",
     "versionTiers": [
       {
@@ -1073,13 +1074,30 @@
         "color": "red"
       }
     ],
+    "services": [
+      { "id": "schema-design", "name": "Schema design (normalization / FK design / migration discipline)" },
+      { "id": "indexing", "name": "Indexing strategy (B-tree / GIN / GiST / partial / covering)" },
+      { "id": "query-planning", "name": "Query planning (EXPLAIN ANALYZE / pg_stat_statements)" },
+      { "id": "partitioning", "name": "Partitioning (declarative range / list / hash)" },
+      { "id": "replication", "name": "Replication (streaming / logical / failover)" },
+      { "id": "backup-pitr", "name": "Backup + PITR (pg_basebackup / WAL archiving / barman)" },
+      { "id": "jsonb", "name": "JSONB (operators / GIN indexes / containment)" },
+      { "id": "vacuum-tuning", "name": "VACUUM + autovacuum tuning" },
+      { "id": "connection-pooling", "name": "Connection pooling (pgbouncer / pgcat)" },
+      { "id": "row-level-security", "name": "Row-level security (RLS / multi-tenant patterns)" },
+      { "id": "mvcc-isolation", "name": "MVCC + transaction isolation levels (SSI / Serializable)" },
+      { "id": "extensions", "name": "Extensions (PostGIS / pg_partman / pg_cron / pgvector)" },
+      { "id": "roles-grants", "name": "Roles + grants discipline (least-privilege / role hierarchies)" }
+    ],
     "enterpriseStillUsed": true,
     "suggestedProbes": [
-      "JSONB usage patterns?",
-      "Replication — logical vs streaming?",
-      "EXPLAIN ANALYZE — comfortable reading plans?"
+      "Walk me through an EXPLAIN ANALYZE you debugged — what changed after the fix?",
+      "Replication — streaming, logical, or both? What's the failover story?",
+      "JSONB — schema-on-read pattern, or used sparingly for sidecar data?",
+      "Partitioning — declarative partitions in production, or still on inheritance-based?"
     ],
-    "guidanceForUnknownVersion": "Yellow — Postgres devs usually know their major version."
+    "guidanceForUnknownVersion": "Yellow — Postgres devs usually know their major version.",
+    "checklistGuidance": "Round-12 hybrid mode (Lina F3 round-10): the services axis captures depth-of-operation independent from version era. App-developers tick 4-6 services (schema / indexing / JSONB / query planning). DBAs / data engineers tick 9-13 (everything except possibly RLS or extensions if shop doesn't use them)."
   },
   {
     "id": "mysql",
@@ -2098,6 +2116,10 @@
       {
         "id": "cloud-iam",
         "name": "Cloud IAM (Identity / access)"
+      },
+      {
+        "id": "identity-platform",
+        "name": "Identity Platform (consumer auth: B2C / B2B)"
       },
       {
         "id": "monitoring-logging",
@@ -3771,6 +3793,7 @@
     "id": "storybook",
     "name": "Storybook",
     "category": "Frontend",
+    "vetMode": "hybrid",
     "currentVersion": "10.4",
     "releasedYear": 2016,
     "versionTiers": [
@@ -3800,13 +3823,25 @@
         "note": "Pre-6 — long-deprecated APIs."
       }
     ],
+    "services": [
+      { "id": "story-authoring", "name": "Story authoring (CSF 3 / args / play functions)" },
+      { "id": "addons", "name": "Addons (a11y / interactions / measure / viewport)" },
+      { "id": "test-runner", "name": "Test runner (interaction tests + smoke)" },
+      { "id": "visual-regression", "name": "Visual regression (Chromatic / Loki / Percy)" },
+      { "id": "design-tokens", "name": "Design tokens integration" },
+      { "id": "docs-site", "name": "Docs site (MDX / autodocs)" },
+      { "id": "composition", "name": "Composition (multi-repo Storybook federation)" },
+      { "id": "governance", "name": "Governance (component approval / contribution workflow)" }
+    ],
     "suggestedProbes": [
       "How do you structure stories — co-located or central?",
       "Have you used Storybook for visual regression (Chromatic, Loki)?",
-      "How do you make Storybook part of the design hand-off?",
-      "Storybook in CI — how do you keep it fast?"
+      "CSF 3 + play functions — are your stories test-bearing, or documentation-only?",
+      "Storybook in CI — how do you keep it fast?",
+      "Component approval workflow — how does a new design-system component get added?"
     ],
-    "guidanceForUnknownVersion": "Yellow — ask whether they configured Storybook or just write stories."
+    "guidanceForUnknownVersion": "Yellow — ask whether they configured Storybook or just write stories.",
+    "checklistGuidance": "Round-14 hybrid mode (Maya M2 round-8): the services axis captures design-system governance senior signal independent from version era. Story-writers tick 2-3 services. Senior FE design-system owners tick 6-8 (test-bearing stories + visual regression + composition + governance flow)."
   },
   {
     "id": "sqlite",
@@ -4529,7 +4564,8 @@
       { "id": "feature-definitions", "name": "Feature definitions (entities + feature views)" },
       { "id": "online-store", "name": "Online store (Redis / DynamoDB / Bigtable)" },
       { "id": "offline-store", "name": "Offline store (BigQuery / Snowflake / Parquet)" },
-      { "id": "materialization", "name": "Materialization (batch + stream)" },
+      { "id": "batch-materialization", "name": "Batch materialization (Airflow / Prefect / cron)" },
+      { "id": "stream-materialization", "name": "Stream materialization (Kafka / Kinesis / on-demand)" },
       { "id": "point-in-time-joins", "name": "Point-in-time correctness joins" },
       { "id": "registry-management", "name": "Registry management (apply / teardown)" },
       { "id": "feature-serving", "name": "Online serving (gRPC / REST)" },
@@ -4637,5 +4673,51 @@
       "Last performance issue you debugged in UIKit — what was the cause?"
     ],
     "checklistGuidance": "UIKit is the legacy-but-active iOS UI framework — most production iOS apps in 2026 still have substantial UIKit surface during SwiftUI migration. Diffable data sources + SwiftUI interop + accessibility discipline signals a senior iOS engineer who's bridging eras; tutorial-level UIKit is storyboards-only."
+  },
+  {
+    "id": "kyverno",
+    "name": "Kyverno",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "validate-policies", "name": "ValidatingPolicy (admission validation)" },
+      { "id": "mutate-policies", "name": "MutatingPolicy (admission mutation / defaults)" },
+      { "id": "generate-policies", "name": "GeneratePolicy (downstream-resource creation)" },
+      { "id": "verify-images", "name": "VerifyImages (cosign / sigstore integration)" },
+      { "id": "policy-exceptions", "name": "PolicyException CRD (carve-outs + governance)" },
+      { "id": "reports-metrics", "name": "Policy reports + Prometheus metrics" },
+      { "id": "cli-testing", "name": "CLI testing (kyverno test + policy unit-tests)" },
+      { "id": "background-scan", "name": "Background scanning (existing-resource compliance)" }
+    ],
+    "suggestedProbes": [
+      "Kyverno vs OPA/Gatekeeper — what drove the choice?",
+      "Walk me through a policy you wrote — validation, mutation, or generation pattern?",
+      "Background scan — how do you handle pre-existing non-compliant workloads?",
+      "Policy testing — do you unit-test policies in CI before applying?"
+    ],
+    "checklistGuidance": "Kyverno is the OSS-canonical K8s policy engine in 2026 (alongside OPA/Gatekeeper). Policy authoring + image verification + governance flow (PolicyException + reports) separates platform engineers from teams that installed Kyverno for a single deny-rule."
+  },
+  {
+    "id": "port",
+    "name": "Port (Internal Developer Platform)",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "blueprint-model", "name": "Blueprint model (entity types + relations)" },
+      { "id": "self-service-actions", "name": "Self-service actions (engineer-driven workflows)" },
+      { "id": "scorecards", "name": "Scorecards (production-readiness / quality)" },
+      { "id": "rbac-permissions", "name": "RBAC + team permissions" },
+      { "id": "integrations", "name": "Integrations (GitHub / K8s / ArgoCD / cloud)" },
+      { "id": "ai-agents", "name": "AI agents (Port AI / agent flows)" },
+      { "id": "developer-portal-ui", "name": "Developer portal UI customization" },
+      { "id": "governance-adoption", "name": "Governance + adoption metrics" }
+    ],
+    "suggestedProbes": [
+      "Port vs Backstage — what drove choosing a hosted SaaS IDP over self-hosted?",
+      "Self-service actions — what's the most-used action you've shipped?",
+      "Scorecards — has a scorecard ever blocked a deploy or escalated to leadership?",
+      "Adoption metrics — what percentage of services / engineers actively use Port?"
+    ],
+    "checklistGuidance": "Port is the SaaS-canonical IDP alternative to Backstage in 2026 (Cortex / OpsLevel are adjacent). Blueprint authoring + self-service action design + scorecard governance separates platform engineers who own developer experience from teams that bought Port and treated it as a catalog viewer."
   }
 ]

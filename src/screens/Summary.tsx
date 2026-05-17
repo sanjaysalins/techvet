@@ -306,6 +306,22 @@ export default function Summary() {
             </section>
           );
         })()}
+        {/* Round-16 J5 (Mei + Eitan rounds 6-10): seniority-aware framing
+            sentence below the headline cards. Pre-J5, headline counts were
+            seniority-blind — HM reading Mei's report saw "1 Yellow" without
+            knowing it was a TS-shallow junior probe target vs a senior tech
+            debt issue. One line of context anchors the read. */}
+        {meta.seniority && meta.seniority !== 'unspecified' && (
+          <p className="text-xs text-slate-500 dark:text-slate-400 italic mb-6 -mt-2">
+            {meta.seniority === 'junior'
+              ? `Junior candidate — Yellows often indicate probe targets, not regressions; verify the right depth + version expectations for the role.`
+              : meta.seniority === 'mid'
+                ? `Mid-level candidate — balanced verdicts expected; deep+narrow specialism vs broad working-knowledge is the read.`
+                : meta.seniority === 'senior'
+                  ? `Senior candidate — Greens carry depth signal; capped Yellows on architect/reviewer scope read as Staff-IC shape, not weakness.`
+                  : `Staff+ candidate — methodology + named-only signals carry more weight than version-tier coverage; focus on the architectural framing.`}
+          </p>
+        )}
         {/* Coverage chips — confirmed-absent and not-discussed counts. Fix L
             (round-2 cross-cut): hiring managers asked to distinguish "asked &
             confirmed not in stack" from "ran out of time" — both used to be

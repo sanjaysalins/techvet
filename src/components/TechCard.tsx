@@ -84,7 +84,13 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
         <VersionBody tech={tech} item={item} />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+      {/* Round-16 J4 (Mei + Eitan across rounds 6-10): junior screens have
+          no use for the Scope dropdown — a junior is operator-by-default
+          (they didn't author or architect anything yet, and "review" is
+          mid+ shape). Hide on `meta.seniority === 'junior'`; reclaim ~15-20s
+          per screen by dropping the grid from 3-col to 2-col. The catalog
+          default still applies if one's set. */}
+      <div className={cn('grid grid-cols-1 gap-3 mt-4', meta.seniority === 'junior' ? 'md:grid-cols-2' : 'md:grid-cols-3')}>
         <div>
           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
             Depth
@@ -105,35 +111,37 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
           </select>
         </div>
 
-        <div>
-          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-            Scope of use
-          </label>
-          <select
-            value={item.scope ?? ''}
-            onChange={e =>
-              updateItem(tech.id, {
-                scope: (e.target.value || undefined) as Scope | undefined,
-              })
-            }
-            onClick={e => e.stopPropagation()}
-            className="input"
-          >
-            {/* Fix K: surface the catalog default so the recruiter knows
-                the chosen scope without opening the dropdown. AI/ML libs
-                default to "author" so the depth-game stops earning Green. */}
-            <option value="">
-              {tech.defaultScope
-                ? `— Use default: ${tech.defaultScope}`
-                : '— Not specified'}
-            </option>
-            {SCOPE_OPTIONS.map(s => (
-              <option key={s} value={s}>
-                {scopeLabel(s)}
+        {meta.seniority !== 'junior' && (
+          <div>
+            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+              Scope of use
+            </label>
+            <select
+              value={item.scope ?? ''}
+              onChange={e =>
+                updateItem(tech.id, {
+                  scope: (e.target.value || undefined) as Scope | undefined,
+                })
+              }
+              onClick={e => e.stopPropagation()}
+              className="input"
+            >
+              {/* Fix K: surface the catalog default so the recruiter knows
+                  the chosen scope without opening the dropdown. AI/ML libs
+                  default to "author" so the depth-game stops earning Green. */}
+              <option value="">
+                {tech.defaultScope
+                  ? `— Use default: ${tech.defaultScope}`
+                  : '— Not specified'}
               </option>
-            ))}
-          </select>
-        </div>
+              {SCOPE_OPTIONS.map(s => (
+                <option key={s} value={s}>
+                  {scopeLabel(s)}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div>
           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
@@ -151,7 +159,7 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
           />
         </div>
 
-        <div className="md:col-span-3">
+        <div className={meta.seniority === 'junior' ? 'md:col-span-2' : 'md:col-span-3'}>
           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
             Notes
           </label>
