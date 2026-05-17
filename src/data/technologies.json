@@ -1937,6 +1937,7 @@
       { "id": "sqs-sns", "name": "SQS / SNS / EventBridge (Messaging)", "tags": ["general"] },
       { "id": "cloudwatch", "name": "CloudWatch (Logs / metrics)", "tags": ["general"] },
       { "id": "iam", "name": "IAM (Identity / access)", "tags": ["general", "security", "architect"] },
+      { "id": "cognito-user-pool", "name": "Cognito (User Pools + Identity Pools)", "tags": ["general", "security"] },
       { "id": "cloudformation-cdk", "name": "CloudFormation / CDK (IaC)", "tags": ["general", "cicd", "architect"] },
       { "id": "vpc", "name": "VPC (Networking / subnets)", "tags": ["general", "architect"] },
       { "id": "step-functions", "name": "Step Functions (Workflow orchestration)", "tags": ["general"] },

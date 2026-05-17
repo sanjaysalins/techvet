@@ -101,7 +101,9 @@ describe('roles.ts — integrity', () => {
  */
 describe('roles.ts — content snapshots (regression for red-team item 1)', () => {
   const EXPECTED_ROLE_TECHS: Record<string, string[]> = {
-    fullstack: ['aws', 'docker', 'nodejs', 'postgresql', 'react', 'typescript'],
+    // Round-10 10C (Lina F4): nextjs + tailwind added — modern 2026 fullstack
+    // is Next-first; both were already preloaded by Frontend template.
+    fullstack: ['aws', 'docker', 'nextjs', 'nodejs', 'postgresql', 'react', 'tailwind', 'typescript'],
     frontend: ['nextjs', 'react', 'tailwind', 'typescript', 'vite'],
     backend: ['docker', 'kubernetes', 'nodejs', 'postgresql', 'python', 'redis'],
     'solution-architect': ['aws', 'azure', 'kafka', 'kubernetes', 'postgresql', 'terraform'],
@@ -819,6 +821,33 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
   it('Round-9 9E: DevOps template preloads Vault (Lars F2)', () => {
     const devops = ROLE_TEMPLATES.find(r => r.id === 'devops');
     expect(devops?.techIds).toContain('vault');
+  });
+
+  it('Round-10 10A: Fullstack template ships 6 methodologyChips (Lina F1)', () => {
+    const fs = ROLE_TEMPLATES.find(r => r.id === 'fullstack');
+    expect(fs?.methodologyChips?.length ?? 0).toBe(6);
+    const ids = new Set((fs?.methodologyChips ?? []).map(c => c.id));
+    // Reused from Backend (7A): feature-flags / trunk-based via DevOps /
+    // contract-testing / otel-instrumentation. Reused from FE (6F): a11y-wcag.
+    // New: design-system-discipline (vs FE's design-system-ownership).
+    expect(ids.has('feature-flags')).toBe(true);
+    expect(ids.has('trunk-based')).toBe(true);
+    expect(ids.has('contract-testing')).toBe(true);
+    expect(ids.has('otel-instrumentation')).toBe(true);
+    expect(ids.has('a11y-wcag')).toBe(true);
+    expect(ids.has('design-system-discipline')).toBe(true);
+  });
+
+  it('Round-10 10C: Fullstack template preloads nextjs + tailwind (Lina F4)', () => {
+    const fs = ROLE_TEMPLATES.find(r => r.id === 'fullstack');
+    expect(fs?.techIds).toContain('nextjs');
+    expect(fs?.techIds).toContain('tailwind');
+  });
+
+  it('Round-10 10B: AWS catalog includes Cognito (Lina F2)', () => {
+    const aws = TECH_BY_ID.get('aws');
+    const ids = new Set((aws?.services ?? []).map(s => s.id));
+    expect(ids.has('cognito-user-pool')).toBe(true);
   });
 
   it('Round-7 7A: Backend template carries ≥4 methodologyChips (closes Sven 6F deferral mistake)', () => {

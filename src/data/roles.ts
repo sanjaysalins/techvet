@@ -37,8 +37,32 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'fullstack',
     name: 'Full-Stack Developer',
     description: 'Frontend + backend with cloud deployment.',
-    techIds: ['react', 'typescript', 'nodejs', 'postgresql', 'docker', 'aws'],
+    // Round-10 10C (Lina F4): 6-tech preload was too narrow for fullstack —
+    // modern 2026 fullstack is Next-first more often than not, and Tailwind
+    // is the default styling layer. Both already preloaded by Frontend
+    // template; symmetric addition here closes Lina's "6 search-adds in 3
+    // minutes" tax. Express/tRPC stay named-only (real divergence axis).
+    techIds: ['react', 'typescript', 'nextjs', 'tailwind', 'nodejs', 'postgresql', 'docker', 'aws'],
     serviceTagFilters: { aws: ['general', 'cicd'] },
+    // Round-10 10A (Lina F1): Fullstack had no methodologyChips — same shape
+    // as the round-7 7A Sven-Backend defect (a major template ships without
+    // chip-set). Fullstack is the most-picked template (universal first-pick
+    // for generalists) and went unvalidated until round 10. Six chips chosen
+    // to balance FE + BE + cross-stack senior signal: feature flags +
+    // trunk-based dev (cross-stack discipline), contract testing + OTel
+    // (service-architecture senior signal), a11y + design-system-discipline
+    // (FE senior signal). Reuse chip IDs from Backend (7A) and FE (6F) where
+    // the same concept applies; new `design-system-discipline` ID (vs FE's
+    // `design-system-ownership`) since fullstack engineers contribute to
+    // rather than solely own design-systems.
+    methodologyChips: [
+      { id: 'feature-flags', label: 'Feature flags (LaunchDarkly / Unleash / OpenFeature)' },
+      { id: 'trunk-based', label: 'Trunk-based development' },
+      { id: 'contract-testing', label: 'Contract testing (Pact / consumer-driven)' },
+      { id: 'otel-instrumentation', label: 'OpenTelemetry / distributed tracing' },
+      { id: 'a11y-wcag', label: 'Accessibility (WCAG 2.x)' },
+      { id: 'design-system-discipline', label: 'Design-system discipline (token consumption + component reuse)' },
+    ],
   },
   {
     id: 'frontend',
