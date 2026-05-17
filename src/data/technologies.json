@@ -786,9 +786,16 @@
         "note": "Python 3.8 is EOL."
       },
       {
+        "min": "3",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Bare \"Python 3\" typed — ask the candidate for the minor version (3.8 / 3.10 / 3.13). Almost all Python 3 work post-2018 is on a specific minor that maps to a real tier."
+      },
+      {
         "min": "0",
         "label": "Concern",
-        "color": "red"
+        "color": "red",
+        "note": "Python 2.x — sunset January 2020. Verify production usage is actually pre-3."
       }
     ],
     "enterpriseStillUsed": true,
@@ -1883,12 +1890,12 @@
   },
   {
     "id": "langchain",
-    "name": "LangChain / LangGraph",
+    "name": "LangChain",
     "category": "AI/ML",
-    "defaultScope": "author",
+    "defaultScope": "operator",
     "vetMode": "checklist",
     "services": [
-      { "id": "langgraph-agents", "name": "LangGraph — agent workflows & state graphs" },
+      { "id": "lcel-chains", "name": "Chains + LCEL (Runnable pipe / composition)" },
       { "id": "rag-retrieval", "name": "RAG retrieval pipelines (loaders / splitters / vector ops)" },
       { "id": "tool-use", "name": "Tool use / function calling end-to-end" },
       { "id": "structured-output", "name": "Structured output (Pydantic / JSON schema)" },
@@ -1900,11 +1907,12 @@
       { "id": "production-deploy", "name": "Production deploy + retries / rate-limit handling" }
     ],
     "suggestedProbes": [
-      "LangGraph for agent workflows?",
-      "Retrieval (RAG) pipeline you've built?",
-      "Why LangChain over direct SDK calls?"
+      "Walk me through a chain you shipped — LCEL or imperative? How do you handle failures mid-chain?",
+      "Retrieval (RAG) pipeline you've built — what retrieval strategy and how do you evaluate it?",
+      "Why LangChain over direct SDK calls?",
+      "Tool-calling agents — how do you bound tool calls + prevent runaway costs?"
     ],
-    "checklistGuidance": "LangChain moves fast — the version isn't the signal, the *services exercised* are. Round-4 Bashir validation: version-mode let a 6-week tutorial user score Excellent at v1.x. Coverage of LangGraph agents, RAG retrieval, tool use, structured output, and evals separates 'I built a hobby RAG' from 'I run an agentic feature in prod'."
+    "checklistGuidance": "LangChain moves fast — the version isn't the signal, the *services exercised* are. Round-4 Bashir validation: version-mode let a 6-week tutorial user score Excellent at v1.x. Coverage of LCEL + RAG retrieval + tool use + structured output + evals separates 'I built a hobby RAG' from 'I run an agentic feature in prod'. LangGraph is a separate catalog entry — add both for candidates who use stateful agent graphs."
   },
   {
     "id": "graphql",
@@ -4719,5 +4727,125 @@
       "Adoption metrics — what percentage of services / engineers actively use Port?"
     ],
     "checklistGuidance": "Port is the SaaS-canonical IDP alternative to Backstage in 2026 (Cortex / OpsLevel are adjacent). Blueprint authoring + self-service action design + scorecard governance separates platform engineers who own developer experience from teams that bought Port and treated it as a catalog viewer."
+  },
+  {
+    "id": "langgraph",
+    "name": "LangGraph",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "state-graph", "name": "StateGraph design (typed state / reducers)" },
+      { "id": "nodes-edges", "name": "Conditional edges + parallel branches" },
+      { "id": "checkpoints-persistence", "name": "Checkpoints + state persistence (time-travel / resume)" },
+      { "id": "human-in-loop", "name": "Human-in-the-loop (interrupts / approval nodes)" },
+      { "id": "streaming-events", "name": "Streaming (stream_mode / event filtering)" },
+      { "id": "multi-agent-patterns", "name": "Multi-agent patterns (supervisor / hierarchical / collab)" },
+      { "id": "tool-nodes", "name": "Tool nodes + function-calling integration" },
+      { "id": "langgraph-deployment", "name": "Deployment (LangGraph Cloud / Platform / self-host)" }
+    ],
+    "suggestedProbes": [
+      "Why LangGraph over plain LangChain chains? What did the graph give you?",
+      "Multi-agent system you shipped — supervisor pattern or peer collaboration?",
+      "Human-in-the-loop — where do you interrupt, and how does the resume work?",
+      "Checkpoints — postgres / sqlite / managed? Used for debugging or production resilience?"
+    ],
+    "checklistGuidance": "LangGraph is the canonical stateful-agent framework in 2026. Graph design + checkpoints + human-in-loop is the production-LLM signal; single-shot agents are application-tinkerer level."
+  },
+  {
+    "id": "llamaindex",
+    "name": "LlamaIndex",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "ingestion-pipelines", "name": "Ingestion pipelines (loaders / parsers / node-postprocessors)" },
+      { "id": "indices", "name": "Indices (vector / tree / keyword / knowledge-graph / hybrid)" },
+      { "id": "query-engines", "name": "Query engines (semantic / sub-question / hybrid retrieval)" },
+      { "id": "chat-engines", "name": "Chat engines (context-mode / condense-mode / agent-mode)" },
+      { "id": "agents-llamaindex", "name": "Agents (ReAct / Function / Tool agents)" },
+      { "id": "evaluation-llamaindex", "name": "Evaluation (Faithfulness / Relevancy / Context evaluators)" },
+      { "id": "workflows-llamaindex", "name": "Workflows (event-driven workflow primitives)" },
+      { "id": "llamaparse-cloud", "name": "LlamaParse + LlamaCloud (managed parsing / RAG infra)" }
+    ],
+    "suggestedProbes": [
+      "Why LlamaIndex over LangChain for your RAG layer? What was the deciding factor?",
+      "Index choice — vector + hybrid, knowledge-graph, or mixed? At what corpus size did it matter?",
+      "Evaluation harness — which evaluators do you run on PRs, and where do they live in CI?",
+      "LlamaParse — managed or self-hosted, and how complex are your source documents?"
+    ],
+    "checklistGuidance": "LlamaIndex is the RAG-first LLM framework in 2026 (alongside LangChain + custom RAG stacks). Ingestion + evaluation discipline + workflow primitives separate engineers who shipped production RAG from tutorial-followers."
+  },
+  {
+    "id": "agno",
+    "name": "Agno",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "agent-primitives", "name": "Agent primitives (instructions / tools / structured outputs)" },
+      { "id": "knowledge-bases-agno", "name": "Knowledge bases (vector DBs / hybrid search)" },
+      { "id": "agent-memory", "name": "Memory + state (session / user / agentic memory)" },
+      { "id": "multi-agent-teams", "name": "Multi-agent teams (leader-worker / collaborative)" },
+      { "id": "agent-workflows", "name": "Workflows (state machines / agentic pipelines)" },
+      { "id": "agno-monitoring", "name": "Built-in monitoring + observability" },
+      { "id": "provider-flexibility", "name": "Provider-neutral model layer + fallback" },
+      { "id": "agno-structured-outputs", "name": "Structured outputs (Pydantic models / JSON mode)" }
+    ],
+    "suggestedProbes": [
+      "Agno vs LangChain / LangGraph — what drove the choice?",
+      "Multi-agent team you shipped — how do leader-workers split responsibility?",
+      "Memory across sessions — how do you bound the context and prevent stale state?",
+      "Production deployment shape — self-host or Agno Cloud?"
+    ],
+    "checklistGuidance": "Agno is a newer-generation Python agent framework focused on multi-agent teams + built-in observability. Team coordination + memory discipline + workflow design is the senior signal; single-agent demos are tutorial-level."
+  },
+  {
+    "id": "pydantic-ai",
+    "name": "Pydantic AI",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "type-safe-agents", "name": "Type-safe agents (Pydantic schemas for I/O)" },
+      { "id": "tools-typed", "name": "Typed tools + function-calling" },
+      { "id": "result-validation", "name": "Result validation (validated structured outputs)" },
+      { "id": "streaming-typed", "name": "Streaming + type-safe partial outputs" },
+      { "id": "dependency-injection", "name": "Dependency injection (typed deps)" },
+      { "id": "testing-models", "name": "Testing (TestModel / FunctionModel for unit tests)" },
+      { "id": "multi-model-pydantic", "name": "Multi-model + provider switching + fallback" },
+      { "id": "logfire-integration", "name": "Logfire tracing integration" }
+    ],
+    "suggestedProbes": [
+      "Why Pydantic AI over LangChain — what types-first guarantees did you need?",
+      "Result validation — how do you handle invalid LLM outputs in production?",
+      "Testing strategy — TestModel + FunctionModel, or live-API tests?",
+      "Dependency injection in agents — what's your use case?"
+    ],
+    "checklistGuidance": "Pydantic AI is the type-safe LLM agent framework in 2026 (built by the Pydantic team). Type-safety + DI + Logfire tracing separates engineers who want production guarantees from those okay with stringy LLM I/O."
+  },
+  {
+    "id": "dspy",
+    "name": "DSPy",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "signatures-types", "name": "Signatures (typed input/output schemas)" },
+      { "id": "modules-programs", "name": "Modules (Predict / ChainOfThought / ReAct / Refine)" },
+      { "id": "optimizers", "name": "Optimizers (BootstrapFewShot / MIPRO / SIMBA)" },
+      { "id": "evaluations-dspy", "name": "Evaluations (metric functions / dev-test splits)" },
+      { "id": "compilation", "name": "Program compilation + caching" },
+      { "id": "prompt-programming", "name": "Programmatic prompts (no string templating)" },
+      { "id": "multi-step-pipelines", "name": "Multi-step composable pipelines" },
+      { "id": "dspy-model-abstraction", "name": "LM abstraction + provider switching" }
+    ],
+    "suggestedProbes": [
+      "Why DSPy over prompt-as-template frameworks — what's the pitch you give your team?",
+      "Optimizer you've actually run — MIPRO, BootstrapFewShot, SIMBA? What metric did it optimize?",
+      "Compiled program → has the optimization survived a model upgrade?",
+      "Evaluation harness — gold examples, programmatic metrics, or both?"
+    ],
+    "checklistGuidance": "DSPy is the programmatic-prompts framework from Stanford NLP. Signature design + optimizer use + evaluation discipline is the senior signal; using DSPy as a prompt wrapper without compiling is tutorial-level."
   }
 ]

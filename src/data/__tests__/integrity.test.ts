@@ -304,11 +304,15 @@ describe('technologies.json — no single-tier `min: "0"` rubber-stamps (Fix J)'
     expect(lc!.vetMode).toBe('checklist');
     expect((lc!.services ?? []).length).toBeGreaterThanOrEqual(8);
     // Spot-check the load-bearing services Bashir's recommendation called out.
+    // Round-19 (user-named AI gap): LangGraph carved out into its own catalog
+    // entry so `langgraph-agents` is no longer a LangChain service — assert
+    // langgraph EXISTS as its own catalog entry instead.
     const serviceIds = new Set((lc!.services ?? []).map(s => s.id));
-    expect(serviceIds.has('langgraph-agents')).toBe(true);
     expect(serviceIds.has('rag-retrieval')).toBe(true);
     expect(serviceIds.has('tool-use')).toBe(true);
     expect(serviceIds.has('evals-langsmith')).toBe(true);
+    expect(serviceIds.has('lcel-chains'), 'LCEL chain composition is the LangChain-canonical primitive').toBe(true);
+    expect(TECH_BY_ID.get('langgraph'), 'LangGraph is now its own catalog entry, not a service of LangChain').toBeDefined();
   });
 });
 
@@ -582,9 +586,19 @@ describe('technologies.json — AI/ML libraries carry defaultScope=author (Fix K
     // managed infrastructure), not as libraries she authors against. They
     // belong in the AI/ML category for discoverability (recruiters
     // searching AI/ML candidates need to find them) but the author-default
-    // would misframe them. Listed below as intentional `defaultScope:
-    // 'operator'` exceptions.
-    const MLOPS_OPERATOR_TOOLS = new Set(['braintrust', 'evidently-ai', 'feast', 'langfuse']);
+    // would misframe them.
+    //
+    // Round-19 (user-named AI category gap): 6 more AI engineering
+    // frameworks ship with `defaultScope: 'operator'` — LangChain /
+    // LangGraph / LlamaIndex / Agno / Pydantic AI / DSPy. These are
+    // libraries you import + write code against, but the dominant 2026
+    // user pattern is OPERATE in prod (RAG pipelines / agent workflows),
+    // not AUTHOR (novel framework internals). Same operator-shape
+    // distinction as the round-11 MLOps tools.
+    const MLOPS_OPERATOR_TOOLS = new Set([
+      'braintrust', 'evidently-ai', 'feast', 'langfuse',
+      'langchain', 'langgraph', 'llamaindex', 'agno', 'pydantic-ai', 'dspy',
+    ]);
     const aimlTechs = TECHS.filter(t => t.category === 'AI/ML');
     expect(aimlTechs.length, 'AI/ML category empty — catalog drift').toBeGreaterThan(0);
     const missing = aimlTechs
@@ -906,6 +920,30 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(cucumber, 'cucumber missing — BDD catalog gap').toBeDefined();
     expect(cucumber!.versionTiers, 'cucumber should be version-mode').toBeDefined();
     expect((cucumber!.versionTiers ?? []).length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('Round-19 (user-named AI gap): 6 AI engineering frameworks shipped (LangChain / LangGraph / LlamaIndex / Agno / Pydantic AI / DSPy)', () => {
+    const frameworks = ['langchain', 'langgraph', 'llamaindex', 'agno', 'pydantic-ai', 'dspy'];
+    for (const id of frameworks) {
+      const tech = TECH_BY_ID.get(id);
+      expect(tech, `${id} missing — round-19 AI framework catalog gap`).toBeDefined();
+      expect(tech!.category).toBe('AI/ML');
+      expect(tech!.vetMode).toBe('checklist');
+      expect(tech!.defaultScope).toBe('operator');
+      expect((tech!.services ?? []).length).toBeGreaterThanOrEqual(6);
+    }
+  });
+
+  it('Round-19 (user-found): bare "Python 3" hits Yellow tier with clarification, not Red', () => {
+    // Pre-round-19: tiers were 3.13/3.10/3.8/0 — typing bare "3" fell past
+    // all specific tiers to min:0 (Concern/Red). The recruiter's intent was
+    // "Python 3 generation" not "Python 3.0". Added a min:"3" Yellow tier
+    // with "ask for the minor" guidance.
+    const py = TECH_BY_ID.get('python');
+    const yellow3Tier = (py?.versionTiers ?? []).find(t => t.min === '3');
+    expect(yellow3Tier, 'Python tier with min:"3" missing — bare-major bug regression').toBeDefined();
+    expect(yellow3Tier!.color).toBe('yellow');
+    expect(yellow3Tier!.note).toMatch(/minor version/);
   });
 
   it('Round-15: Catalog adds — Kyverno + Port + GCP Identity Platform + Feast materialization split', () => {
