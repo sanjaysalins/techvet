@@ -664,7 +664,13 @@ function TierSection({
               )}
               {tier.scopeCapped && !tier.cappedFromColor && (
                 <div className="text-xs italic text-amber-700 mt-1">
-                  Bounded by {item.scope ?? tech.defaultScope} scope — reads as review/architect-shape signal, not hands-on operating signal.
+                  {/* Round-11 (Anil R10 copy polish): plain-English variant of the
+                      9B bounded-by-scope wording. Recruiter-friendlier framing. */}
+                  {item.scope === 'architect' || tech.defaultScope === 'architect'
+                    ? 'Architect-scope verdict — designs how this gets used; doesn\'t operate it day-to-day.'
+                    : item.scope === 'reviewer' || tech.defaultScope === 'reviewer'
+                      ? 'Reviewer-scope verdict — reviews and audits this; doesn\'t operate it day-to-day.'
+                      : 'Author-scope verdict — writes code that uses this; doesn\'t operate it day-to-day.'}
                 </div>
               )}
               {/* Fix E: recency note rendered before the tier note so the

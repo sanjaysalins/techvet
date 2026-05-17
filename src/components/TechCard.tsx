@@ -169,8 +169,14 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
           (Green-base capped); absent → bounded story (Yellow-base capped). */}
       {resolved.scopeCapped && !resolved.cappedFromColor && (
         <div className="mt-3 text-xs text-amber-700 dark:text-amber-300 italic">
-          Verdict bounded by scope — {item.scope ?? tech.defaultScope} scope reads as
-          review/architect-shape signal, not hands-on operating signal.
+          {/* Round-11 (Anil R10 copy polish): "review/architect-shape signal"
+              was clinical for non-engineer recruiters; rewritten to plain English
+              that names the actual day-to-day pattern (designs vs operates). */}
+          {item.scope === 'architect' || tech.defaultScope === 'architect'
+            ? 'Architect-scope verdict — designs how this gets used; doesn\'t operate it day-to-day.'
+            : item.scope === 'reviewer' || tech.defaultScope === 'reviewer'
+              ? 'Reviewer-scope verdict — reviews and audits this; doesn\'t operate it day-to-day.'
+              : 'Author-scope verdict — writes code that uses this; doesn\'t operate it day-to-day.'}
         </div>
       )}
       {!resolved.scopeCapped && resolved.depthAdjusted && resolved.depthDirection !== 'lowered' && (

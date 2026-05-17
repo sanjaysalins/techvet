@@ -4314,5 +4314,307 @@
       "UIKit interop — what couldn't you do in pure SwiftUI?"
     ],
     "checklistGuidance": "SwiftUI maturity in 2026 splits on iOS-17 Observation adoption and Navigation v2 patterns. Older projects still live on @ObservedObject + NavigationView — that's legacy, not wrong, but worth flagging for a senior role."
+  },
+  {
+    "id": "argo-rollouts",
+    "name": "Argo Rollouts",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "canary-strategy", "name": "Canary deployment strategy" },
+      { "id": "blue-green-strategy", "name": "Blue-green deployment strategy" },
+      { "id": "analysis-templates", "name": "Analysis templates (Prometheus / Datadog metrics)" },
+      { "id": "experiment-resource", "name": "Experiment CRD (A/B + dark launch)" },
+      { "id": "traffic-management", "name": "Traffic management (Istio / NGINX / ALB)" },
+      { "id": "rollback-automation", "name": "Automated rollback on metric breach" },
+      { "id": "argocd-integration", "name": "Integration with ArgoCD sync waves" },
+      { "id": "manual-promotion", "name": "Manual gate / promotion workflow" }
+    ],
+    "suggestedProbes": [
+      "Walk me through a canary rollout you ran in production — what metrics gated promotion?",
+      "Has an AnalysisRun ever auto-rolled-back a release? What triggered it?",
+      "Traffic split: are you on a service mesh, ingress, or DIY?",
+      "Where does the rollout strategy live — Helm chart, Kustomize overlay, or in-cluster CRD?"
+    ],
+    "checklistGuidance": "Argo Rollouts is GitOps-canonical for progressive delivery in 2026. AnalysisTemplates + auto-rollback is the seniority signal — without those they've likely only done manual canaries via two-deployment kludges."
+  },
+  {
+    "id": "karpenter",
+    "name": "Karpenter",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "nodepools", "name": "NodePool resources (workload-class isolation)" },
+      { "id": "ec2nodeclasses", "name": "EC2NodeClass (AMI / userData / volume config)" },
+      { "id": "consolidation", "name": "Consolidation policy (WhenEmpty / WhenUnderutilized)" },
+      { "id": "spot-instances", "name": "Spot capacity + interruption handling" },
+      { "id": "instance-type-mix", "name": "Instance-type diversification + price-capacity" },
+      { "id": "drift-detection", "name": "Drift detection / node refresh" },
+      { "id": "taints-tolerations", "name": "Taints + tolerations + nodeAffinity" },
+      { "id": "disruption-budget", "name": "Disruption budgets (PDBs / do-not-evict)" }
+    ],
+    "suggestedProbes": [
+      "Karpenter vs Cluster Autoscaler — what drove the migration?",
+      "Have you used consolidation policies? Any production incident from aggressive consolidation?",
+      "Spot ratio in production — how do you handle interruptions for stateful workloads?",
+      "Cost savings you've actually measured after switching?"
+    ],
+    "checklistGuidance": "Karpenter is the 2026 K8s autoscaler default on AWS. NodePool design + consolidation discipline + spot handling separates serious operators from tutorial-followers."
+  },
+  {
+    "id": "backstage",
+    "name": "Backstage",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "software-catalog", "name": "Software Catalog (entity model + ownership)" },
+      { "id": "scaffolder-templates", "name": "Scaffolder templates (golden paths)" },
+      { "id": "tech-docs", "name": "TechDocs (docs-as-code rendering)" },
+      { "id": "plugins-custom", "name": "Custom plugins (frontend + backend)" },
+      { "id": "auth-integration", "name": "Auth integration (OIDC / SAML / GitHub)" },
+      { "id": "kubernetes-plugin", "name": "Kubernetes plugin (cluster + workload views)" },
+      { "id": "cicd-integrations", "name": "CI/CD integrations (GHA / ArgoCD / Jenkins)" },
+      { "id": "deployment-discipline", "name": "Deployment + upgrade discipline (self-hosted)" }
+    ],
+    "suggestedProbes": [
+      "Did you adopt Backstage or build it? Walk me through the rollout story.",
+      "Scaffolder templates — how many golden paths have you shipped, and what do they create?",
+      "Custom plugins — what plugin did you write, and what problem did it solve?",
+      "Adoption metrics: how many services have catalog entries, how many engineers use it weekly?"
+    ],
+    "checklistGuidance": "Backstage is the canonical 2026 IDP. Scaffolder templates + plugin authoring + adoption discipline separates platform engineers who own developer experience from teams that installed Backstage and never iterated."
+  },
+  {
+    "id": "unleash",
+    "name": "Unleash",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "feature-toggles", "name": "Feature toggles (boolean + variant)" },
+      { "id": "strategies", "name": "Activation strategies (gradual / userId / IP / custom)" },
+      { "id": "constraints-segments", "name": "Constraints + segments (audience scoping)" },
+      { "id": "ab-experiments", "name": "A/B experiments + variants" },
+      { "id": "sdk-integration", "name": "SDK integration (server-side + client-side)" },
+      { "id": "feature-lifecycle", "name": "Feature lifecycle (planning → archived discipline)" },
+      { "id": "openfeature", "name": "OpenFeature provider conformance" },
+      { "id": "self-hosting", "name": "Self-hosted Unleash operations (HA / backups)" }
+    ],
+    "suggestedProbes": [
+      "Largest rollout you've managed via Unleash — strategy used and how it ramped?",
+      "Self-hosted or Unleash Cloud — what drove the choice?",
+      "Feature-flag debt — how do you keep stale toggles from accumulating?",
+      "OpenFeature — have you migrated to it, or is your codebase still on the native SDK?"
+    ],
+    "checklistGuidance": "Unleash is the OSS-canonical feature-flag stack in 2026 (alongside LaunchDarkly + commercial alternatives). Strategy authoring + lifecycle discipline + OpenFeature adoption signals a platform engineer; SDK calls without strategy depth is application-level use."
+  },
+  {
+    "id": "crossplane",
+    "name": "Crossplane",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "providers", "name": "Providers (AWS / GCP / Azure / Kubernetes)" },
+      { "id": "compositions", "name": "Compositions (XR + abstract APIs)" },
+      { "id": "composite-resources", "name": "Composite Resources (XR / XRD)" },
+      { "id": "configuration-packages", "name": "Configuration packages (xpkg)" },
+      { "id": "claim-namespace", "name": "Claims (namespaced consumption)" },
+      { "id": "functions-pipeline", "name": "Composition Functions (pipeline mode)" },
+      { "id": "managed-resources", "name": "Managed Resources (cloud primitives)" },
+      { "id": "rbac-multi-tenant", "name": "RBAC + multi-tenant boundaries" }
+    ],
+    "suggestedProbes": [
+      "Crossplane vs Terraform — what drove adopting Crossplane in your shop?",
+      "Walk me through a Composition you've authored — what abstraction did you expose?",
+      "Drift handling — how does Crossplane reconcile vs Terraform's apply model?",
+      "Production stability — any incidents from provider bugs or composition mistakes?"
+    ],
+    "checklistGuidance": "Crossplane straddles K8s + IaC categories — categorized under DevOps because the primary user persona is platform/DevOps. Composition authoring + Function pipelines is the 2026 senior signal; provider installation alone is tutorial-level."
+  },
+  {
+    "id": "cosign-sigstore",
+    "name": "Cosign / Sigstore",
+    "category": "DevOps",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "keyless-signing", "name": "Keyless signing (OIDC + Fulcio)" },
+      { "id": "key-pair-signing", "name": "Key-pair signing (KMS / file keys)" },
+      { "id": "rekor-transparency", "name": "Rekor transparency log" },
+      { "id": "attestations", "name": "Attestations (SLSA provenance / SPDX / CycloneDX)" },
+      { "id": "verify-policy", "name": "Verification policies (Kyverno / OPA / admission)" },
+      { "id": "slsa-build", "name": "SLSA build provenance (level 2/3 compliance)" },
+      { "id": "registry-integration", "name": "OCI registry integration (cosign tags)" },
+      { "id": "ci-integration", "name": "CI integration (GHA / cosign-installer)" }
+    ],
+    "suggestedProbes": [
+      "Why did you adopt Cosign — compliance, threat model, or platform discipline?",
+      "Keyless vs key-pair — which do you use and why?",
+      "SLSA level you target in production — how do you measure compliance?",
+      "Verification — where does signature check fire? Admission controller, CD pipeline, or both?"
+    ],
+    "checklistGuidance": "Cosign + Sigstore is the 2026 supply-chain-security default. Keyless signing + SLSA attestations + admission-policy enforcement is the platform engineer signal; signing without verification policy is half the story."
+  },
+  {
+    "id": "braintrust",
+    "name": "Braintrust",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "eval-framework", "name": "Eval framework (scorers + datasets)" },
+      { "id": "dataset-versioning", "name": "Dataset versioning + golden sets" },
+      { "id": "scorer-authoring", "name": "Custom scorer authoring (LLM-as-judge / heuristic)" },
+      { "id": "playground", "name": "Prompt playground + A/B compare" },
+      { "id": "production-logging", "name": "Production logging + online eval sampling" },
+      { "id": "experiment-comparison", "name": "Experiment comparison + regression detection" },
+      { "id": "ci-integration-evals", "name": "CI integration (PR-gated eval runs)" },
+      { "id": "trace-debugging", "name": "Trace debugging (span-level inspection)" }
+    ],
+    "suggestedProbes": [
+      "What scorers do you run on your golden set? LLM-as-judge, heuristic, or both?",
+      "Eval-on-CI — has it ever blocked a PR? What was the regression?",
+      "Online sampling rate in production — and how do you triage flagged outputs?",
+      "Dataset hygiene — how do you keep your golden set from going stale?"
+    ],
+    "checklistGuidance": "Braintrust is the 2026 LLM-eval canonical (alongside HumanLoop / Patronus). Custom scorers + CI-gating + online sampling separates LLM-app engineers from prompt-tinkerers."
+  },
+  {
+    "id": "evidently-ai",
+    "name": "Evidently AI",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "data-drift", "name": "Data drift detection (feature distributions)" },
+      { "id": "prediction-drift", "name": "Prediction drift (output distribution shift)" },
+      { "id": "data-quality", "name": "Data quality reports (missing / nulls / range)" },
+      { "id": "concept-drift", "name": "Concept drift (target distribution shift)" },
+      { "id": "monitoring-dashboards", "name": "Monitoring dashboards (live + scheduled)" },
+      { "id": "test-suites", "name": "Test suites (regression gates)" },
+      { "id": "model-performance", "name": "Model performance metrics (regression / classification)" },
+      { "id": "production-integration", "name": "Production integration (Airflow / Prefect / cron)" }
+    ],
+    "suggestedProbes": [
+      "Which drift signals fire in your production pipeline? How often?",
+      "What's your retraining trigger — drift threshold, schedule, or hybrid?",
+      "Has an Evidently test suite ever blocked a model release? What broke?",
+      "How do you handle the false-positive rate on drift alerts?"
+    ],
+    "checklistGuidance": "Evidently is OSS-canonical for ML monitoring in 2026 (alongside Arize / WhyLabs). Drift + concept + data-quality monitoring as scheduled jobs is the productionization signal; one-off notebooks aren't the same shape."
+  },
+  {
+    "id": "feast",
+    "name": "Feast (Feature Store)",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "feature-definitions", "name": "Feature definitions (entities + feature views)" },
+      { "id": "online-store", "name": "Online store (Redis / DynamoDB / Bigtable)" },
+      { "id": "offline-store", "name": "Offline store (BigQuery / Snowflake / Parquet)" },
+      { "id": "materialization", "name": "Materialization (batch + stream)" },
+      { "id": "point-in-time-joins", "name": "Point-in-time correctness joins" },
+      { "id": "registry-management", "name": "Registry management (apply / teardown)" },
+      { "id": "feature-serving", "name": "Online serving (gRPC / REST)" },
+      { "id": "feature-discovery", "name": "Feature discovery + reuse across teams" }
+    ],
+    "suggestedProbes": [
+      "How many feature views are in your registry, and how many teams contribute?",
+      "Online store choice — what drove it, and what's the latency budget?",
+      "Point-in-time correctness — have you debugged a training-serving skew incident?",
+      "Materialization cadence — batch-only or streaming pipeline?"
+    ],
+    "checklistGuidance": "Feast is OSS-canonical for feature stores in 2026 (alongside Tecton / SageMaker FS). Point-in-time correctness + cross-team registry discipline is the senior MLOps signal; single-team usage often doesn't justify the operational overhead."
+  },
+  {
+    "id": "langfuse",
+    "name": "Langfuse",
+    "category": "AI/ML",
+    "defaultScope": "operator",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "tracing", "name": "LLM tracing (nested spans / latency / tokens)" },
+      { "id": "prompt-management", "name": "Prompt management (versioning + A/B)" },
+      { "id": "evaluations", "name": "Evaluations (LLM-as-judge / scoring)" },
+      { "id": "user-feedback", "name": "User feedback capture (thumbs / scores)" },
+      { "id": "datasets-experiments", "name": "Datasets + experiments" },
+      { "id": "session-replay", "name": "Session replay (multi-turn conversation traces)" },
+      { "id": "cost-tracking", "name": "Cost + token tracking per session" },
+      { "id": "self-host-deployment", "name": "Self-hosted deployment (HA / scaling)" }
+    ],
+    "suggestedProbes": [
+      "Trace volume per day — and how do you sample for retention vs cost?",
+      "Prompt management — do engineers ship prompt changes via Langfuse, or is git the source of truth?",
+      "User-feedback loop — how does Langfuse data flow back into evals?",
+      "Self-hosted or cloud — what drove the choice?"
+    ],
+    "checklistGuidance": "Langfuse is OSS-canonical for LLM observability in 2026 (alongside Arize Phoenix / LangSmith). Trace + prompt versioning + eval integration is the production-LLM signal; tracing alone is application-debugging-level."
+  },
+  {
+    "id": "pact",
+    "name": "Pact (Contract Testing)",
+    "category": "Testing",
+    "vetMode": "checklist",
+    "services": [
+      { "id": "consumer-tests", "name": "Consumer-side test authoring" },
+      { "id": "provider-verification", "name": "Provider verification" },
+      { "id": "pact-broker", "name": "Pact Broker (self-hosted or PactFlow)" },
+      { "id": "can-i-deploy", "name": "can-i-deploy gating in CI" },
+      { "id": "matchers-state", "name": "Matchers + provider states" },
+      { "id": "bi-directional", "name": "Bi-directional contracts (OpenAPI / Postman)" },
+      { "id": "webhooks-versioning", "name": "Webhooks + version selectors" },
+      { "id": "rollout-strategy", "name": "Cross-team rollout strategy" }
+    ],
+    "suggestedProbes": [
+      "Walk me through how a consumer test interacts with a provider's state during verification.",
+      "can-i-deploy — has it ever blocked a release? What was the contract mismatch?",
+      "Bi-directional contracts — when do you reach for them vs classic consumer-driven?",
+      "Cross-team adoption — how did you sell Pact to a provider team that didn't want to participate?"
+    ],
+    "checklistGuidance": "Pact is the canonical consumer-driven contract testing tool. Pact Broker + can-i-deploy gating is the production-quality signal; consumer tests without provider verification is half the value."
+  },
+  {
+    "id": "cucumber",
+    "name": "Cucumber",
+    "category": "Testing",
+    "currentVersion": "10.x",
+    "versionTiers": [
+      { "min": "10", "label": "Excellent", "color": "green", "note": "Cucumber 10.x — current generation, async/Promise-friendly across JVM and JS runners." },
+      { "min": "8", "label": "Good", "color": "green" },
+      { "min": "6", "label": "Review / Probe", "color": "yellow", "enterpriseStillUsed": true },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Cucumber 4.x and older — pre-Cucumber Expressions, legacy API." }
+    ],
+    "suggestedProbes": [
+      "BDD vs imperative tests — when do you reach for Cucumber over a code-only e2e framework?",
+      "Step definition discipline — how do you keep glue code DRY and maintainable?",
+      "Has BDD adoption actually engaged your PMs or QAs in feature writing, or is it engineering-only?",
+      "Reporting + screenshots on failure — Allure, Cucumber HTML, or custom?"
+    ],
+    "enterpriseStillUsed": false
+  },
+  {
+    "id": "uikit",
+    "name": "UIKit",
+    "category": "Mobile",
+    "vetMode": "checklist",
+    "enterpriseStillUsed": true,
+    "services": [
+      { "id": "view-controllers", "name": "UIViewController lifecycle + transitions" },
+      { "id": "auto-layout", "name": "Auto Layout (programmatic + NSLayoutConstraint)" },
+      { "id": "storyboards-xibs", "name": "Storyboards / XIBs" },
+      { "id": "table-collection-views", "name": "UITableView / UICollectionView (diffable data sources)" },
+      { "id": "navigation-controllers", "name": "UINavigationController + UITabBarController patterns" },
+      { "id": "uikit-animations", "name": "UIView animations + UIViewPropertyAnimator" },
+      { "id": "core-animation", "name": "Core Animation (CALayer / CAAnimation)" },
+      { "id": "swiftui-interop", "name": "SwiftUI interop (UIHostingController / UIViewRepresentable)" },
+      { "id": "accessibility", "name": "Accessibility (UIAccessibility / VoiceOver / Dynamic Type)" },
+      { "id": "uikit-testing", "name": "UI testing (XCUITest / snapshot)" }
+    ],
+    "suggestedProbes": [
+      "Programmatic Auto Layout vs Storyboards — which does your team prefer and why?",
+      "Diffable data sources — have you migrated from index-path-based to diffable, or still on legacy?",
+      "SwiftUI migration story — what's the strategy for incremental adoption in a UIKit-heavy app?",
+      "Last performance issue you debugged in UIKit — what was the cause?"
+    ],
+    "checklistGuidance": "UIKit is the legacy-but-active iOS UI framework — most production iOS apps in 2026 still have substantial UIKit surface during SwiftUI migration. Diffable data sources + SwiftUI interop + accessibility discipline signals a senior iOS engineer who's bridging eras; tutorial-level UIKit is storyboards-only."
   }
 ]

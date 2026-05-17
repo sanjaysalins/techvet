@@ -574,16 +574,32 @@ describe('roles.ts — methodology chip catalogs (Fix D4)', () => {
  * mode returns. This test fails loudly so the omission is intentional.
  */
 describe('technologies.json — AI/ML libraries carry defaultScope=author (Fix K)', () => {
-  it('every AI/ML category tech has defaultScope set to "author"', () => {
+  it('every AI/ML LIBRARY (not MLOps platform tool) has defaultScope set to "author"', () => {
+    // Round-11 (Esme R9 catalog adds): MLOps PLATFORM tools (Braintrust /
+    // Evidently / Feast / Langfuse) are operator-shape, NOT library-author
+    // shape. Esme uses them as production services (dashboards / SDKs /
+    // managed infrastructure), not as libraries she authors against. They
+    // belong in the AI/ML category for discoverability (recruiters
+    // searching AI/ML candidates need to find them) but the author-default
+    // would misframe them. Listed below as intentional `defaultScope:
+    // 'operator'` exceptions.
+    const MLOPS_OPERATOR_TOOLS = new Set(['braintrust', 'evidently-ai', 'feast', 'langfuse']);
     const aimlTechs = TECHS.filter(t => t.category === 'AI/ML');
     expect(aimlTechs.length, 'AI/ML category empty — catalog drift').toBeGreaterThan(0);
     const missing = aimlTechs
+      .filter(t => !MLOPS_OPERATOR_TOOLS.has(t.id))
       .filter(t => t.defaultScope !== 'author')
       .map(t => `${t.id} (defaultScope=${t.defaultScope ?? 'undefined'})`);
     expect(
       missing,
-      `AI/ML libs without defaultScope=author let depth-game earn Green for tutorial-grade users — add "defaultScope": "author" to each, or intentionally remove from this guard if the lib should not default to author`
+      `AI/ML libs without defaultScope=author let depth-game earn Green for tutorial-grade users — add "defaultScope": "author" to each, or intentionally add to MLOPS_OPERATOR_TOOLS set above if the entry is an operator-shape platform tool.`
     ).toEqual([]);
+    // Belt-and-braces: the exception list members all exist + carry operator.
+    for (const id of MLOPS_OPERATOR_TOOLS) {
+      const tech = TECHS.find(t => t.id === id);
+      expect(tech, `${id} missing from catalog — exception list stale`).toBeDefined();
+      expect(tech!.defaultScope, `${id} should be operator (in MLOPS_OPERATOR_TOOLS exception list)`).toBe('operator');
+    }
   });
 });
 
@@ -848,6 +864,59 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     const aws = TECH_BY_ID.get('aws');
     const ids = new Set((aws?.services ?? []).map(s => s.id));
     expect(ids.has('cognito-user-pool')).toBe(true);
+  });
+
+  /**
+   * Round-11 catalog refresh: 13 new catalog entries close the named-only
+   * frontier surfaced across rounds 8-10. DevOps (6) + AI/ML (4) + QA (2) +
+   * Apple (1). If a future agent removes or renames any, the round-9/10
+   * personas (Lars / Akira / Esme / Kenji) regress to dispatching named-only
+   * for canonical 2026-vocabulary tools.
+   */
+  it('Round-11 catalog: DevOps 2026-vocabulary entries shipped (Lars rounds 9-10)', () => {
+    for (const id of ['argo-rollouts', 'karpenter', 'backstage', 'unleash', 'crossplane', 'cosign-sigstore']) {
+      const tech = TECH_BY_ID.get(id);
+      expect(tech, `${id} missing — DevOps catalog vocabulary gap`).toBeDefined();
+      expect(tech!.vetMode).toBe('checklist');
+      expect((tech!.services ?? []).length).toBeGreaterThanOrEqual(6);
+      expect(tech!.category).toBe('DevOps');
+    }
+  });
+
+  it('Round-11 catalog: AI/ML productionization platform tools shipped (Esme round 9 F3)', () => {
+    for (const id of ['braintrust', 'evidently-ai', 'feast', 'langfuse']) {
+      const tech = TECH_BY_ID.get(id);
+      expect(tech, `${id} missing — MLOps platform-tool catalog gap`).toBeDefined();
+      expect(tech!.vetMode).toBe('checklist');
+      expect((tech!.services ?? []).length).toBeGreaterThanOrEqual(6);
+      // Operator-shape per round-9 design — these are platform tools, not libraries.
+      expect(tech!.defaultScope).toBe('operator');
+      expect(tech!.category).toBe('AI/ML');
+    }
+  });
+
+  it('Round-11 catalog: Pact + Cucumber QA testing entries shipped (Akira round 9)', () => {
+    const pact = TECH_BY_ID.get('pact');
+    expect(pact, 'pact missing — Akira contract-testing named-only').toBeDefined();
+    expect(pact!.vetMode).toBe('checklist');
+    expect((pact!.services ?? []).length).toBeGreaterThanOrEqual(6);
+
+    const cucumber = TECH_BY_ID.get('cucumber');
+    expect(cucumber, 'cucumber missing — BDD catalog gap').toBeDefined();
+    expect(cucumber!.versionTiers, 'cucumber should be version-mode').toBeDefined();
+    expect((cucumber!.versionTiers ?? []).length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('Round-11 catalog: UIKit shipped for iOS migration shops (Kenji rounds 7-8 deferred)', () => {
+    const uikit = TECH_BY_ID.get('uikit');
+    expect(uikit, 'uikit missing — Kenji migration-shop named-only').toBeDefined();
+    expect(uikit!.vetMode).toBe('checklist');
+    expect(uikit!.category).toBe('Mobile');
+    expect(uikit!.enterpriseStillUsed).toBe(true);
+    const ids = new Set((uikit!.services ?? []).map(s => s.id));
+    // Load-bearing migration-shop services per Kenji's round-7 finding.
+    expect(ids.has('swiftui-interop')).toBe(true);
+    expect(ids.has('accessibility')).toBe(true);
   });
 
   it('Round-7 7A: Backend template carries ≥4 methodologyChips (closes Sven 6F deferral mistake)', () => {
