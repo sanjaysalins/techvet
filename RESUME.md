@@ -1,69 +1,79 @@
-# Resume point — TechVet (2026-05-17 EOD-3 — rounds 8-11 shipped + catalog refresh; total saturation)
+# Resume point — TechVet (2026-05-17 EOD-1 — full deferred backlog cleared across batches 13-18)
 
 ---
 
 ## 👋 Pick up here
 
-**Repo state — clean as of 2026-05-17 ~15:40.**
+**Repo state — clean as of 2026-05-17 ~17:10.**
 
-- Working tree clean (last commit `373f482`). **5 ship batches today** across rounds 8, 9, 10, 11 of adversarial validation + 1 catalog refresh + 1 follow-up. 33 items shipped total (8A-E, 9A-E, 10A-C, batch 11 = 13 catalog entries + 9B copy polish, 11A-B).
-- `npx tsc -b` clean. `npm test` → **295/295 pass** (+20 today). `npx vite build` clean (1.31 MB / ~384 KB gzipped). Catalog **120 entries** / **15 templates**.
-- **Total saturation reached.** Round 11 came in at **4 Safe / 0 At-risk / 0 Unworkable** — the cleanest round across all 11. Three consecutive saturation-zone rounds (9: 5/1/0, 10: 5/1/0, 11: 4/0/0). The trajectory is converged.
+- Working tree clean (last commit `b92e7cc`). **11 ship batches today** across rounds 8-12 of adversarial validation. **42 items shipped today total** (8A-E, 9A-E, 10A-C, batch 11 = 13 catalog entries + 9B copy polish, 11A-B, K8s hybrid, batches 13-17, round-12 batch 18).
+- `npx tsc -b` clean. `npm test` → **311/311 pass** (+36 today). `npx vite build` clean (1.32 MB / ~389 KB gzipped). Catalog **123 entries** / **15 templates**.
+- **Full deferred-backlog cleared.** Every named structural item from rounds 7-11 shipped: K8s hybrid (Sven R5), Postgres hybrid (Lina F3), Storybook hybrid (Maya M2), AI/ML productionization scope (Esme), DevOps catalog refresh (Lars), QA catalog refresh (Akira), Custom AWS filter (Theo FT-2), J4 + J5 (Mei + Eitan).
+- **Saturation curve across rounds 8-12:** 8: 2/4/0 → 9: 5/1/0 → 10: 5/1/0 → 11: 4/0/0 → 12: 4/1/0 (the 1 was Theo Custom AWS filter bug — closed in batch 18 same cycle).
 
 **What's next (in priority order):**
 
-1. **Stop running validation rounds.** Round-11 cross-cut explicitly recommends NOT running round 12 — saturation means new sims would mostly confirm prior wins without surfacing new structural information. The next valuable work is structural items deferred over rounds 7-10.
+1. **Stop running validation rounds.** All deferred structural items are shipped. New rounds would mostly confirm prior wins. If you do run one, pick a never-validated terrain slice (Game-engine / Embedded / Blockchain — explicitly out-of-scope per CLAUDE.md "Focused" scope) or a never-validated persona axis (panel format, async-CV-only, contractor-shape, bootcamp-fresh-grad).
 
-2. **Deferred structural items, each warrants its own session** (~half-day each):
-   - **K8s hybrid vetMode** (Sven round 7) — `kubernetes` is version-mode only; Helm-chart-consumers (Sven shape) + multi-cluster operators (Lars shape) need both version tier AND service slice. Implement `vetMode: 'hybrid'` with both `versionTiers` AND `services`. ~half-day design + implementation.
-   - **Postgres checklist mode** (Lina F3 round 10) — currently version-mode; senior DB signal (schema design / indexing / partitioning / replication / JSONB / VACUUM) goes to suggestedProbes which doesn't render in the report. Same hybrid pattern as K8s.
-   - **Custom flow stack-focus picker** (Theo FT-2 round 10) — without serviceTagFilters, generalist on Custom reads "Concern" at 3/26 services. UX redesign: starter "What kind of stack?" picker that applies category tag filters.
-   - **Storybook checklist-mode conversion** (Maya M2 round 8) — currently version-mode; senior FE governance signal needs services. Existing entry already covers ~half of M2 intent via version awareness.
+2. **Smaller items still open** (each <half-day):
+   - **Hybrid-mode depth-lift seniority gate** (Lina R12 F11) — design question. `resolveChecklistTier` requires `seniority !== 'junior'` for 6D depth-lift; `resolveHybridTier` doesn't. Should hybrid match for consistency? Verify with a junior+hybrid sim.
+   - **`adjustForDepth` on combined-base vs per-channel** (Sven R12 F9) — currently hybrid runs depth-lift on the combined-base color. The honest alternative is per-channel (depth-lift version OR coverage independently). Needs a Helm-consumer + self-claimed-deep sim.
+   - **UIKit `enterpriseStillUsed` root-vs-tier** (Kenji R11 F2/F3) — design question (root flag fires on every Yellow band incl tutorial-grade thin coverage; tier-level pattern tighter).
+   - **Cucumber `currentVersion` drop UX inconsistency** (batch 12 sim 02 carryover) — the card no longer shows "current stable: X" since the entry has no unified version. Minor.
+   - **Round-12 sim 02 Lina F9 cross-check:** any other catalog `checklistGuidance` strings still have persona-leak (round-X codenames in shipped UI)? Quick grep audit.
 
-3. **Small follow-on catalog items** (each ~30 min):
-   - **Kyverno catalog** (Lars R11 F7) — DevOps named-only on the second pass. Add if a second platform-eng persona names it.
-   - **Feast materialization split** (Esme R11 F5) — split `materialization` into `batch-materialization` + `stream-materialization`. Observe 1-2 more DE/ML personas first.
-   - **GCP Identity Platform** — Round 10 added AWS Cognito; Azure already has Entra ID; complete the auth triangle.
-   - **Port / Cortex / OpsLevel IDP entries** — if multiple platform-eng candidates start naming non-Backstage IDPs, justify a new "Developer Platform" category.
-
-4. **Small UI / polish items still open** (each ~5-15 LOC):
-   - **J4** — hide Scope dropdown on `meta.seniority === 'junior'` (Mei+Eitan ~20s tax across rounds 6-10).
-   - **J5** — level-fit copy line below headline cards (seniority-aware framing).
-   - **UIKit enterpriseStillUsed root-vs-tier** (Kenji R11 F2/F3) — design question: root flag misfires on tutorial-grade Yellow coverage; tier-level (Selenium 3 / Cypress 10-11 pattern) tighter but loses the "UIKit is legacy-but-active everywhere" claim.
+3. **Bigger items genuinely deferred** (each half-day to day):
+   - **Per-card stack-focus picker** for Custom flow (more granular than the round-17 'general' filter — recruiter picks lens per-card via chip-bar). Defer.
+   - **Hybrid mode for more catalog entries** — round-12 + 13 + 14 covered K8s / Postgres / Storybook. Candidates: MySQL (similar to Postgres), Redis (depth+services), Docker (multi-stage / Compose / orchestration). Each ~30min if pattern stays clean.
 
 **How to verify nothing regressed before starting work:**
 
 ```bash
 cd ~/devtools/techvet
-git status                   # should be clean (373f482 is HEAD)
+git status                   # should be clean (b92e7cc is HEAD)
 npx tsc -b                   # types clean
-npm test                     # 295/295 pass
-npx vite build               # builds clean ~10s
+npm test                     # 311/311 pass
+npx vite build               # builds clean ~10-15s
 npm run dev                  # boots ~1s; visit http://localhost:5173
-                             # smoke 5 things:
-                             #   1. Pick AI/ML template — PyTorch / LLM API SDK / Vector DB cards arrive scope-locked to operator (no "Use default: author").
-                             #   2. Pick Fullstack template — 8 preloaded techs (incl. nextjs + tailwind); Methodology section shows 6 chips.
-                             #   3. Pick DevOps template — 8 preloads (incl. Vault); search "Argo Rollouts" / "Karpenter" / "Backstage" / "Unleash" / "Crossplane" / "cosign" — all 6 should hit catalog.
-                             #   4. Search "Braintrust" / "Evidently" / "Feast" / "Langfuse" — all 4 catalog hits with operator-default scope.
-                             #   5. Search "Pact" / "Cucumber" / "UIKit" — all 3 catalog hits.
+                             # smoke 6 things:
+                             #   1. K8s + Postgres + Storybook cards render dual bodies (version input + services checklist).
+                             #   2. Pick DevOps template → 8 preloaded incl. Vault; K8s in hybrid mode.
+                             #   3. Pick Custom template → search-add AWS → 15 checkboxes (not 26, 'general' filter live); 3 ticks → "Concern — 3/15 services" (matched denominator).
+                             #   4. Pick Frontend template → Storybook now preloaded (was named-only before round 18).
+                             #   5. Junior seniority + any tech card → Scope dropdown HIDDEN (J4); Summary shows "Junior candidate — Yellows here typically flag probe targets…" (J5, plain text-sm not italic).
+                             #   6. Search Argo Rollouts / Karpenter / Backstage / Crossplane / Kyverno / Port / Pact / UIKit / Braintrust / Evidently / Feast / Langfuse — all 12 hit catalog.
 ```
 
 **Pointers:**
 - `CLAUDE.md` — codebase notes (stack, scoring quirks, Tailwind config gotchas, what's verified).
-- `simulations/rounds/` — **11 rounds** of adversarial agent findings (~115k+ words across ~62 sessions). `cross-cut.md` in each round is the synthesis + priority list. Most recent: `2026-05-17-round-11-catalog-validation/cross-cut.md`.
-- Today's commits: `54fc806` (batch 8), `2637da3` (batch 9), `a4d7b73` (batch 10), `2c204d4` (batch 11 catalog refresh), `373f482` (batch 12).
-- The numbered log below this section is reverse-chronological history. Skim if needed; not pickup material.
+- `simulations/rounds/` — **12 rounds** of adversarial agent findings (~125k+ words across ~67 sessions). `cross-cut.md` in each round is the synthesis + priority list. Most recent: `2026-05-17-round-12-structural-validation/sessions/` (cross-cut not formalized for round 12; session notes are self-explanatory).
+- Today's commits (newest first): `b92e7cc` (batch 18 round-12 closure), `f7f0be1` (batches 13-17), `f5c9e07` (K8s hybrid), `42157b9`, `373f482` (batch 12), `2c204d4` (batch 11 catalog refresh), `6ab2051`, `a4d7b73` (batch 10), `2637da3` (batch 9), `54fc806` (batch 8).
+- The numbered log below this section is reverse-chronological history.
 
 **Flagged for review (autonomous-session caveats):**
-- **10A's `design-system-discipline` chip ID** is new (vs FE's existing `design-system-ownership`). Different concept (contribution vs ownership) but worth sanity-checking the naming if you intend to unify.
-- **9A scope override on AI/ML template** assumes the template signals "productionization shape." If a library-author candidate accidentally picks AI/ML template (instead of Custom), they hit the operator override and may need to manually flip back to author on PyTorch/LLM-API-SDK/Vector-DB. HuggingFace stays at catalog default for this exact reason.
-- **Batch 11 MLOPS_OPERATOR_TOOLS exception list** in `integrity.test.ts:586`: Braintrust / Evidently / Feast / Langfuse are AI/ML category but operator-default (platform tools, not modelling libraries). If you add more MLOps operator-shape entries, update the exception list.
-- **Batch 11 Crossplane categorized as DevOps**, not IaC or Cloud. Defensible (no IaC category exists; Terraform/Ansible/Pulumi also sit in DevOps) but worth a sanity check.
-- **Batch 12 Cucumber** had its `currentVersion` claim dropped — the entry now doesn't render a "current stable: X" line on the card. Acceptable for multi-ecosystem tools but slight UX inconsistency. Defer.
+- **Round-18 serviceTagFilter scoring fix changed the verdict semantics** for AWS-on-Backend / AWS-on-Custom (and any tech with template `serviceTagFilters`). Pre-18 some recruiters may have been calibrating to "3/26 services" labels; post-18 those become "3/15 services" same Red but different denominator. Verdict color usually unchanged but the label reads different. If anyone has external workflow expecting the old labels, flag.
+- **Hybrid-mode depth-lift inconsistency** (Lina R12 F11) — `resolveChecklistTier` gates 6D depth-lift on `seniority !== 'junior'`; `resolveHybridTier` doesn't. Junior+hybrid currently CAN get depth-lift. Probably wrong-axis; needs a junior+K8s sim to confirm.
+- **'general' tag filter on Custom (batch 17/18)** is opinionated — security-shaped candidates on Custom lose access to KMS/GuardDuty/SecurityHub from AWS unless the recruiter manually adds those via name. Acceptable trade-off (Security template exists for that lens) but worth surfacing if a security-on-Custom sim ever surfaces friction.
+- **`design-system-discipline` chip ID (10A)** is new vs FE's existing `design-system-ownership`. Different concept (contribution vs ownership) but worth sanity-checking the naming if you intend to unify.
+- **9A scope override on AI/ML template** assumes the template signals "productionization shape." If a library-author candidate picks AI/ML template (instead of Custom), they hit the operator override and may need to manually flip back to author. HuggingFace stays at catalog default for this exact reason.
+- **MLOPS_OPERATOR_TOOLS exception list** in `integrity.test.ts:586`: Braintrust / Evidently / Feast / Langfuse are AI/ML category but operator-default. If you add more MLOps operator-shape entries, update the exception list.
+- **Crossplane categorized as DevOps** (not IaC or Cloud). Defensible (no IaC category exists; Terraform/Ansible/Pulumi sit there too) but worth a sanity check.
 
 ---
 
-## 2026-05-17 afternoon autonomous block (extended) — rounds 8/9/10/11 + catalog refresh
+## 2026-05-17 full-day autonomous block — rounds 8-12 + 11 ship batches
+
+User ran a ~7 hour extended autonomous block. **Five rounds (8-12) + 11 ship batches.** Full deferred backlog from rounds 7-11 cleared.
+
+**42. Shipped batch 18 (round-12 closure) — serviceTagFilter scoring fix + J5 polish + Storybook preload + persona-leak cleanup.** Threading `serviceTagFilter` through `resolveChecklistTier` + `resolveHybridTier` so the verdict denominator matches the rendered checklist (was a Theo R12 finding — card showed "3/15" but label said "3/26 services"). J5 wording polish: drop homework-y clause, swap text-xs italic → text-sm. Storybook preloaded on Frontend (round-14 omission). Stripped "Round-X / Maya M2" persona-leaks from K8s/Postgres/Storybook checklistGuidance. Tests 307 → 311. Commit `b92e7cc`.
+
+**41. Ran round 12 — validation sims across batches 13-17.** 5 sims (Sven K8s Helm-consumer / Lina Postgres hybrid / Maya Storybook hybrid / Theo Custom AWS / Mei J4+J5). **Distribution: 4 Safe / 1 Re-open / 0 Unworkable.** Re-open was Theo's serviceTagFilter render-only bug, closed in batch 18 same cycle.
+
+**40. Shipped batches 13-17 (Postgres hybrid + Storybook hybrid + catalog adds + J4/J5 + Custom AWS filter).** Five batches in one commit. Postgres → hybrid (13 services). Storybook → hybrid (8 services). Added Kyverno + Port + GCP Identity Platform + Feast materialization split. J4 hides Scope dropdown on junior (~20s/screen saved). J5 seniority-aware framing on Summary. Custom template gains `serviceTagFilters: { aws: ['general'] }`. Tests 304 → 307. Commit `f7f0be1`.
+
+**39. Shipped K8s hybrid vetMode.** New `vetMode: 'hybrid'` resolver: weakest-link MIN of version-tier color + coverage-tier color. Depth + scope + recency apply on top via existing pipeline. Back-compat preserved (services-untouched → version-only). K8s converted with 13 services. Browser-verified: Sven Helm-consumer (1.28 + 3/13) → Red; Lars deep-operator (1.30 + 13/13) → Green (pre-hybrid both read identical Green). Tests 295 → 304. Commit `f5c9e07`.
+
+## 2026-05-17 afternoon autonomous block — rounds 8/9/10/11 + catalog refresh
 
 User ran a ~5 hour autonomous block. **Four rounds + five ship batches** (rounds 8/9/10/11 + batch 11 catalog refresh + batch 12 follow-up).
 
