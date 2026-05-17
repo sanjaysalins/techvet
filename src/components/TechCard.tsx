@@ -21,7 +21,14 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
   // Pre-8A, 7D's junior+shallow lowering fired on the side-panel (Assessment.tsx:67
   // passes seniority) but not on the card badge — Mei's TS 5.3 card showed Green
   // while the panel showed Yellow on the same screen.
-  const resolved = resolveTier(tech, item, { seniority: meta.seniority });
+  //
+  // Round-18 (Theo R12 fix): also thread the template's serviceTagFilter so the
+  // scoring denominator matches the rendered service list. Pre-18 the verdict
+  // label read "3/26 services" while the checkbox grid showed 15 — internally
+  // contradictory output Theo's sim caught.
+  const template = meta.templateId ? ROLE_TEMPLATES.find(r => r.id === meta.templateId) : null;
+  const serviceTagFilter = template?.serviceTagFilters?.[tech.id];
+  const resolved = resolveTier(tech, item, { seniority: meta.seniority, serviceTagFilter });
   const isChecklist = tech.vetMode === 'checklist';
   // Round-12 hybrid mode: render both VersionBody + ChecklistBody for techs
   // where both axes carry independent senior signal (Kubernetes is the

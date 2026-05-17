@@ -68,7 +68,12 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'frontend',
     name: 'Frontend Engineer',
     description: 'Web UI specialist (React, modern tooling).',
-    techIds: ['react', 'typescript', 'nextjs', 'tailwind', 'vite'],
+    // Round-18 (Maya R12 F-β): preload Storybook now that batch-14 made it
+    // hybrid with governance services. Maya M2 named this explicitly; the
+    // round-14 ship landed the catalog conversion but not the preload —
+    // the round-12 sim caught the omission. Senior FE candidates' design-
+    // system signal lands on a Strengths card instead of off-catalog free-text.
+    techIds: ['react', 'typescript', 'nextjs', 'tailwind', 'vite', 'storybook'],
     // Round-6 6F (Mei round-6 + Maya round-1): frontend candidates carry
     // signal beyond library versions — performance budgets, a11y discipline,
     // design-system ownership. Chips give the recruiter a 30-second way to

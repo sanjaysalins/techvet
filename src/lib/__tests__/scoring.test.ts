@@ -1514,6 +1514,93 @@ describe('resolveTier — 8A seniority threading parity (Mei)', () => {
  * read awkward across rounds 5-9.
  */
 /**
+ * Round-18 (Theo R12 sim 04 — round-17 closure bug): pre-batch-18 the
+ * serviceTagFilters template field was render-only — TechCard hid filtered
+ * services from the checkbox grid but resolveChecklistTier used full
+ * services.length. Verdict labels like "3/26 services" appeared while the
+ * checkbox grid showed "3 / 15". Threading the filter fixes this.
+ */
+describe('resolveTier — round-18 serviceTagFilter threading (Theo)', () => {
+  function taggedChecklistTech(): Technology {
+    return {
+      id: 'tagged-tech',
+      name: 'Tagged Tech',
+      category: 'Cloud',
+      vetMode: 'checklist',
+      services: [
+        { id: 'svc-a', name: 'A', tags: ['general'] },
+        { id: 'svc-b', name: 'B', tags: ['general'] },
+        { id: 'svc-c', name: 'C', tags: ['general'] },
+        { id: 'svc-d', name: 'D', tags: ['security'] },
+        { id: 'svc-e', name: 'E', tags: ['security'] },
+        { id: 'svc-f', name: 'F', tags: ['security'] },
+        { id: 'svc-g', name: 'G', tags: ['architect'] },
+        { id: 'svc-h', name: 'H', tags: ['architect'] },
+      ],
+      suggestedProbes: [],
+    };
+  }
+
+  it('without filter: denominator is full services.length', () => {
+    const tech = taggedChecklistTech();
+    const r = resolveTier(tech, item({ selectedServices: ['svc-a', 'svc-b'], checklistTouched: true }));
+    expect(r.coverage?.total).toBe(8);
+    expect(r.label).toMatch(/2\/8 services/);
+  });
+
+  it('with general filter: denominator drops to filtered service count', () => {
+    const tech = taggedChecklistTech();
+    const r = resolveTier(
+      tech,
+      item({ selectedServices: ['svc-a', 'svc-b'], checklistTouched: true }),
+      { serviceTagFilter: ['general'] }
+    );
+    expect(r.coverage?.total).toBe(3);
+    expect(r.label).toMatch(/2\/3 services/);
+  });
+
+  it('already-selected service outside the filter still counts (matches render logic)', () => {
+    // Mirror TechCard.tsx: already-selected always shows in render. Scoring
+    // must match — if a previously-ticked service is now filtered-out by
+    // template, it stays in both the denominator and the selected count.
+    const tech = taggedChecklistTech();
+    const r = resolveTier(
+      tech,
+      item({ selectedServices: ['svc-a', 'svc-d'], checklistTouched: true }),
+      { serviceTagFilter: ['general'] }
+    );
+    // svc-d is selected but tagged 'security' (not in 'general' filter).
+    // It still appears in the denominator + selected count via the
+    // matched-by-tag OR already-selected OR untagged rule.
+    expect(r.coverage?.total).toBe(4); // 3 general + 1 selected-out-of-filter
+    expect(r.coverage?.selected).toBe(2);
+    expect(r.label).toMatch(/2\/4 services/);
+  });
+
+  it('hybrid mode also respects serviceTagFilter (K8s + Backend template scenario)', () => {
+    const tech: Technology = {
+      ...taggedChecklistTech(),
+      id: 'hybrid-tagged',
+      vetMode: 'hybrid',
+      currentVersion: '5',
+      versionTiers: [
+        { min: '5', label: 'Excellent', color: 'green' },
+        { min: '3', label: 'Good', color: 'green' },
+        { min: '0', label: 'Concern', color: 'red' },
+      ],
+    };
+    const r = resolveTier(
+      tech,
+      item({ version: '5', selectedServices: ['svc-a', 'svc-b'], checklistTouched: true }),
+      { serviceTagFilter: ['general'] }
+    );
+    // Version Green + 2/3 (67%) coverage = Green base → Green.
+    expect(r.color).toBe('green');
+    expect(r.label).toMatch(/2\/3 services/);
+  });
+});
+
+/**
  * Round-12 hybrid mode (Sven round-7 R5 + Lars rounds 9-10): vetMode='hybrid'
  * combines version-tier + checklist-coverage via MIN/weakest-link. Kubernetes
  * is the canonical case. Tests cover the four matrix cells (version × services)

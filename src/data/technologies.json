@@ -1097,7 +1097,7 @@
       "Partitioning — declarative partitions in production, or still on inheritance-based?"
     ],
     "guidanceForUnknownVersion": "Yellow — Postgres devs usually know their major version.",
-    "checklistGuidance": "Round-12 hybrid mode (Lina F3 round-10): the services axis captures depth-of-operation independent from version era. App-developers tick 4-6 services (schema / indexing / JSONB / query planning). DBAs / data engineers tick 9-13 (everything except possibly RLS or extensions if shop doesn't use them)."
+    "checklistGuidance": "The services axis captures depth-of-operation independent from version era. App-developers tick 4-6 services (schema / indexing / JSONB / query planning). DBAs / data engineers tick 9-13 (everything except possibly RLS or extensions if shop doesn't use them)."
   },
   {
     "id": "mysql",
@@ -1350,7 +1350,7 @@
       "Network policies — turned on by default in your clusters, or opt-in per workload?"
     ],
     "guidanceForUnknownVersion": "Yellow — version matters for security and features.",
-    "checklistGuidance": "Round-12 hybrid mode (Sven round-7 + Lars rounds 9-10): the services axis captures depth-of-operation independent from version era. Helm-consumers tick 3-5 services (workloads / config / autoscaling). Platform engineers tick 9-12 (everything except possibly multi-cluster if single-cluster shop). The Yellow band (25-66% coverage) is honest mid-territory — operators who know their workloads but haven't owned cluster-build."
+    "checklistGuidance": "The services axis captures depth-of-operation independent from version era. Helm-consumers tick 3-5 services (workloads / config / autoscaling). Platform engineers tick 9-12 (everything except possibly multi-cluster if single-cluster shop). The Yellow band (25-66% coverage) is honest mid-territory — operators who know their workloads but haven't owned cluster-build."
   },
   {
     "id": "terraform",
@@ -3841,7 +3841,7 @@
       "Component approval workflow — how does a new design-system component get added?"
     ],
     "guidanceForUnknownVersion": "Yellow — ask whether they configured Storybook or just write stories.",
-    "checklistGuidance": "Round-14 hybrid mode (Maya M2 round-8): the services axis captures design-system governance senior signal independent from version era. Story-writers tick 2-3 services. Senior FE design-system owners tick 6-8 (test-bearing stories + visual regression + composition + governance flow)."
+    "checklistGuidance": "The services axis captures design-system governance senior signal independent from version era. Story-writers tick 2-3 services. Senior FE design-system owners tick 6-8 (test-bearing stories + visual regression + composition + governance flow)."
   },
   {
     "id": "sqlite",

@@ -63,8 +63,13 @@ export default function Assessment() {
 
   const focusedTech = focusedTechId ? TECH_BY_ID.get(focusedTechId) : null;
   const focusedItem = items.find(i => i.techId === focusedTechId) ?? null;
+  // Round-18 (Theo R12 fix): pass the template's serviceTagFilter to keep
+  // the GuidancePanel verdict aligned with the card render. Pre-18 the
+  // scoring denominator used full services.length regardless of filter.
+  const focusedTemplate = meta.templateId ? ROLE_TEMPLATES.find(r => r.id === meta.templateId) : null;
+  const focusedFilter = focusedTech ? focusedTemplate?.serviceTagFilters?.[focusedTech.id] : undefined;
   const focusedResolved =
-    focusedTech && focusedItem ? resolveTier(focusedTech, focusedItem, { seniority: meta.seniority }) : null;
+    focusedTech && focusedItem ? resolveTier(focusedTech, focusedItem, { seniority: meta.seniority, serviceTagFilter: focusedFilter }) : null;
 
   const alreadyAdded = new Set(items.map(i => i.techId));
 

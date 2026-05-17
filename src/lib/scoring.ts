@@ -4,6 +4,7 @@ import type {
   ResolvedTier,
   Scope,
   Seniority,
+  ServiceItem,
   Technology,
   TierColor,
 } from '../types';
@@ -222,10 +223,34 @@ function applyRecency(
   return { ...current, recencyAdjusted: false };
 }
 
+/**
+ * Round-18 (Theo R12 sim 04 — round-17 closure bug): pre-batch-18 the
+ * `serviceTagFilters` template field was render-only — TechCard.tsx hid
+ * tag-filtered services from the checkbox grid but resolveChecklistTier /
+ * resolveHybridTier used `tech.services.length` as denominator. Theo's
+ * Custom + AWS read 3/15 in the checkbox UI but the verdict label showed
+ * "3/26 services" — internally contradictory. Threading the filter through
+ * scoring lets the denominator match the rendered list. Filter semantics
+ * mirror TechCard.tsx: matched-by-tag OR already-selected OR untagged.
+ */
+function filterServicesByTag(
+  allServices: ServiceItem[],
+  selectedIds: string[],
+  tagFilter?: string[]
+): ServiceItem[] {
+  if (!tagFilter || tagFilter.length === 0) return allServices;
+  const selectedSet = new Set(selectedIds);
+  return allServices.filter(s => {
+    if (selectedSet.has(s.id)) return true;
+    if (!s.tags?.length) return true;
+    return s.tags.some(t => tagFilter.includes(t));
+  });
+}
+
 export function resolveTier(
   tech: Technology,
   item: AssessmentItem,
-  opts?: { seniority?: Seniority }
+  opts?: { seniority?: Seniority; serviceTagFilter?: string[] }
 ): ResolvedTier {
   // Candidate explicitly does not work with this tech. Excluded from
   // scoring entirely — buckets and radar must filter on `skipped`.
@@ -254,10 +279,10 @@ export function resolveTier(
       : item;
 
   if (tech.vetMode === 'checklist') {
-    return resolveChecklistTier(tech, itemWithEffectiveScope, opts?.seniority);
+    return resolveChecklistTier(tech, itemWithEffectiveScope, opts?.seniority, opts?.serviceTagFilter);
   }
   if (tech.vetMode === 'hybrid') {
-    return resolveHybridTier(tech, itemWithEffectiveScope, opts?.seniority);
+    return resolveHybridTier(tech, itemWithEffectiveScope, opts?.seniority, opts?.serviceTagFilter);
   }
   return resolveVersionTier(tech, itemWithEffectiveScope, opts?.seniority);
 }
@@ -437,9 +462,15 @@ function findTier(tech: Technology, version: string) {
 function resolveChecklistTier(
   tech: Technology,
   item: AssessmentItem,
-  seniority?: Seniority
+  seniority?: Seniority,
+  serviceTagFilter?: string[]
 ): ResolvedTier {
-  const services = tech.services ?? [];
+  const allServices = tech.services ?? [];
+  // Round-18 (Theo R12 fix): use the template-filtered service list as the
+  // denominator (mirrors TechCard render). Pre-18 the scoring used full
+  // services.length while the card hid filtered services, producing an
+  // internally contradictory "3/15 in checklist, 3/26 in label" output.
+  const services = filterServicesByTag(allServices, item.selectedServices ?? [], serviceTagFilter);
   const validIds = new Set(services.map(s => s.id));
   const selected = (item.selectedServices ?? []).filter(id => validIds.has(id));
   const total = services.length || 1;
@@ -591,9 +622,13 @@ function resolveChecklistTier(
 function resolveHybridTier(
   tech: Technology,
   item: AssessmentItem,
-  seniority?: Seniority
+  seniority?: Seniority,
+  serviceTagFilter?: string[]
 ): ResolvedTier {
-  const services = tech.services ?? [];
+  const allServices = tech.services ?? [];
+  // Round-18 (Theo R12 fix): same filter threading as resolveChecklistTier
+  // so the hybrid coverage denominator matches the rendered service list.
+  const services = filterServicesByTag(allServices, item.selectedServices ?? [], serviceTagFilter);
   const validIds = new Set(services.map(s => s.id));
   const selected = (item.selectedServices ?? []).filter(id => validIds.has(id));
   const total = services.length || 1;

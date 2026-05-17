@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
+import { ROLE_TEMPLATES } from '../data/roles';
 import technologiesData from '../data/technologies.json';
 import type { AssessmentItem, Depth, NamedOnlyEntry, Scope, Technology, TierColor } from '../types';
 import {
@@ -34,13 +35,23 @@ export default function Summary() {
   const [exporting, setExporting] = useState(false);
   const [status, setStatus] = useState<ExportStatus>({ kind: 'idle' });
 
+  // Round-18 (Theo R12 fix): pass each tech's template-specific
+  // serviceTagFilter into resolveTier so the Summary verdicts match the
+  // Assessment-page card renders. Pre-18 the report scoring used
+  // tech.services.length regardless of filter, producing label/coverage
+  // inconsistency with the card UI.
+  const template = useMemo(
+    () => (meta.templateId ? ROLE_TEMPLATES.find(r => r.id === meta.templateId) : null),
+    [meta.templateId]
+  );
   const resolved = useMemo(() => {
     return items.flatMap(item => {
       const tech = TECH_BY_ID.get(item.techId);
       if (!tech) return [];
-      return [{ tech, item, tier: resolveTier(tech, item, { seniority: meta.seniority }) }];
+      const serviceTagFilter = template?.serviceTagFilters?.[tech.id];
+      return [{ tech, item, tier: resolveTier(tech, item, { seniority: meta.seniority, serviceTagFilter }) }];
     });
-  }, [items, meta.seniority]);
+  }, [items, meta.seniority, template]);
 
   // Three exclusion buckets, in order of precedence:
   //   - skipped       (notUsed=true)        — candidate confirmed absent
@@ -312,14 +323,17 @@ export default function Summary() {
             knowing it was a TS-shallow junior probe target vs a senior tech
             debt issue. One line of context anchors the read. */}
         {meta.seniority && meta.seniority !== 'unspecified' && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 italic mb-6 -mt-2">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 -mt-2">
+            {/* Round-18 polish (Mei R12 sim 05 finding F6, F7): tightened to
+                drop the homework-y "verify the right depth + version" clause
+                AND swapped text-xs italic → text-sm so it doesn't email-skim. */}
             {meta.seniority === 'junior'
-              ? `Junior candidate — Yellows often indicate probe targets, not regressions; verify the right depth + version expectations for the role.`
+              ? `Junior candidate — Yellows here typically flag probe targets, not regressions.`
               : meta.seniority === 'mid'
-                ? `Mid-level candidate — balanced verdicts expected; deep+narrow specialism vs broad working-knowledge is the read.`
+                ? `Mid-level candidate — balanced verdicts expected; the read is deep+narrow specialism vs broad working knowledge.`
                 : meta.seniority === 'senior'
-                  ? `Senior candidate — Greens carry depth signal; capped Yellows on architect/reviewer scope read as Staff-IC shape, not weakness.`
-                  : `Staff+ candidate — methodology + named-only signals carry more weight than version-tier coverage; focus on the architectural framing.`}
+                  ? `Senior candidate — Greens carry depth signal; capped Yellows on architect/reviewer scope read as Staff-IC shape.`
+                  : `Staff+ candidate — methodology + named-only signals carry more weight than version-tier coverage.`}
           </p>
         )}
         {/* Coverage chips — confirmed-absent and not-discussed counts. Fix L

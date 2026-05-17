@@ -104,7 +104,8 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
     // Round-10 10C (Lina F4): nextjs + tailwind added — modern 2026 fullstack
     // is Next-first; both were already preloaded by Frontend template.
     fullstack: ['aws', 'docker', 'nextjs', 'nodejs', 'postgresql', 'react', 'tailwind', 'typescript'],
-    frontend: ['nextjs', 'react', 'tailwind', 'typescript', 'vite'],
+    // Round-18 (Maya R12 F-β): Storybook preloaded for design-system shape.
+    frontend: ['nextjs', 'react', 'storybook', 'tailwind', 'typescript', 'vite'],
     backend: ['docker', 'kubernetes', 'nodejs', 'postgresql', 'python', 'redis'],
     'solution-architect': ['aws', 'azure', 'kafka', 'kubernetes', 'postgresql', 'terraform'],
     // Round-9 9E (Lars F2): Vault added — DevOps owns secrets management.
