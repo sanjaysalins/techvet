@@ -1,63 +1,105 @@
-# Resume point — TechVet (2026-05-17 EOD-1 — full deferred backlog cleared across batches 13-18)
+# Resume point — TechVet (2026-05-17 EOD — GitHub repo live + 6 AI frameworks + Python "3" fix)
 
 ---
 
-## 👋 Pick up here
+## 👋 Pick up here tomorrow
 
-**Repo state — clean as of 2026-05-17 ~17:10.**
+**Repo state — clean as of 2026-05-17 ~20:40.**
 
-- Working tree clean (last commit `b92e7cc`). **11 ship batches today** across rounds 8-12 of adversarial validation. **42 items shipped today total** (8A-E, 9A-E, 10A-C, batch 11 = 13 catalog entries + 9B copy polish, 11A-B, K8s hybrid, batches 13-17, round-12 batch 18).
-- `npx tsc -b` clean. `npm test` → **311/311 pass** (+36 today). `npx vite build` clean (1.32 MB / ~389 KB gzipped). Catalog **123 entries** / **15 templates**.
-- **Full deferred-backlog cleared.** Every named structural item from rounds 7-11 shipped: K8s hybrid (Sven R5), Postgres hybrid (Lina F3), Storybook hybrid (Maya M2), AI/ML productionization scope (Esme), DevOps catalog refresh (Lars), QA catalog refresh (Akira), Custom AWS filter (Theo FT-2), J4 + J5 (Mei + Eitan).
+- **🌐 GitHub:** [`github.com/sanjaysalins/techvet`](https://github.com/sanjaysalins/techvet) — `main` at `ae9e69b`. Standard push workflow: `cd ~/devtools/techvet && git push`.
+- **Working dir:** `~/devtools/techvet/` — fresh clone (was previously a sub-tree of a parent `devtools/` git repo tracking unrelated `spinalelements`; restructured via `git subtree split` to publish the 94 commits as a standalone repo with content at root). Old `techvet-old/` backup deleted.
+- Working tree clean. **12 ship batches today** across rounds 8-12 of adversarial validation + manual-test fixes (Python "3" + 6 AI frameworks).
+- `npx tsc -b` clean. `npm test` → **313/313 pass** (+38 today). `npx vite build` clean (~1.32 MB / ~390 KB gzipped). Catalog **128 entries** / **15 templates**.
 - **Saturation curve across rounds 8-12:** 8: 2/4/0 → 9: 5/1/0 → 10: 5/1/0 → 11: 4/0/0 → 12: 4/1/0 (the 1 was Theo Custom AWS filter bug — closed in batch 18 same cycle).
+
+**What shipped today (high-level):**
+
+1. **Rounds 8-12 of adversarial validation** — 5 rounds + 22 sim agents + ~125k words of session notes across ~67 sessions. Saturation marker reached.
+2. **Hybrid `vetMode`** — new scoring mode combining version-tier + coverage-tier via MIN/weakest-link. Used by K8s, Postgres, Storybook. Lets Helm-consumers / app-developers / story-writers read distinctly from deep operators / DBAs / design-system owners on the same catalog entry.
+3. **13 round-11 catalog adds** + 6 **AI engineering frameworks** added late: DevOps (Argo Rollouts / Karpenter / Backstage / Unleash / Crossplane / cosign-sigstore / Kyverno / Port), AI/ML (Braintrust / Evidently / Feast / Langfuse / LangGraph / LlamaIndex / Agno / Pydantic AI / DSPy), QA (Pact / Cucumber), iOS (UIKit), Cloud (GCP Identity Platform service).
+4. **UI polish:** J4 (hide Scope dropdown on junior), J5 (seniority-aware Summary framing), 8A (card-panel verdict parity), 8B (Yellow-base architect scope-bounded), 9B (recruiter-friendlier capped-scope copy), 9C (tautological softener label suppressed).
+5. **AI/ML productionization scope override** (Esme): AI/ML template flips PyTorch / LLM-API-SDK / Vector-DB to operator-default (vs catalog K2 author-default for library-author shape).
+6. **Custom flow AWS filter** + serviceTagFilter threading fix (Theo) — render-side filter now matches scoring denominator (was internally contradictory "3/15 in checklist but 3/26 in label" pre-batch-18).
+7. **Python "3" bare-major bug fix** — typing bare "3" used to fall to Red; now hits a new Yellow tier with "ask for the minor version" guidance.
 
 **What's next (in priority order):**
 
 1. **Stop running validation rounds.** All deferred structural items are shipped. New rounds would mostly confirm prior wins. If you do run one, pick a never-validated terrain slice (Game-engine / Embedded / Blockchain — explicitly out-of-scope per CLAUDE.md "Focused" scope) or a never-validated persona axis (panel format, async-CV-only, contractor-shape, bootcamp-fresh-grad).
 
 2. **Smaller items still open** (each <half-day):
+   - **Add a `LICENSE`** to the GitHub repo if you plan to share it externally. MIT is the typical pick for client-side internal tools; if keeping private, skip.
    - **Hybrid-mode depth-lift seniority gate** (Lina R12 F11) — design question. `resolveChecklistTier` requires `seniority !== 'junior'` for 6D depth-lift; `resolveHybridTier` doesn't. Should hybrid match for consistency? Verify with a junior+hybrid sim.
    - **`adjustForDepth` on combined-base vs per-channel** (Sven R12 F9) — currently hybrid runs depth-lift on the combined-base color. The honest alternative is per-channel (depth-lift version OR coverage independently). Needs a Helm-consumer + self-claimed-deep sim.
    - **UIKit `enterpriseStillUsed` root-vs-tier** (Kenji R11 F2/F3) — design question (root flag fires on every Yellow band incl tutorial-grade thin coverage; tier-level pattern tighter).
-   - **Cucumber `currentVersion` drop UX inconsistency** (batch 12 sim 02 carryover) — the card no longer shows "current stable: X" since the entry has no unified version. Minor.
-   - **Round-12 sim 02 Lina F9 cross-check:** any other catalog `checklistGuidance` strings still have persona-leak (round-X codenames in shipped UI)? Quick grep audit.
+   - **Cucumber `currentVersion` drop UX inconsistency** (batch 12 carryover) — the card no longer shows "current stable: X" since the entry has no unified version. Minor.
+   - **Round-12 sim 02 Lina F9 cross-check:** grep audit for any other catalog `checklistGuidance` strings still carrying persona-leak ("Round-X / Maya M2" etc).
+   - **Bare-major audit on other languages** — Python "3" is fixed; similar bug could exist on TypeScript ("5"), Go ("1"), Rust ("1"). Quick audit + add Yellow "ask for minor" tiers where needed.
 
 3. **Bigger items genuinely deferred** (each half-day to day):
    - **Per-card stack-focus picker** for Custom flow (more granular than the round-17 'general' filter — recruiter picks lens per-card via chip-bar). Defer.
-   - **Hybrid mode for more catalog entries** — round-12 + 13 + 14 covered K8s / Postgres / Storybook. Candidates: MySQL (similar to Postgres), Redis (depth+services), Docker (multi-stage / Compose / orchestration). Each ~30min if pattern stays clean.
+   - **Hybrid mode for more catalog entries** — rounds 12-14 covered K8s / Postgres / Storybook. Candidates: MySQL (similar to Postgres), Redis (depth+services), Docker (multi-stage / Compose / orchestration). Each ~30min if pattern stays clean.
 
 **How to verify nothing regressed before starting work:**
 
 ```bash
 cd ~/devtools/techvet
-git status                   # should be clean (b92e7cc is HEAD)
+git status                   # should be clean (ae9e69b is HEAD)
+git pull                     # in case you push from another machine
 npx tsc -b                   # types clean
-npm test                     # 311/311 pass
+npm test                     # 313/313 pass
 npx vite build               # builds clean ~10-15s
 npm run dev                  # boots ~1s; visit http://localhost:5173
-                             # smoke 6 things:
+                             # smoke 7 things:
                              #   1. K8s + Postgres + Storybook cards render dual bodies (version input + services checklist).
                              #   2. Pick DevOps template → 8 preloaded incl. Vault; K8s in hybrid mode.
                              #   3. Pick Custom template → search-add AWS → 15 checkboxes (not 26, 'general' filter live); 3 ticks → "Concern — 3/15 services" (matched denominator).
-                             #   4. Pick Frontend template → Storybook now preloaded (was named-only before round 18).
+                             #   4. Pick Frontend template → Storybook now preloaded (hybrid mode).
                              #   5. Junior seniority + any tech card → Scope dropdown HIDDEN (J4); Summary shows "Junior candidate — Yellows here typically flag probe targets…" (J5, plain text-sm not italic).
-                             #   6. Search Argo Rollouts / Karpenter / Backstage / Crossplane / Kyverno / Port / Pact / UIKit / Braintrust / Evidently / Feast / Langfuse — all 12 hit catalog.
+                             #   6. Search Argo Rollouts / Karpenter / Backstage / Crossplane / Kyverno / Port / Pact / UIKit / Braintrust / Evidently / Feast / Langfuse / LangGraph / LlamaIndex / Agno / Pydantic AI / DSPy — all 17 hit catalog.
+                             #   7. Search Python + type bare "3" → "Review / Probe" Yellow with "ask for minor" guidance (NOT Red Concern).
 ```
 
 **Pointers:**
 - `CLAUDE.md` — codebase notes (stack, scoring quirks, Tailwind config gotchas, what's verified).
 - `simulations/rounds/` — **12 rounds** of adversarial agent findings (~125k+ words across ~67 sessions). `cross-cut.md` in each round is the synthesis + priority list. Most recent: `2026-05-17-round-12-structural-validation/sessions/` (cross-cut not formalized for round 12; session notes are self-explanatory).
-- Today's commits (newest first): `b92e7cc` (batch 18 round-12 closure), `f7f0be1` (batches 13-17), `f5c9e07` (K8s hybrid), `42157b9`, `373f482` (batch 12), `2c204d4` (batch 11 catalog refresh), `6ab2051`, `a4d7b73` (batch 10), `2637da3` (batch 9), `54fc806` (batch 8).
+- **Today's commits on GitHub** (newest first):
+  - `ae9e69b` round-12 session notes (housekeeping)
+  - `8e9ae3e` Python "3" Yellow tier + 6 AI engineering frameworks
+  - `1b9bff7` RESUME.md autonomous-block summary
+  - `db2e7cc` batch 18 (round-12 closure: serviceTagFilter scoring + J5 polish + Storybook preload + persona-leak cleanup)
+  - `de4c0d6` batches 13-17 (Postgres hybrid + Storybook hybrid + catalog adds + J4/J5 + Custom AWS filter)
+  - `7c1c0bb` K8s hybrid vetMode (Sven R5 + Lars R9-10 closure)
+  - ...earlier: batch 8 / 9 / 10 / 11 / 12 commits
+  - (commit hashes shifted vs original `~/devtools/` repo because `git subtree split` rewrote history; the work is identical, just reparented.)
 - The numbered log below this section is reverse-chronological history.
 
 **Flagged for review (autonomous-session caveats):**
-- **Round-18 serviceTagFilter scoring fix changed the verdict semantics** for AWS-on-Backend / AWS-on-Custom (and any tech with template `serviceTagFilters`). Pre-18 some recruiters may have been calibrating to "3/26 services" labels; post-18 those become "3/15 services" same Red but different denominator. Verdict color usually unchanged but the label reads different. If anyone has external workflow expecting the old labels, flag.
+- **AI engineering frameworks shipped operator-default per user selection.** LangChain rebased from "LangChain / LangGraph" combined entry → standalone "LangChain" (operator-default, was author-default). LangGraph carved out as separate first-class catalog entry. LlamaIndex / Agno / Pydantic AI / DSPy added as new. All 6 added to `MLOPS_OPERATOR_TOOLS` integrity exception list so K2 author-default guard doesn't fire on them. If you'd rather some of these stay author-default (Vikram library-author shape), pull from the exception list + flip `defaultScope` back.
+- **Round-18 serviceTagFilter scoring fix changed verdict semantics** for AWS-on-Backend / AWS-on-Custom (and any tech with template `serviceTagFilters`). Pre-18 some recruiters may have been calibrating to "3/26 services" labels; post-18 those become "3/15 services" same Red but different denominator. Verdict color usually unchanged but the label reads different. Flag if external workflow expects the old labels.
 - **Hybrid-mode depth-lift inconsistency** (Lina R12 F11) — `resolveChecklistTier` gates 6D depth-lift on `seniority !== 'junior'`; `resolveHybridTier` doesn't. Junior+hybrid currently CAN get depth-lift. Probably wrong-axis; needs a junior+K8s sim to confirm.
 - **'general' tag filter on Custom (batch 17/18)** is opinionated — security-shaped candidates on Custom lose access to KMS/GuardDuty/SecurityHub from AWS unless the recruiter manually adds those via name. Acceptable trade-off (Security template exists for that lens) but worth surfacing if a security-on-Custom sim ever surfaces friction.
 - **`design-system-discipline` chip ID (10A)** is new vs FE's existing `design-system-ownership`. Different concept (contribution vs ownership) but worth sanity-checking the naming if you intend to unify.
 - **9A scope override on AI/ML template** assumes the template signals "productionization shape." If a library-author candidate picks AI/ML template (instead of Custom), they hit the operator override and may need to manually flip back to author. HuggingFace stays at catalog default for this exact reason.
-- **MLOPS_OPERATOR_TOOLS exception list** in `integrity.test.ts:586`: Braintrust / Evidently / Feast / Langfuse are AI/ML category but operator-default. If you add more MLOps operator-shape entries, update the exception list.
+- **MLOPS_OPERATOR_TOOLS exception list** in `integrity.test.ts`: Braintrust / Evidently / Feast / Langfuse + the 6 new AI frameworks are AI/ML category but operator-default. If you add more MLOps operator-shape entries, update the exception list.
 - **Crossplane categorized as DevOps** (not IaC or Cloud). Defensible (no IaC category exists; Terraform/Ansible/Pulumi sit there too) but worth a sanity check.
+
+**Git workflow note for future pushes:**
+The fresh clone at `~/devtools/techvet/` has `origin` → `git@github.com:sanjaysalins/techvet.git`. Standard workflow:
+```bash
+cd ~/devtools/techvet
+git add <files> && git commit -m "..." && git push
+```
+The old subtree-split dance from the original `~/devtools/.git` repo is no longer needed — that parent repo still exists and tracks unrelated `spinalelements`; ignore it.
+
+---
+
+## 2026-05-17 late-afternoon — Python "3" fix + 6 AI frameworks + GitHub publish
+
+**45. Published to GitHub at `github.com/sanjaysalins/techvet`.** Parent `~/devtools/.git` repo tracked unrelated `spinalelements` + had techvet as a subtree. Ran `git subtree split --prefix=techvet -b techvet-only` to rewrite 94 commits with techvet/ as root, then `git push -u techvet techvet-only:main` to the new GitHub repo. Re-cloned fresh into `~/devtools/techvet/` so standard `git push` workflow works going forward; old `techvet-old/` backup deleted after `npx tsc -b` + 313/313 tests verified on the clone. `origin` now points cleanly to the new GitHub repo. Commit hashes after the subtree split shifted (history rewrite) but content is identical.
+
+**44. Shipped Python "3" bare-major Yellow tier + 6 AI engineering framework catalog entries.** User manual-tested + caught: typing bare "3" on the Python card fell to Red (Concern) because tiers were `3.13 Excellent / 3.10 Good / 3.8 Yellow / 0 Red` and "3" failed every specific tier. Added a `min: "3"` Yellow tier with "Bare Python 3 typed — ask for the minor version (3.8 / 3.10 / 3.13)" guidance. Updated Red tier note to call out Python 2.x sunset Jan 2020 distinctly. Also added 6 AI engineering frameworks per user-named catalog gap: existing combined "LangChain / LangGraph" rebased into standalone "LangChain" (defaultScope flipped author → operator); LangGraph carved out as separate first-class entry (StateGraph / checkpoints / multi-agent / human-in-loop / etc); LlamaIndex / Agno / Pydantic AI / DSPy each added as new checklist entries with 8 services. All 6 ship with `defaultScope: 'operator'` (productionization is the dominant 2026 user pattern); added to `MLOPS_OPERATOR_TOOLS` integrity exception list. Tests 311 → 313. Commit `8e9ae3e`.
+
+**43. Manual testing surfaced both bugs.** User picked a few smoke-tests at end of autonomous block. Surfaced the Python "3" misfire + named the AI category gap. Three sims worth of friction caught in 5 min of human eyeballs — useful reminder that automated sims complement manual testing but don't replace it.
 
 ---
 
