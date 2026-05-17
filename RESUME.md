@@ -1,55 +1,83 @@
-# Resume point — TechVet (2026-05-16 EOD-24 — 7D/E/F shipped; round-7 priority list cleared)
+# Resume point — TechVet (2026-05-17 mid-day — rounds 8/9/10 shipped; saturation marker reached)
 
 ---
 
-## 👋 Pick up here tomorrow
+## 👋 Pick up here
 
-**Repo state — already clean as of 2026-05-16 EOD.**
+**Repo state — clean as of 2026-05-17 ~13:35.**
 
-- Working tree clean (last commit `3343b81`). 28 items shipped today across 7 rounds of adversarial validation (rounds 1–7) and ~10 ship batches.
-- `npx tsc -b` clean. `npm test` → **275/275 pass** (+49 today). `npx vite build` clean (1.24 MB / ~374 KB gzipped). Catalog **107 entries** / **15 templates**.
-- Speed-of-use trajectory across rounds: round 3 (0 Safe / 7 At-risk / 3 Unworkable) → round 4 → 5 → 6 (2 Safe / 4 At-risk / 0 Unworkable) → **round 7 (3 Safe / 3 At-risk / 0 Unworkable)** — best to date.
+- Working tree clean (last commit `a4d7b73`). 3 ship batches today across rounds 8, 9, 10 of adversarial validation (16 items shipped across 8A-8E, 9A-9E, 10A-10C).
+- `npx tsc -b` clean. `npm test` → **291/291 pass** (+16 today). `npx vite build` clean (1.29 MB / ~379 KB gzipped). Catalog **107 entries** / **15 templates** (DE template +1 preload, DevOps +1 preload, Fullstack +2 preloads + 6 chips, QA chips +2, AI/ML +3 scope locks).
+- **Saturation marker reached.** Rounds 9 + 10 both came in at **5 Safe / 1 At-risk / 0 Unworkable** — the single At-risk in each round was on a never-validated terrain path that named-its-fix on the spot and was shipped in the same cycle. Round-by-round: round 3 (0/7/3) → round 6 (2/4/0) → round 7 (3/3/0) → round 8 (2/4/0) → **round 9 (5/1/0)** → **round 10 (5/1/0, on a NEW diverse cast)**.
 
 **What's next (in priority order):**
 
-1. **Run another adversarial validation round** (round 8) to surface what 7D/7E/7F missed — the round-7 pattern was that each ship cycle reveals 2–3 structural items the prior round couldn't see. Cast suggestion: 3 redux on personas whose fixes just shipped (Mei junior FE for 7D / Kenji iOS for 7F / Sven backend for 7A) + 3 new (e.g. iOS-on-mobile-ios template, deeper junior cross-role, a senior-on-Cross-Platform template). Follow the pattern in `simulations/rounds/2026-05-16-round-7-post-6F-validation/cast.md`.
-2. **Low/cosmetic backlog still open** (any worth folding into round-8 fixes):
-   - **J4** — hide Scope dropdown on `meta.seniority === 'junior'` (~5 LOC, Mei+Eitan ~20s tax)
-   - **J5** — level-fit copy line below headline cards ("for a Junior FE, this report shows…") (~10 LOC)
-   - **7B-tier-note** — tier `note` field also needs junior-aware wording (Eitan Spring Boot 2.x "verify migration awareness" mis-fits junior-inherited-legacy) (~5 LOC + few catalog edits)
-   - **6E threshold tighter** — Kenji small-N over-eager promotion at `4 > 2`; change to `> scored + 1` (~3 LOC)
-   - **6γ tautology label** — "softened from Review/Probe — stale but defensible" when final color == base color (Margarethe cosmetic)
-   - **5θ expand-back caret** — compact NamedOnlyEditor on async has no way to expand back (Yasmin round-6)
-   - **5ι color A/B** — emerald-100 Methodology card too close to Good's emerald-50 (Yasmin minor)
-3. **Larger structural items deferred**:
-   - **UIKit catalog entry** — 6F shipped SwiftUI without UIKit; for migration-shop iOS engineers (Kenji's actual role) half the daily work has no verdict surface. ~30 min catalog work copy-modifying the SwiftUI entry.
-   - **K8s hybrid mode** — Sven R5: K8s is version-mode only, so Helm-chart-consumers have no service-slice signal. Needs new `vetMode: 'hybrid'` with both `versionTiers` AND `services`. Half-day design + implementation.
-   - **Mobile chip iOS expansion polish** — Kenji noted Crashlytics is Firebase-specific (Apple ecosystem uses Xcode Organizer); the mobile-cross-platform/mobile-android sets need a vendor-neutral pass.
+1. **Run a catalog-refresh batch** (NOT another validation round). Round-10 cross-cut explicitly recommends this as the next valuable work — saturation means the structural redesigns are converged. ~6 hr batch:
+   - **DevOps catalog (Lars rounds 9-10, ~3 hr):** Argo Rollouts / Karpenter / Backstage / Unleash / Crossplane / cosign-SLSA — six canonical 2026 platform-eng entries still named-only. Each ~30 min catalog work copy-modifying e.g. the Helm or Vault entries.
+   - **AI/ML catalog (Esme round 9, ~2 hr):** Braintrust (LLM evals) / Evidently (drift detection) / Feast (feature store) / Langfuse (LLM observability). Each productionization-canonical.
+   - **QA catalog (Akira round 9, ~1 hr):** Pact (checklist-mode, contract testing — Akira's biggest project) / Cucumber (version-mode, BDD).
+   - **iOS UIKit catalog (Kenji rounds 7-8, deferred):** ~30 min checklist-mode entry — UIView programmatic / Storyboards / Auto Layout / UIViewController lifecycle / Combine bridging / accessibility / UIViewRepresentable interop. For migration-shop iOS shapes.
+
+2. **Small UI / scoring polish items** (each ~5-15 LOC):
+   - **9B copy polish (Anil round 10):** "review/architect-shape signal" reads clinical for non-engineer recruiters. Replace with "Architect-scope verdict — designs how it gets used, doesn't operate it day-to-day."
+   - **J4** — hide Scope dropdown on `meta.seniority === 'junior'` (Mei+Eitan ~20s tax across rounds 6-10).
+   - **J5** — level-fit copy line below headline cards (seniority-aware framing).
+   - **Storybook catalog entry** (Maya M2 round 8, deferred) — checklist-mode senior FE governance.
+
+3. **Larger structural items deferred** (each half-day to day):
+   - **Custom flow stack-focus picker** (Theo FT-2 round 10) — without serviceTagFilters on AWS, generalist on Custom reads "Concern" at 3/26 services. Could ship a starter "What kind of stack?" picker that applies category tag filters.
+   - **K8s hybrid mode** (Sven R5 round 7, deferred) — version-mode only; Helm-chart-consumers have no service-slice signal. Needs new `vetMode: 'hybrid'`.
+   - **Postgres checklist mode** (Lina F3 round 10) — currently version-mode only; senior DB signal (schema design / indexing / partitioning / replication / JSONB / VACUUM) goes to suggestedProbes which doesn't render in the report. Architectural change.
+   - **GCP Identity Platform catalog** — Round 10 added AWS Cognito; verify parallel AWS Azure GCP auth coverage.
 
 **How to verify nothing regressed before starting work:**
 
 ```bash
 cd ~/devtools/techvet
-git status                   # should be clean (3343b81 is HEAD)
+git status                   # should be clean (a4d7b73 is HEAD)
 npx tsc -b                   # types clean
-npm test                     # 275/275 pass
-npx vite build               # builds clean ~12s
+npm test                     # 291/291 pass
+npx vite build               # builds clean ~10s
 npm run dev                  # boots ~1s; visit http://localhost:5173
-                             # smoke 3 things:
-                             #   1. Landing shows 15 templates with 3 Mobile sub-templates (no generic "Mobile Engineer")
-                             #   2. Backend template Methodology section shows 6 chips (contract testing / event-driven / etc.)
-                             #   3. Pick SA template + AWS (architect scope, deep) + methodology chips → Summary
-                             #      shows 5- or 6-card grid with "Scope-capped: N" sky card + "(capped from Good by architect scope)" labels
+                             # smoke 4 things:
+                             #   1. Pick AI/ML template — PyTorch / LLM API SDK / Vector DB cards arrive scope-locked to operator (no "Use default: author").
+                             #   2. Pick Fullstack template — 8 preloaded techs (incl. nextjs + tailwind); Methodology section shows 6 chips.
+                             #   3. Pick SA template, leave Azure at 5/13 services, scope=architect → label "(capped — architect scope)" with no "from Good".
+                             #   4. Junior + Frontend + TS 5.3 + shallow → card AND side panel both read "Review/Probe (lowered from Good by shallow depth)".
 ```
 
 **Pointers:**
-- `CLAUDE.md` — codebase notes (stack, scoring quirks, Tailwind config gotchas, what's verified)
-- `simulations/rounds/` — 7 rounds of adversarial agent findings (~75k words total across ~40 sessions). `cross-cut.md` in each round is the synthesis + priority list.
-- The numbered log below this section is the chronological "28 things shipped today" — historical reference, not pickup material. Items are reverse-chronological (28 = latest).
+- `CLAUDE.md` — codebase notes (stack, scoring quirks, Tailwind config gotchas, what's verified).
+- `simulations/rounds/` — **10 rounds** of adversarial agent findings (~100k+ words across ~58 sessions). `cross-cut.md` in each round is the synthesis + priority list. Most recent: `2026-05-17-round-10-saturation-validation/cross-cut.md`.
+- Today's commits: `54fc806` (batch 8), `2637da3` (batch 9), `a4d7b73` (batch 10).
+- The numbered log below this section is reverse-chronological history. Skim if needed; not pickup material.
+
+**Flagged for review (autonomous-session caveats):**
+- 8B's new TechCard "Verdict bounded by scope" italic copy: validated mechanically but reads clinical. Decide whether to ship the round-10 copy polish or keep as-is.
+- 10A's `design-system-discipline` chip ID is new (vs FE's existing `design-system-ownership`). Different concept (contribution vs ownership) but worth sanity-checking the naming if you intend to unify.
+- 9A scope override on AI/ML template assumes the template signals "productionization shape." If a library-author candidate accidentally picks AI/ML template (instead of Custom), they hit the operator override and may need to manually flip back to author on PyTorch/LLM-API-SDK/Vector-DB. HuggingFace stays at catalog default for this exact reason.
 
 ---
 
-**Status:** clean working tree. `npx tsc -b` clean; `npm test` passes **275/275** (+49 today); `npx vite build` clean (1.24 MB / **~374 KB gzipped**). Catalog: **107 entries** across 12 categories. **15 role templates** (Mobile split 1 → 3). Twenty-eight things today:
+## 2026-05-17 mid-day autonomous block — rounds 8/9/10 (+ 3 ship batches, +16 tests)
+
+User ran a ~3.5 hour Ralph-loop while away. Three rounds + three ship batches.
+
+**31. Shipped round-10 batch (10A–10C) — Fullstack template chips + AWS Cognito + Next/Tailwind preload.** Closes Lina's first-ever Fullstack template At-risk finding. Same shape as 7A Sven-Backend (template-without-chips). Tests: 288 → 291. Commit `a4d7b73`.
+
+**30. Ran round 10 — saturation validation.** 6 sims: 3 redux (Esme/Anil/Lars validating batch 9) + 3 new shapes (Lina Senior Fullstack / Vikram-redux library-author on Custom / Theo mid-senior generalist on Custom). **Distribution: 5 Safe / 1 At-risk / 0 Unworkable** — saturation confirmed (identical to round 9 on a NEW diverse cast that pushed into 3 never-validated paths). K2 catalog default + 9A template override coexist correctly; Custom flow works end-to-end for clean shapes; first-ever Fullstack validation surfaced 3 surgical fixes.
+
+**29. Shipped round-9 batch (9A–9E) — AI/ML productionization scope override + 4 cleanup items.** Closes Esme's At-risk. 9A added template-level `techScopes: { pytorch: 'operator', llm-api-sdk: 'operator', vector-db: 'operator' }` to AI/ML template (HuggingFace stays at catalog default — genuine scope ambiguity). 9B branches capped-by-scope italic copy on cappedFromColor presence. 9C suppresses tautological softener label when finalLabel === baseLabel. 9D refreshes QA chip-set + drops Selenium from preload. 9E adds Vault to DevOps preload. Tests: 283 → 288. Commit `2637da3`.
+
+**28. Ran round 9 — post-8E validation.** 6 sims: 3 redux (Mei/Anil/Pooja validating batch 8) + 3 new shapes (Lars senior DevOps / Akira senior QA / Esme senior AI/ML productionization). **Distribution: 5 Safe / 1 At-risk / 0 Unworkable** — best to date. DevOps + QA templates first-ever validations both ship at ~75% out-of-box. AI/ML's K2 author-default mismatched productionization shape.
+
+**27. Shipped round-8 batch (8A–8E) — UI parity fix + Yellow-base architect cap + cross-platform chip rewrite + DE template fixes + FE chip swap.** 8A passed seniority to TechCard.tsx:resolveTier (card-vs-panel divergence closed). 8B set scopeCapped on Yellow-base architect (Anil's Azure surfaces). 8C rewrote mobile-XP chips (KMP wrong-axis dropped, OTA + two-store added). 8D added Snowflake preload + Postgres/Kafka reviewer techScopes + lineage/CDC chips to DE template. 8E swapped progressive-enhancement for bundle-size-budgets on FE. Tests: 275 → 283. Commit `54fc806`.
+
+**26. Ran round 8 — post-7F validation.** 6 sims: 3 redux (Mei/Anil/Kenji) + 3 new (Maya senior FE / Pooja senior DE / Diego mobile cross-platform). Distribution: 2 Safe / 4 At-risk / 0 Unworkable. Surfaced UI rendering gap for 7D lowered direction, applyScope branch missing Yellow-base cap, mobile-XP chip quality defects, DE template first-ever validation.
+
+---
+
+**Status (pre-2026-05-17 autonomous block):** clean working tree. `npx tsc -b` clean; `npm test` passes **275/275** (+49 today); `npx vite build` clean (1.24 MB / **~374 KB gzipped**). Catalog: **107 entries** across 12 categories. **15 role templates** (Mobile split 1 → 3). Twenty-eight things today:
 
 1. **Priority #4 shipped** — scope-of-use axis. Closes the *named* half of yesterday's 12-session cluster.
 2. **Built `simulations/` pipeline + ran 10-session phone-screening round.** 10 independent agents wrote ~19k words of findings into `simulations/rounds/2026-05-16-phone-screening/`. Surfaced **6 code bugs, 10 structural defects, 13+ catalog gaps, 4 substantive pushbacks on shipped work**. Cross-cut + 16-item priority list (A–P) in `cross-cut.md`.
