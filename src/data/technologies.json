@@ -4576,14 +4576,14 @@
     "id": "cucumber",
     "name": "Cucumber",
     "category": "Testing",
-    "currentVersion": "10.x",
     "versionTiers": [
-      { "min": "10", "label": "Excellent", "color": "green", "note": "Cucumber 10.x — current generation, async/Promise-friendly across JVM and JS runners." },
-      { "min": "8", "label": "Good", "color": "green" },
-      { "min": "6", "label": "Review / Probe", "color": "yellow", "enterpriseStillUsed": true },
-      { "min": "0", "label": "Concern", "color": "red", "note": "Cucumber 4.x and older — pre-Cucumber Expressions, legacy API." }
+      { "min": "10", "label": "Excellent", "color": "green", "note": "Modern Cucumber-JS 10.x+. Note: Cucumber-JVM ships at 7.x, Cucumber-Ruby at 9.x — ask which language the candidate uses and verify the major-version maps to current for that ecosystem." },
+      { "min": "7", "label": "Good", "color": "green", "note": "Cucumber-JVM 7.x is current generation. Same green-band for Cucumber-JS 7-9.x." },
+      { "min": "5", "label": "Review / Probe", "color": "yellow", "enterpriseStillUsed": true, "note": "Late-legacy Cucumber across ecosystems — pre-Cucumber-Expressions in some bindings; verify ecosystem + actual version." },
+      { "min": "0", "label": "Concern", "color": "red", "note": "Cucumber 4.x and older — pre-Cucumber Expressions, legacy step-def API." }
     ],
     "suggestedProbes": [
+      "Which Cucumber binding — JVM / JS / Ruby / something else? (Major versions diverge across ecosystems.)",
       "BDD vs imperative tests — when do you reach for Cucumber over a code-only e2e framework?",
       "Step definition discipline — how do you keep glue code DRY and maintainable?",
       "Has BDD adoption actually engaged your PMs or QAs in feature writing, or is it engineering-only?",
@@ -4599,12 +4599,15 @@
     "enterpriseStillUsed": true,
     "services": [
       { "id": "view-controllers", "name": "UIViewController lifecycle + transitions" },
+      { "id": "app-scene-lifecycle", "name": "App / Scene lifecycle (UIApplicationDelegate / UISceneDelegate / UIWindowSceneDelegate)" },
       { "id": "auto-layout", "name": "Auto Layout (programmatic + NSLayoutConstraint)" },
       { "id": "storyboards-xibs", "name": "Storyboards / XIBs" },
       { "id": "table-collection-views", "name": "UITableView / UICollectionView (diffable data sources)" },
       { "id": "navigation-controllers", "name": "UINavigationController + UITabBarController patterns" },
       { "id": "uikit-animations", "name": "UIView animations + UIViewPropertyAnimator" },
       { "id": "core-animation", "name": "Core Animation (CALayer / CAAnimation)" },
+      { "id": "custom-drawing", "name": "Custom drawing (CoreGraphics / UIView.draw / CALayerDelegate)" },
+      { "id": "push-background-tasks", "name": "Push notifications + background tasks (UNUserNotificationCenter / BGTaskScheduler)" },
       { "id": "swiftui-interop", "name": "SwiftUI interop (UIHostingController / UIViewRepresentable)" },
       { "id": "accessibility", "name": "Accessibility (UIAccessibility / VoiceOver / Dynamic Type)" },
       { "id": "uikit-testing", "name": "UI testing (XCUITest / snapshot)" }
