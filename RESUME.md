@@ -1,69 +1,79 @@
-# Resume point — TechVet (2026-05-17 mid-day — rounds 8/9/10 shipped; saturation marker reached)
+# Resume point — TechVet (2026-05-17 EOD-3 — rounds 8-11 shipped + catalog refresh; total saturation)
 
 ---
 
 ## 👋 Pick up here
 
-**Repo state — clean as of 2026-05-17 ~13:35.**
+**Repo state — clean as of 2026-05-17 ~15:40.**
 
-- Working tree clean (last commit `a4d7b73`). 3 ship batches today across rounds 8, 9, 10 of adversarial validation (16 items shipped across 8A-8E, 9A-9E, 10A-10C).
-- `npx tsc -b` clean. `npm test` → **291/291 pass** (+16 today). `npx vite build` clean (1.29 MB / ~379 KB gzipped). Catalog **107 entries** / **15 templates** (DE template +1 preload, DevOps +1 preload, Fullstack +2 preloads + 6 chips, QA chips +2, AI/ML +3 scope locks).
-- **Saturation marker reached.** Rounds 9 + 10 both came in at **5 Safe / 1 At-risk / 0 Unworkable** — the single At-risk in each round was on a never-validated terrain path that named-its-fix on the spot and was shipped in the same cycle. Round-by-round: round 3 (0/7/3) → round 6 (2/4/0) → round 7 (3/3/0) → round 8 (2/4/0) → **round 9 (5/1/0)** → **round 10 (5/1/0, on a NEW diverse cast)**.
+- Working tree clean (last commit `373f482`). **5 ship batches today** across rounds 8, 9, 10, 11 of adversarial validation + 1 catalog refresh + 1 follow-up. 33 items shipped total (8A-E, 9A-E, 10A-C, batch 11 = 13 catalog entries + 9B copy polish, 11A-B).
+- `npx tsc -b` clean. `npm test` → **295/295 pass** (+20 today). `npx vite build` clean (1.31 MB / ~384 KB gzipped). Catalog **120 entries** / **15 templates**.
+- **Total saturation reached.** Round 11 came in at **4 Safe / 0 At-risk / 0 Unworkable** — the cleanest round across all 11. Three consecutive saturation-zone rounds (9: 5/1/0, 10: 5/1/0, 11: 4/0/0). The trajectory is converged.
 
 **What's next (in priority order):**
 
-1. **Run a catalog-refresh batch** (NOT another validation round). Round-10 cross-cut explicitly recommends this as the next valuable work — saturation means the structural redesigns are converged. ~6 hr batch:
-   - **DevOps catalog (Lars rounds 9-10, ~3 hr):** Argo Rollouts / Karpenter / Backstage / Unleash / Crossplane / cosign-SLSA — six canonical 2026 platform-eng entries still named-only. Each ~30 min catalog work copy-modifying e.g. the Helm or Vault entries.
-   - **AI/ML catalog (Esme round 9, ~2 hr):** Braintrust (LLM evals) / Evidently (drift detection) / Feast (feature store) / Langfuse (LLM observability). Each productionization-canonical.
-   - **QA catalog (Akira round 9, ~1 hr):** Pact (checklist-mode, contract testing — Akira's biggest project) / Cucumber (version-mode, BDD).
-   - **iOS UIKit catalog (Kenji rounds 7-8, deferred):** ~30 min checklist-mode entry — UIView programmatic / Storyboards / Auto Layout / UIViewController lifecycle / Combine bridging / accessibility / UIViewRepresentable interop. For migration-shop iOS shapes.
+1. **Stop running validation rounds.** Round-11 cross-cut explicitly recommends NOT running round 12 — saturation means new sims would mostly confirm prior wins without surfacing new structural information. The next valuable work is structural items deferred over rounds 7-10.
 
-2. **Small UI / scoring polish items** (each ~5-15 LOC):
-   - **9B copy polish (Anil round 10):** "review/architect-shape signal" reads clinical for non-engineer recruiters. Replace with "Architect-scope verdict — designs how it gets used, doesn't operate it day-to-day."
+2. **Deferred structural items, each warrants its own session** (~half-day each):
+   - **K8s hybrid vetMode** (Sven round 7) — `kubernetes` is version-mode only; Helm-chart-consumers (Sven shape) + multi-cluster operators (Lars shape) need both version tier AND service slice. Implement `vetMode: 'hybrid'` with both `versionTiers` AND `services`. ~half-day design + implementation.
+   - **Postgres checklist mode** (Lina F3 round 10) — currently version-mode; senior DB signal (schema design / indexing / partitioning / replication / JSONB / VACUUM) goes to suggestedProbes which doesn't render in the report. Same hybrid pattern as K8s.
+   - **Custom flow stack-focus picker** (Theo FT-2 round 10) — without serviceTagFilters, generalist on Custom reads "Concern" at 3/26 services. UX redesign: starter "What kind of stack?" picker that applies category tag filters.
+   - **Storybook checklist-mode conversion** (Maya M2 round 8) — currently version-mode; senior FE governance signal needs services. Existing entry already covers ~half of M2 intent via version awareness.
+
+3. **Small follow-on catalog items** (each ~30 min):
+   - **Kyverno catalog** (Lars R11 F7) — DevOps named-only on the second pass. Add if a second platform-eng persona names it.
+   - **Feast materialization split** (Esme R11 F5) — split `materialization` into `batch-materialization` + `stream-materialization`. Observe 1-2 more DE/ML personas first.
+   - **GCP Identity Platform** — Round 10 added AWS Cognito; Azure already has Entra ID; complete the auth triangle.
+   - **Port / Cortex / OpsLevel IDP entries** — if multiple platform-eng candidates start naming non-Backstage IDPs, justify a new "Developer Platform" category.
+
+4. **Small UI / polish items still open** (each ~5-15 LOC):
    - **J4** — hide Scope dropdown on `meta.seniority === 'junior'` (Mei+Eitan ~20s tax across rounds 6-10).
    - **J5** — level-fit copy line below headline cards (seniority-aware framing).
-   - **Storybook catalog entry** (Maya M2 round 8, deferred) — checklist-mode senior FE governance.
-
-3. **Larger structural items deferred** (each half-day to day):
-   - **Custom flow stack-focus picker** (Theo FT-2 round 10) — without serviceTagFilters on AWS, generalist on Custom reads "Concern" at 3/26 services. Could ship a starter "What kind of stack?" picker that applies category tag filters.
-   - **K8s hybrid mode** (Sven R5 round 7, deferred) — version-mode only; Helm-chart-consumers have no service-slice signal. Needs new `vetMode: 'hybrid'`.
-   - **Postgres checklist mode** (Lina F3 round 10) — currently version-mode only; senior DB signal (schema design / indexing / partitioning / replication / JSONB / VACUUM) goes to suggestedProbes which doesn't render in the report. Architectural change.
-   - **GCP Identity Platform catalog** — Round 10 added AWS Cognito; verify parallel AWS Azure GCP auth coverage.
+   - **UIKit enterpriseStillUsed root-vs-tier** (Kenji R11 F2/F3) — design question: root flag misfires on tutorial-grade Yellow coverage; tier-level (Selenium 3 / Cypress 10-11 pattern) tighter but loses the "UIKit is legacy-but-active everywhere" claim.
 
 **How to verify nothing regressed before starting work:**
 
 ```bash
 cd ~/devtools/techvet
-git status                   # should be clean (a4d7b73 is HEAD)
+git status                   # should be clean (373f482 is HEAD)
 npx tsc -b                   # types clean
-npm test                     # 291/291 pass
+npm test                     # 295/295 pass
 npx vite build               # builds clean ~10s
 npm run dev                  # boots ~1s; visit http://localhost:5173
-                             # smoke 4 things:
+                             # smoke 5 things:
                              #   1. Pick AI/ML template — PyTorch / LLM API SDK / Vector DB cards arrive scope-locked to operator (no "Use default: author").
                              #   2. Pick Fullstack template — 8 preloaded techs (incl. nextjs + tailwind); Methodology section shows 6 chips.
-                             #   3. Pick SA template, leave Azure at 5/13 services, scope=architect → label "(capped — architect scope)" with no "from Good".
-                             #   4. Junior + Frontend + TS 5.3 + shallow → card AND side panel both read "Review/Probe (lowered from Good by shallow depth)".
+                             #   3. Pick DevOps template — 8 preloads (incl. Vault); search "Argo Rollouts" / "Karpenter" / "Backstage" / "Unleash" / "Crossplane" / "cosign" — all 6 should hit catalog.
+                             #   4. Search "Braintrust" / "Evidently" / "Feast" / "Langfuse" — all 4 catalog hits with operator-default scope.
+                             #   5. Search "Pact" / "Cucumber" / "UIKit" — all 3 catalog hits.
 ```
 
 **Pointers:**
 - `CLAUDE.md` — codebase notes (stack, scoring quirks, Tailwind config gotchas, what's verified).
-- `simulations/rounds/` — **10 rounds** of adversarial agent findings (~100k+ words across ~58 sessions). `cross-cut.md` in each round is the synthesis + priority list. Most recent: `2026-05-17-round-10-saturation-validation/cross-cut.md`.
-- Today's commits: `54fc806` (batch 8), `2637da3` (batch 9), `a4d7b73` (batch 10).
+- `simulations/rounds/` — **11 rounds** of adversarial agent findings (~115k+ words across ~62 sessions). `cross-cut.md` in each round is the synthesis + priority list. Most recent: `2026-05-17-round-11-catalog-validation/cross-cut.md`.
+- Today's commits: `54fc806` (batch 8), `2637da3` (batch 9), `a4d7b73` (batch 10), `2c204d4` (batch 11 catalog refresh), `373f482` (batch 12).
 - The numbered log below this section is reverse-chronological history. Skim if needed; not pickup material.
 
 **Flagged for review (autonomous-session caveats):**
-- 8B's new TechCard "Verdict bounded by scope" italic copy: validated mechanically but reads clinical. Decide whether to ship the round-10 copy polish or keep as-is.
-- 10A's `design-system-discipline` chip ID is new (vs FE's existing `design-system-ownership`). Different concept (contribution vs ownership) but worth sanity-checking the naming if you intend to unify.
-- 9A scope override on AI/ML template assumes the template signals "productionization shape." If a library-author candidate accidentally picks AI/ML template (instead of Custom), they hit the operator override and may need to manually flip back to author on PyTorch/LLM-API-SDK/Vector-DB. HuggingFace stays at catalog default for this exact reason.
+- **10A's `design-system-discipline` chip ID** is new (vs FE's existing `design-system-ownership`). Different concept (contribution vs ownership) but worth sanity-checking the naming if you intend to unify.
+- **9A scope override on AI/ML template** assumes the template signals "productionization shape." If a library-author candidate accidentally picks AI/ML template (instead of Custom), they hit the operator override and may need to manually flip back to author on PyTorch/LLM-API-SDK/Vector-DB. HuggingFace stays at catalog default for this exact reason.
+- **Batch 11 MLOPS_OPERATOR_TOOLS exception list** in `integrity.test.ts:586`: Braintrust / Evidently / Feast / Langfuse are AI/ML category but operator-default (platform tools, not modelling libraries). If you add more MLOps operator-shape entries, update the exception list.
+- **Batch 11 Crossplane categorized as DevOps**, not IaC or Cloud. Defensible (no IaC category exists; Terraform/Ansible/Pulumi also sit in DevOps) but worth a sanity check.
+- **Batch 12 Cucumber** had its `currentVersion` claim dropped — the entry now doesn't render a "current stable: X" line on the card. Acceptable for multi-ecosystem tools but slight UX inconsistency. Defer.
 
 ---
 
-## 2026-05-17 mid-day autonomous block — rounds 8/9/10 (+ 3 ship batches, +16 tests)
+## 2026-05-17 afternoon autonomous block (extended) — rounds 8/9/10/11 + catalog refresh
 
-User ran a ~3.5 hour Ralph-loop while away. Three rounds + three ship batches.
+User ran a ~5 hour autonomous block. **Four rounds + five ship batches** (rounds 8/9/10/11 + batch 11 catalog refresh + batch 12 follow-up).
 
-**31. Shipped round-10 batch (10A–10C) — Fullstack template chips + AWS Cognito + Next/Tailwind preload.** Closes Lina's first-ever Fullstack template At-risk finding. Same shape as 7A Sven-Backend (template-without-chips). Tests: 288 → 291. Commit `a4d7b73`.
+**33. Shipped batch 12 (11A + 11B) — Cucumber currentVersion fix + UIKit 3 missing services.** 11A: Cucumber `currentVersion: "10.x"` was fiction (Cucumber-JVM 7.x, JS 11.x, Ruby 9.x — no unified 10.x). Retiered with ecosystem-aware notes. 11B: UIKit gained app-scene-lifecycle / custom-drawing / push-background-tasks (Kenji R11 F1). Tests still 295/295. Commit `373f482`.
+
+**32. Ran round 11 — catalog validation.** 4 redux sims (Lars / Akira / Esme / Kenji) validate batch-11's 13 new entries. **Distribution: 4 Safe / 0 At-risk / 0 Unworkable — cleanest round across all 11.** Total saturation reached. Lars: named-only 6→1. Akira: Pact+Cucumber both validate (Cucumber currentVersion bug surfaced). Esme: named-only 4→0, 12G/0Y/0R headline. Kenji: UIKit lands, named-only 6→5.
+
+**31. Shipped batch 11 — Catalog refresh (13 entries + 9B copy polish).** DevOps (6: argo-rollouts / karpenter / backstage / unleash / crossplane / cosign-sigstore), AI/ML (4: braintrust / evidently-ai / feast / langfuse — all operator-default with MLOPS_OPERATOR_TOOLS exception in integrity guard), QA (2: pact / cucumber), iOS (1: uikit). Plus 9B's "review/architect-shape signal" wording replaced with scope-specific plain English. Catalog 107 → 120. Tests 291 → 295. Commit `2c204d4`.
+
+**30. Shipped round-10 batch (10A–10C) — Fullstack template chips + AWS Cognito + Next/Tailwind preload.** Closes Lina's first-ever Fullstack template At-risk finding. Same shape as 7A Sven-Backend (template-without-chips). Tests: 288 → 291. Commit `a4d7b73`.
 
 **30. Ran round 10 — saturation validation.** 6 sims: 3 redux (Esme/Anil/Lars validating batch 9) + 3 new shapes (Lina Senior Fullstack / Vikram-redux library-author on Custom / Theo mid-senior generalist on Custom). **Distribution: 5 Safe / 1 At-risk / 0 Unworkable** — saturation confirmed (identical to round 9 on a NEW diverse cast that pushed into 3 never-validated paths). K2 catalog default + 9A template override coexist correctly; Custom flow works end-to-end for clean shapes; first-ever Fullstack validation surfaced 3 surgical fixes.
 
