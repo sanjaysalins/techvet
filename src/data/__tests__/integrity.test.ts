@@ -105,7 +105,8 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
     frontend: ['nextjs', 'react', 'tailwind', 'typescript', 'vite'],
     backend: ['docker', 'kubernetes', 'nodejs', 'postgresql', 'python', 'redis'],
     'solution-architect': ['aws', 'azure', 'kafka', 'kubernetes', 'postgresql', 'terraform'],
-    devops: ['argocd', 'docker', 'github-actions', 'helm', 'kubernetes', 'observability', 'terraform'],
+    // Round-9 9E (Lars F2): Vault added — DevOps owns secrets management.
+    devops: ['argocd', 'docker', 'github-actions', 'helm', 'kubernetes', 'observability', 'terraform', 'vault'],
     sre: ['aws', 'go', 'helm', 'kubernetes', 'observability', 'python', 'terraform'],
     // Round-8 8D (Pooja F1): Snowflake added as first-class preload — was in
     // catalog but invisible to the template, every Snowflake DE ate a search-add.
@@ -127,7 +128,9 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
       'observability', 'owasp-zap', 'python', 'semgrep', 'snyk', 'sql',
       'terraform', 'trivy', 'vault',
     ],
-    qa: ['cypress', 'github-actions', 'playwright', 'pytest', 'python', 'selenium', 'typescript', 'vitest'],
+    // Round-9 9D (Akira F4): Selenium dropped from preload — recruiter adds
+    // manually for legacy shops via search.
+    qa: ['cypress', 'github-actions', 'playwright', 'pytest', 'python', 'typescript', 'vitest'],
     // Round-6 6F (Owen): new DBA template; preloads the SQL + Oracle
     // + Postgres + MySQL stack.
     'database-dba': ['mysql', 'oracle-db', 'plsql', 'postgresql', 'sql'],
@@ -661,7 +664,10 @@ describe('roles.ts — techScopes integrity (Fix K2)', () => {
     // is visible. If a template gains one, update this list.
     // Round-8 8D (Pooja F4): `data` template gained techScopes (postgresql + kafka
     // as reviewer — DE consumes upstream sources rather than operates them).
-    const noScopesYet = ['fullstack', 'frontend', 'backend', 'devops', 'data-scientist', 'ai-ml', 'mobile-android', 'mobile-ios', 'mobile-cross-platform', 'qa', 'custom', 'database-dba'];
+    // Round-9 9A (Esme): `ai-ml` template gained techScopes (pytorch / llm-api-sdk
+    // / vector-db as operator — productionization-shape override of catalog
+    // author defaults; huggingface-transformers intentionally left at default).
+    const noScopesYet = ['fullstack', 'frontend', 'backend', 'devops', 'data-scientist', 'mobile-android', 'mobile-ios', 'mobile-cross-platform', 'qa', 'custom', 'database-dba'];
     for (const id of noScopesYet) {
       const role = ROLE_TEMPLATES.find(r => r.id === id);
       expect(role, `${id} template missing`).toBeDefined();
@@ -782,6 +788,37 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     // Niche/redundant chips dropped to free chip-set room.
     expect(ids.has('slowly-changing-dims')).toBe(false);
     expect(ids.has('data-lakehouse')).toBe(false);
+  });
+
+  it('Round-9 9A: AI/ML template overrides catalog author-default scope for productionization (Esme F1)', () => {
+    const aiml = ROLE_TEMPLATES.find(r => r.id === 'ai-ml');
+    expect(aiml?.techScopes?.pytorch).toBe('operator');
+    expect(aiml?.techScopes?.['llm-api-sdk']).toBe('operator');
+    expect(aiml?.techScopes?.['vector-db']).toBe('operator');
+    // huggingface-transformers intentionally left at catalog default (author)
+    // because productionization candidates routinely author fine-tuning loops.
+    expect(aiml?.techScopes?.['huggingface-transformers']).toBeUndefined();
+  });
+
+  it('Round-9 9D: QA template ships 8 chips with Selenium de-preloaded (Akira F1-F4)', () => {
+    const qa = ROLE_TEMPLATES.find(r => r.id === 'qa');
+    expect(qa?.techIds).not.toContain('selenium');
+    const ids = new Set((qa?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('perf-regression-gates')).toBe(true);
+    expect(ids.has('load-testing-discipline')).toBe(true);
+    expect(ids.has('visual-regression-qa')).toBe(true);
+    expect(ids.has('test-data-management')).toBe(true);
+    // Niche chip dropped.
+    expect(ids.has('mutation-testing')).toBe(false);
+    // Round-9 9D ships 8 chips (up from 6) — chip-set is QA-specific so
+    // the slight chip-count inflation is fine; the cap is 6 ONLY when the
+    // chip-set risks pressure-to-fill, which is a junior-shape concern.
+    expect((qa?.methodologyChips ?? []).length).toBe(8);
+  });
+
+  it('Round-9 9E: DevOps template preloads Vault (Lars F2)', () => {
+    const devops = ROLE_TEMPLATES.find(r => r.id === 'devops');
+    expect(devops?.techIds).toContain('vault');
   });
 
   it('Round-7 7A: Backend template carries ≥4 methodologyChips (closes Sven 6F deferral mistake)', () => {

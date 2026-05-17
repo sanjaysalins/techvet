@@ -1081,8 +1081,11 @@ describe('resolveTier — Fix E: asymmetric recency', () => {
       // Round-7 7B: neutral wording (was "returner shape; expect ramp-up").
       expect(r.recencyNote).toMatch(/current at last-use/);
       expect(r.recencyNote).toMatch(/defensible older usage/);
-      // Label still reflects the softener story.
-      expect(r.label).toMatch(/softened from Review \/ Probe/);
+      // Round-9 9C (Pooja F5): when finalLabel === baseLabel (both Yellow
+      // = "Review / Probe"), composeLabel suppresses the tautological from-
+      // clause. Label reads "Review / Probe (stale but defensible)" instead
+      // of "(softened from Review / Probe — stale but defensible)".
+      expect(r.label).toMatch(/Review \/ Probe \(stale but defensible\)/);
     });
   });
 
@@ -1500,6 +1503,33 @@ describe('resolveTier — 8A seniority threading parity (Mei)', () => {
     expect(fromAssessment.color).toBe(fromTechCard.color);
     expect(fromAssessment.label).toBe(fromTechCard.label);
     expect(fromAssessment.depthDirection).toBe(fromTechCard.depthDirection);
+  });
+});
+
+/**
+ * Round-9 9C (Pooja F5): when composeLabel softener/penalty fires on an
+ * already-Yellow baseLabel, the from-clause renders the same label twice
+ * ("(softened from Review / Probe — stale but defensible)"). Suppress the
+ * from-clause when finalLabel === baseLabel. Cosmetic but the tautology
+ * read awkward across rounds 5-9.
+ */
+describe('resolveTier — 9C tautological softener label (Pooja)', () => {
+  it('softener on Yellow base label suppresses from-clause', () => {
+    const r = resolveTier(versionTech(), item({ version: '17', lastUsed: '2022' }));
+    expect(r.color).toBe('yellow');
+    expect(r.recencyAdjusted).toBe(true);
+    // Label = "Review / Probe (stale but defensible)" NOT "Review / Probe
+    // (softened from Review / Probe — stale but defensible)".
+    expect(r.label).toBe('Review / Probe (stale but defensible)');
+  });
+
+  it('softener on different base label still renders from-clause', () => {
+    // Red → Yellow softener: baseLabel "Concern" != finalLabel "Review / Probe".
+    // From-clause stays.
+    const r = resolveTier(versionTech(), item({ version: '12', lastUsed: '2022' }));
+    expect(r.color).toBe('yellow');
+    expect(r.recencyAdjusted).toBe(true);
+    expect(r.label).toMatch(/softened from Concern — stale but defensible/);
   });
 });
 

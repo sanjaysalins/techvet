@@ -133,7 +133,12 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'devops',
     name: 'DevOps / Platform',
     description: 'CI/CD, infra-as-code, container orchestration.',
-    techIds: ['kubernetes', 'terraform', 'docker', 'github-actions', 'argocd', 'helm', 'observability'],
+    // Round-9 9E (Lars F2): Vault was preloaded by Security template but not
+    // DevOps — same gap shape as round-8 8D's Snowflake/DE fix. Modern platform
+    // teams own secrets management end-to-end; Vault is the canonical operator-
+    // scope tech for DevOps. Add to preload so platform-engineer candidates
+    // don't dispatch a search-add for it.
+    techIds: ['kubernetes', 'terraform', 'docker', 'github-actions', 'argocd', 'helm', 'vault', 'observability'],
     serviceTagFilters: { aws: ['general', 'cicd', 'container'] },
     methodologyChips: [
       { id: 'gitops', label: 'GitOps' },
@@ -250,6 +255,22 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'AI / ML Engineer',
     description: 'Build and deploy ML / LLM systems and RAG.',
     techIds: ['python', 'pytorch', 'huggingface-transformers', 'llm-api-sdk', 'vector-db', 'fastapi', 'docker', 'aws'],
+    // Round-9 9A (Esme): Round-2 K2 put `defaultScope: 'author'` on AI/ML
+    // library catalog entries to match Vikram's library-author shape (LangChain
+    // experiments / colab notebooks). Esme is the *productionization* shape:
+    // she uses these libraries as production tools, not research artifacts.
+    // The catalog default is right for the AVERAGE AI/ML candidate, but the
+    // *template* signals the productionization-engineer intent and should
+    // override accordingly. Without this, Esme dispatches ~22s of scope-
+    // override tax on a 10-min phone screen (3.7% of budget). Intentionally
+    // leave `huggingface-transformers` at catalog default — productionization
+    // engineers genuinely do author fine-tuning loops, so author scope is the
+    // honest default there.
+    techScopes: {
+      pytorch: 'operator',
+      'llm-api-sdk': 'operator',
+      'vector-db': 'operator',
+    },
     // Round-3 Vikram named SageMaker + Bedrock as missing AWS slice; now
     // surfaced via the data-ml tag filter.
     serviceTagFilters: { aws: ['general', 'data-ml', 'container'] },
@@ -367,14 +388,29 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'qa',
     name: 'QA / Test Engineer',
     description: 'Test automation across UI, API, and load.',
-    techIds: ['playwright', 'cypress', 'pytest', 'vitest', 'selenium', 'typescript', 'python', 'github-actions'],
+    // Round-9 9D (Akira F4): Selenium dropped from preload — for modern QA
+    // shops it's legacy (Akira's "we keep meaning to delete" case is typical),
+    // every modern-QA candidate ate a not-in-stack click. Recruiter still
+    // adds Selenium manually for legacy shops; the 7B softener + tier-level
+    // enterpriseStillUsed flag on Selenium 3.x ensure the legacy-defensible
+    // story still reads honestly when added.
+    techIds: ['playwright', 'cypress', 'pytest', 'vitest', 'typescript', 'python', 'github-actions'],
+    // Round-9 9D (Akira F1-F3): chip refresh. Split the original perf chip
+    // into perf-regression-gates + load-testing — Akira separates Lighthouse
+    // CI (perf gates) from k6 (load) in different pipelines. Added
+    // visual-regression chip — Percy / Chromatic is a senior signal Akira
+    // volunteered. Replaced niche mutation-testing chip with universal
+    // test-data-management chip (test-fixture discipline, factory patterns,
+    // anonymized-prod-data ethics).
     methodologyChips: [
       { id: 'test-pyramid', label: 'Test pyramid (unit → integration → e2e)' },
       { id: 'contract-testing', label: 'Contract testing (Pact / consumer-driven)' },
-      { id: 'mutation-testing', label: 'Mutation testing' },
+      { id: 'test-data-management', label: 'Test data management (factories / anonymized prod)' },
       { id: 'accessibility-wcag', label: 'Accessibility (WCAG 2.x)' },
-      { id: 'performance-budgets', label: 'Performance budgets + Core Web Vitals' },
-      { id: 'flaky-test-management', label: 'Flaky test triage + quarantine' },
+      { id: 'perf-regression-gates', label: 'Perf-regression gates (Lighthouse CI / Web Vitals budgets)' },
+      { id: 'load-testing-discipline', label: 'Load-testing discipline (k6 / scenarios / SLO-aligned)' },
+      { id: 'visual-regression-qa', label: 'Visual regression (Percy / Chromatic / snapshot)' },
+      { id: 'flaky-test-management', label: 'Flaky test triage + quarantine (SLO-based budgeting)' },
     ],
   },
   {

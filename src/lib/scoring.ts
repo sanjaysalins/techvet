@@ -384,8 +384,18 @@ function composeLabel(opts: {
 }): string {
   const finalLabel = LABEL_MAP[opts.finalColor];
   if (opts.recencyAdjusted) {
-    return opts.recencyDirection === 'softener'
-      ? `${finalLabel} (softened from ${opts.baseLabel} — stale but defensible)`
+    // Round-9 9C (Pooja F5): tautological from-clause when softener fires
+    // on an already-Yellow baseLabel — was rendering "(softened from Review /
+    // Probe — stale but defensible)" on a label that's also "Review / Probe."
+    // Suppress the from-clause when final and base labels match.
+    const sameLabel = finalLabel === opts.baseLabel;
+    if (opts.recencyDirection === 'softener') {
+      return sameLabel
+        ? `${finalLabel} (stale but defensible)`
+        : `${finalLabel} (softened from ${opts.baseLabel} — stale but defensible)`;
+    }
+    return sameLabel
+      ? `${finalLabel} (stale)`
       : `${finalLabel} (penalized from ${opts.baseLabel} — stale)`;
   }
   if (opts.scopeCapped) {

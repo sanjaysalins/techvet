@@ -155,11 +155,22 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
         </div>
       </div>
 
-      {resolved.scopeCapped && (
+      {resolved.scopeCapped && resolved.cappedFromColor && (
         <div className="mt-3 text-xs text-amber-700 dark:text-amber-300 italic">
           Verdict capped by scope — {item.scope ?? tech.defaultScope} scope
           can't earn the higher tier on operating signals alone
           {item.scope === undefined && tech.defaultScope ? ' (catalog default; override in Scope dropdown above)' : ''}.
+        </div>
+      )}
+      {/* Round-9 9B (Anil F1, F2): Yellow-base architect/reviewer scope sets
+          scopeCapped: true but the verdict wasn't lowered, just bounded. The
+          "can't earn the higher tier" wording mis-frames this case (nothing
+          was demoted). Branch on cappedFromColor: present → demotion story
+          (Green-base capped); absent → bounded story (Yellow-base capped). */}
+      {resolved.scopeCapped && !resolved.cappedFromColor && (
+        <div className="mt-3 text-xs text-amber-700 dark:text-amber-300 italic">
+          Verdict bounded by scope — {item.scope ?? tech.defaultScope} scope reads as
+          review/architect-shape signal, not hands-on operating signal.
         </div>
       )}
       {!resolved.scopeCapped && resolved.depthAdjusted && resolved.depthDirection !== 'lowered' && (

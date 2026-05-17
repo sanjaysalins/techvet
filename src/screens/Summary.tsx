@@ -653,9 +653,18 @@ function TierSection({
               {tech.vetMode === 'checklist' && (
                 <ServicesList tech={tech} item={item} />
               )}
-              {tier.scopeCapped && (
+              {/* Round-9 9B (Anil F1, F2): same wording split as TechCard.
+                  cappedFromColor present → demotion story (Green-base capped);
+                  absent → bounded story (Yellow-base capped). The pre-9B
+                  generic wording mis-framed the bounded case as a demotion. */}
+              {tier.scopeCapped && tier.cappedFromColor && (
                 <div className="text-xs italic text-amber-700 mt-1">
                   Capped by {item.scope ?? tech.defaultScope} scope — operates differently than an operator-level signal would imply.
+                </div>
+              )}
+              {tier.scopeCapped && !tier.cappedFromColor && (
+                <div className="text-xs italic text-amber-700 mt-1">
+                  Bounded by {item.scope ?? tech.defaultScope} scope — reads as review/architect-shape signal, not hands-on operating signal.
                 </div>
               )}
               {/* Fix E: recency note rendered before the tier note so the
