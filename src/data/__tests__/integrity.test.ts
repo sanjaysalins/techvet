@@ -107,7 +107,9 @@ describe('roles.ts — content snapshots (regression for red-team item 1)', () =
     'solution-architect': ['aws', 'azure', 'kafka', 'kubernetes', 'postgresql', 'terraform'],
     devops: ['argocd', 'docker', 'github-actions', 'helm', 'kubernetes', 'observability', 'terraform'],
     sre: ['aws', 'go', 'helm', 'kubernetes', 'observability', 'python', 'terraform'],
-    data: ['airflow', 'databricks', 'dbt', 'kafka', 'postgresql', 'python', 'spark', 'sql'],
+    // Round-8 8D (Pooja F1): Snowflake added as first-class preload — was in
+    // catalog but invisible to the template, every Snowflake DE ate a search-add.
+    data: ['airflow', 'databricks', 'dbt', 'kafka', 'postgresql', 'python', 'snowflake', 'spark', 'sql'],
     'data-scientist': ['databricks', 'jupyter', 'numpy', 'pandas', 'python', 'scikit-learn', 'sql'],
     'ai-ml': ['aws', 'docker', 'fastapi', 'huggingface-transformers', 'llm-api-sdk', 'pytorch', 'python', 'vector-db'],
     // Round-7 7F (Priya R3 + Kenji): single Mobile template split into 3
@@ -657,7 +659,9 @@ describe('roles.ts — techScopes integrity (Fix K2)', () => {
   it('templates without techScopes (full-stack, frontend, etc.) preserve pre-K2 behavior', () => {
     // Pin which templates intentionally don't have techScopes so future drift
     // is visible. If a template gains one, update this list.
-    const noScopesYet = ['fullstack', 'frontend', 'backend', 'devops', 'data', 'data-scientist', 'ai-ml', 'mobile-android', 'mobile-ios', 'mobile-cross-platform', 'qa', 'custom', 'database-dba'];
+    // Round-8 8D (Pooja F4): `data` template gained techScopes (postgresql + kafka
+    // as reviewer — DE consumes upstream sources rather than operates them).
+    const noScopesYet = ['fullstack', 'frontend', 'backend', 'devops', 'data-scientist', 'ai-ml', 'mobile-android', 'mobile-ios', 'mobile-cross-platform', 'qa', 'custom', 'database-dba'];
     for (const id of noScopesYet) {
       const role = ROLE_TEMPLATES.find(r => r.id === id);
       expect(role, `${id} template missing`).toBeDefined();
@@ -741,9 +745,43 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(xplat?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
   });
 
+  it('Round-8 8C: Mobile-Cross-Platform chips include OTA + two-store, drop wrong-axis KMP (Diego F2-F4)', () => {
+    const xplat = ROLE_TEMPLATES.find(r => r.id === 'mobile-cross-platform');
+    const ids = new Set((xplat?.methodologyChips ?? []).map(c => c.id));
+    // Load-bearing 2026 cross-platform methodologies a senior demonstrates.
+    // If a future agent reverts to the round-7 chip-set, Diego's failure
+    // mode (free-texts OTA and two-store because chips don't fit) returns.
+    expect(ids.has('ota-update-governance')).toBe(true);
+    expect(ids.has('two-store-release-coordination')).toBe(true);
+    // Wrong-axis competing-framework chip removed.
+    expect(ids.has('code-sharing-strategy')).toBe(false);
+    // Renamed away from RN-specific "JS thread budget" terminology.
+    expect(ids.has('native-bridge-perf')).toBe(false);
+  });
+
   it('Frontend template carries ≥4 methodologyChips (closes Maya/Mei chip-absent finding)', () => {
     const fe = ROLE_TEMPLATES.find(r => r.id === 'frontend');
     expect(fe?.methodologyChips?.length ?? 0).toBeGreaterThanOrEqual(4);
+  });
+
+  it('Round-8 8E: Frontend chips swap progressive-enhancement → bundle-size-budgets (Maya M1)', () => {
+    const fe = ROLE_TEMPLATES.find(r => r.id === 'frontend');
+    const ids = new Set((fe?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('bundle-size-budgets')).toBe(true);
+    expect(ids.has('progressive-enhancement')).toBe(false);
+  });
+
+  it('Round-8 8D: Data Engineer template preloads Snowflake + has DE techScopes + 2026 senior-DE chips (Pooja F1/F2/F4)', () => {
+    const de = ROLE_TEMPLATES.find(r => r.id === 'data');
+    expect(de?.techIds).toContain('snowflake');
+    expect(de?.techScopes?.postgresql).toBe('reviewer');
+    expect(de?.techScopes?.kafka).toBe('reviewer');
+    const ids = new Set((de?.methodologyChips ?? []).map(c => c.id));
+    expect(ids.has('data-lineage-openlineage')).toBe(true);
+    expect(ids.has('cdc-discipline')).toBe(true);
+    // Niche/redundant chips dropped to free chip-set room.
+    expect(ids.has('slowly-changing-dims')).toBe(false);
+    expect(ids.has('data-lakehouse')).toBe(false);
   });
 
   it('Round-7 7A: Backend template carries ≥4 methodologyChips (closes Sven 6F deferral mistake)', () => {

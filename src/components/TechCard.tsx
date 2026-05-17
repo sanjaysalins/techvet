@@ -16,8 +16,12 @@ const DEPTH_OPTIONS: Depth[] = ['unknown', 'shallow', 'working', 'deep', 'very-d
 const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
 
 export default function TechCard({ tech, item, focused, onFocus }: Props) {
-  const { updateItem, removeTech } = useAssessment();
-  const resolved = resolveTier(tech, item);
+  const { updateItem, removeTech, meta } = useAssessment();
+  // Round-8 8A: pass seniority so the card badge matches the GuidancePanel verdict.
+  // Pre-8A, 7D's junior+shallow lowering fired on the side-panel (Assessment.tsx:67
+  // passes seniority) but not on the card badge — Mei's TS 5.3 card showed Green
+  // while the panel showed Yellow on the same screen.
+  const resolved = resolveTier(tech, item, { seniority: meta.seniority });
   const isChecklist = tech.vetMode === 'checklist';
 
   return (
@@ -158,9 +162,18 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
           {item.scope === undefined && tech.defaultScope ? ' (catalog default; override in Scope dropdown above)' : ''}.
         </div>
       )}
-      {!resolved.scopeCapped && resolved.depthAdjusted && (
+      {!resolved.scopeCapped && resolved.depthAdjusted && resolved.depthDirection !== 'lowered' && (
         <div className="mt-3 text-xs text-emerald-700 dark:text-emerald-300 italic">
           Depth raised this one tier — credit given for hands-on experience.
+        </div>
+      )}
+      {/* Round-8 8A: 7D's junior+shallow lowering shipped at scoring layer but
+          this UI strip still claimed "credit given" for any depthAdjusted. Branch
+          on direction so a junior's lowered verdict reads honestly (not as if
+          we're somehow rewarding the shallow claim). */}
+      {!resolved.scopeCapped && resolved.depthAdjusted && resolved.depthDirection === 'lowered' && (
+        <div className="mt-3 text-xs text-amber-700 dark:text-amber-300 italic">
+          Tier lowered by one step — shallow depth on a junior candidate reads as a probe target, not strong signal.
         </div>
       )}
       {/* Fix E: recency note. Sky for softener (Red→Yellow returner),

@@ -86,6 +86,27 @@ function applyScope(
       // plain Yellow ("midmarket signal").
       return { color: 'yellow', depthAdjusted: false, scopeCapped: true, cappedFromColor: adjusted.color };
     }
+    // Round-8 8B (Anil R2, "8α"): Yellow-base architect/reviewer used to
+    // pass through identical to a thin-coverage mid-engineer. The Staff-IC
+    // framing was invisible whenever the underlying coverage didn't quite
+    // cross 40% (Anil's Azure at 5/13 = 38% read identical to a mid-engineer
+    // who happens to know 5/13 Azure services). Set scopeCapped: true so
+    // composeLabel renders "(capped — architect scope)" and the recruiter
+    // sees scope was applied to this Yellow. `cappedFromColor` is left
+    // undefined — the verdict wasn't lowered, just *bounded* by scope —
+    // so the Summary's Scope-capped headline keeps counting Staff-IC
+    // pattern only (Green-base capped) and doesn't inflate.
+    if (SEVERITY[adjusted.color] === SEVERITY.yellow) {
+      return {
+        color: adjusted.color,
+        depthAdjusted: adjusted.adjusted,
+        depthDirection: adjusted.direction,
+        scopeCapped: true,
+      };
+    }
+    // Red — architect/reviewer scope doesn't pull a Red down further,
+    // and surfacing "(capped)" on a Red would imply the candidate would
+    // have been higher without scope, which isn't honest for thin coverage.
     return {
       color: adjusted.color,
       depthAdjusted: adjusted.adjusted,

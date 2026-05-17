@@ -48,9 +48,17 @@ export default function GuidancePanel({ tech, resolved }: Props) {
           </div>
         )}
 
-        {resolved.depthAdjusted && (
+        {resolved.depthAdjusted && resolved.depthDirection !== 'lowered' && (
           <div className="mt-3 text-xs italic text-slate-600 dark:text-slate-300">
             Tier improved by one step based on candidate's stated depth.
+          </div>
+        )}
+        {/* Round-8 8A: 7D introduced direction: 'lowered' (junior + shallow) but
+            this strip still said "improved by one step" regardless. Branch on
+            direction so the panel's depth-note matches the lowered verdict. */}
+        {resolved.depthAdjusted && resolved.depthDirection === 'lowered' && (
+          <div className="mt-3 text-xs italic text-amber-700 dark:text-amber-300">
+            Tier lowered by one step — shallow depth on a junior is a probe target, not strong signal.
           </div>
         )}
 

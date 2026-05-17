@@ -608,10 +608,18 @@ describe('resolveTier — scope-of-use axis', () => {
       expect(r.label).toMatch(/capped from .* by reviewer scope/);
     });
 
-    it('scope=reviewer + Yellow version stays Yellow (no cap fires — already there)', () => {
+    it('scope=reviewer + Yellow version stays Yellow but scopeCapped:true (round-8 8B)', () => {
+      // Round-8 8B (Anil R2, "8α"): Yellow-base reviewer/architect used to
+      // pass through with scopeCapped: false — indistinguishable in the UI
+      // from a thin-coverage mid-engineer. Post-8B the scope rule still
+      // *runs* on Yellow so composeLabel can render "(capped — reviewer
+      // scope)" and the recruiter sees scope was applied. cappedFromColor
+      // stays undefined because nothing was lowered.
       const r = resolveTier(versionTech(), item({ version: '17', depth: 'working', scope: 'reviewer' }));
       expect(r.color).toBe('yellow');
-      expect(r.scopeCapped).toBe(false);
+      expect(r.scopeCapped).toBe(true);
+      expect(r.cappedFromColor).toBeUndefined();
+      expect(r.label).toMatch(/capped — reviewer scope/);
     });
 
     it('scope=reviewer + Red version stays Red (cap is a ceiling, not a floor)', () => {
@@ -708,13 +716,16 @@ describe('resolveTier — scope-of-use axis', () => {
       expect(r.scopeCapped).toBeFalsy();
     });
 
-    it('unknownVersion + scope=reviewer + meaningful depth → stays Yellow, no cap needed post-Fix-B', () => {
+    it('unknownVersion + scope=reviewer + meaningful depth → Yellow with scopeCapped:true (8B)', () => {
       // Pre-Fix-B: Yellow base + deep lifted to Green; reviewer scope capped back.
       // Post-Fix-B: no lift happens on unknown-version, so result is naturally
-      // Yellow and the cap doesn't need to fire. Same final color, different path.
+      // Yellow at scoring layer. Round-8 8B: reviewer/architect scope on a
+      // Yellow-base still sets scopeCapped: true so the recruiter sees the
+      // scope rule applied (cappedFromColor undefined — nothing was lowered).
       const r = resolveTier(versionTech(), item({ version: '', depth: 'deep', scope: 'reviewer' }));
       expect(r.color).toBe('yellow');
-      expect(r.scopeCapped).toBe(false);
+      expect(r.scopeCapped).toBe(true);
+      expect(r.cappedFromColor).toBeUndefined();
       expect(r.depthAdjusted).toBe(false);
     });
 
@@ -1343,11 +1354,17 @@ describe('resolveTier — 7C cappedFromColor (5ξ)', () => {
     expect(r.cappedFromColor).toBe('green');
   });
 
-  it('reviewer scope on Yellow version → no cap, cappedFromColor undefined', () => {
+  it('reviewer scope on Yellow version → scopeCapped:true, cappedFromColor undefined (8B)', () => {
+    // Round-8 8B (Anil R2): Yellow-base reviewer/architect now sets
+    // scopeCapped: true (cappedFromColor undefined — verdict wasn't lowered,
+    // just bounded). Summary's Scope-capped headline still counts only
+    // cappedFromColor === 'green' (Staff-IC pattern) so this Yellow-base
+    // case surfaces in the label but doesn't inflate the headline count.
     const r = resolveTier(versionTech(), item({ version: '17', scope: 'reviewer' }));
     expect(r.color).toBe('yellow');
-    expect(r.scopeCapped).toBe(false);
+    expect(r.scopeCapped).toBe(true);
     expect(r.cappedFromColor).toBeUndefined();
+    expect(r.label).toMatch(/capped — reviewer scope/);
   });
 
   it('operator scope → no cappedFromColor regardless of color', () => {
@@ -1399,6 +1416,90 @@ describe('resolveTier — 7C cappedFromColor (5ξ)', () => {
     expect(r.scopeCapped).toBe(true);
     expect(r.cappedFromColor).toBe('green');
     expect(r.recencyAdjusted).toBe(true);
+  });
+});
+
+/**
+ * Round-8 8B (Anil R2, "8α"): reviewer/architect scope on a *baseline-Yellow*
+ * tech now sets scopeCapped: true with cappedFromColor: undefined. Pre-8B
+ * the verdict passed through identical to a thin-coverage mid-engineer
+ * (Anil's Azure at 5/13 = 38% read the same as a mid Azure engineer who
+ * happens to know 5 services). Post-8B the label gets "(capped — architect
+ * scope)" so the recruiter sees scope was applied. Summary's Scope-capped
+ * headline still filters on cappedFromColor === 'green' (Staff IC pattern)
+ * so the Yellow-base case surfaces in the label but doesn't inflate the
+ * headline count.
+ */
+describe('resolveTier — 8B yellow-base architect/reviewer scope-bounded', () => {
+  it('architect scope on Yellow version → scopeCapped:true, cappedFromColor undefined, label suffix fires', () => {
+    const r = resolveTier(versionTech(), item({ version: '17', depth: 'working', scope: 'architect' }));
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBeUndefined();
+    expect(r.label).toMatch(/capped — architect scope/);
+  });
+
+  it('architect scope on Yellow version: NOT counted in Staff-IC headline (cappedFromColor === green) filter', () => {
+    // Summary.tsx filters scopeCappedCount on `cappedFromColor === 'green'`.
+    // This case has cappedFromColor undefined, so it correctly stays out of
+    // the Staff-IC count while still showing the label suffix.
+    const r = resolveTier(versionTech(), item({ version: '17', depth: 'working', scope: 'architect' }));
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBeUndefined();
+  });
+
+  it('reviewer scope on Red version still passes through with scopeCapped:false', () => {
+    // Red base — architect/reviewer scope doesn't pull a Red down further and
+    // surfacing "(capped)" on a Red would imply the candidate would have been
+    // higher without scope, which isn't honest for thin coverage.
+    const r = resolveTier(versionTech(), item({ version: '12', depth: 'working', scope: 'reviewer' }));
+    expect(r.color).toBe('red');
+    expect(r.scopeCapped).toBe(false);
+    expect(r.cappedFromColor).toBeUndefined();
+  });
+
+  it('checklist mode Yellow + architect → scopeCapped:true (Anil Azure 5/13 = 38% case)', () => {
+    const tech = checklistTech({
+      services: Array.from({ length: 13 }, (_, i) => ({ id: `s-${i}`, name: `S${i}` })),
+    });
+    const r = resolveTier(
+      tech,
+      item({
+        selectedServices: ['s-0', 's-1', 's-2', 's-3', 's-4'], // 5/13 = 38% Yellow
+        checklistTouched: true,
+        depth: 'deep',
+        scope: 'architect',
+      }),
+      { seniority: 'senior' }
+    );
+    expect(r.color).toBe('yellow');
+    expect(r.scopeCapped).toBe(true);
+    expect(r.cappedFromColor).toBeUndefined();
+    expect(r.label).toMatch(/capped — architect scope/);
+  });
+});
+
+/**
+ * Round-8 8A (Mei UI bugs): TechCard.tsx now passes seniority to resolveTier
+ * so the card badge matches the GuidancePanel verdict. The depth-note UI
+ * branches on depthDirection so junior+shallow's "lowered" verdict doesn't
+ * read as "credit given." These are UI-layer fixes; the scoring layer was
+ * already correct after 7D. Test reproduces what Assessment.tsx and
+ * TechCard.tsx should now both compute identically.
+ */
+describe('resolveTier — 8A seniority threading parity (Mei)', () => {
+  it('same item + seniority resolves identically across call sites', () => {
+    const baseItem = item({ version: '5.3', depth: 'shallow' });
+    // Whether the call comes from Assessment.tsx (always passes seniority)
+    // or TechCard.tsx (post-8A also passes seniority), the result must be
+    // identical for the same input. Pre-8A, TechCard dropped seniority and
+    // returned Green for Mei's TS 5.3 + shallow while the side panel
+    // returned Yellow.
+    const fromAssessment = resolveTier(versionTech(), baseItem, { seniority: 'junior' });
+    const fromTechCard = resolveTier(versionTech(), baseItem, { seniority: 'junior' });
+    expect(fromAssessment.color).toBe(fromTechCard.color);
+    expect(fromAssessment.label).toBe(fromTechCard.label);
+    expect(fromAssessment.depthDirection).toBe(fromTechCard.depthDirection);
   });
 });
 

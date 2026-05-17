@@ -54,7 +54,11 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
       { id: 'core-web-vitals', label: 'Core Web Vitals / performance budgets' },
       { id: 'design-system-ownership', label: 'Design system ownership' },
       { id: 'rsc-ssr', label: 'RSC / SSR / streaming patterns' },
-      { id: 'progressive-enhancement', label: 'Progressive enhancement' },
+      // Round-8 8E (Maya M1): `progressive-enhancement` was wrong-axis for the
+      // 2026 senior FE shops this chip-set targets (logged-in consumer fintech,
+      // internal tools, B2B SaaS — none lead with PE). Maya skipped it,
+      // volunteered "bundle-size budgets" unprompted. Senior FE signal in 2026.
+      { id: 'bundle-size-budgets', label: 'Bundle-size budgets + code-splitting discipline' },
       { id: 'visual-regression', label: 'Visual regression testing' },
     ],
   },
@@ -168,14 +172,33 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     id: 'data',
     name: 'Data Engineer',
     description: 'Pipelines, warehousing, streaming.',
-    techIds: ['python', 'sql', 'spark', 'dbt', 'databricks', 'kafka', 'airflow', 'postgresql'],
+    // Round-8 8D (Pooja F1): Snowflake was catalog (`technologies.json:1221`,
+    // 12-service checklist) but not preloaded. Every Snowflake DE ate a
+    // search-add step while every Databricks DE got a free card. Add as
+    // first-class preload alongside Databricks — many senior DEs span both.
+    techIds: ['python', 'sql', 'snowflake', 'spark', 'dbt', 'databricks', 'kafka', 'airflow', 'postgresql'],
+    // Round-8 8D (Pooja F4): DE owns the warehouse but typically *consumes*
+    // upstream Postgres + Kafka rather than operating them — same shape as
+    // round-5 5δ on the SA template. Without this, DE-stack Postgres/Kafka
+    // silently read as operator and over-credit verdicts.
+    techScopes: {
+      postgresql: 'reviewer',
+      kafka: 'reviewer',
+    },
+    // Round-8 8D (Pooja F2): chip-set missed 2026 senior-DE differentiators.
+    // Dropped `slowly-changing-dims` (niche; covered by Kimball) and
+    // `data-lakehouse` (redundant with medallion). Added `data-lineage` and
+    // `cdc-discipline` — Pooja volunteered both unprompted; recruiter had to
+    // free-text them. Reframed `data-contracts` with the source-table /
+    // schema-enforcement vocabulary US recruiters reach for (Pooja F5
+    // cross-cultural vocabulary mismatch).
     methodologyChips: [
       { id: 'kimball-modeling', label: 'Dimensional modeling (Kimball)' },
-      { id: 'data-lakehouse', label: 'Data lakehouse architecture' },
-      { id: 'data-contracts', label: 'Data contracts' },
-      { id: 'slowly-changing-dims', label: 'Slowly-changing dimensions (Type 2)' },
+      { id: 'data-contracts', label: 'Data contracts (source-table freshness + schema enforcement)' },
       { id: 'data-quality-slos', label: 'Data-quality SLOs' },
       { id: 'medallion-architecture', label: 'Medallion (bronze/silver/gold)' },
+      { id: 'data-lineage-openlineage', label: 'Data lineage (OpenLineage / dbt docs)' },
+      { id: 'cdc-discipline', label: 'CDC discipline (Debezium / source freshness)' },
     ],
   },
   {
@@ -280,12 +303,20 @@ export const ROLE_TEMPLATES: RoleTemplate[] = [
     name: 'Mobile — Cross-Platform',
     description: 'React Native / Flutter / Expo.',
     techIds: ['react-native', 'expo', 'flutter'],
+    // Round-8 8C (Diego F2-F4): the previous chip-set carried 3 quality defects.
+    // `code-sharing-strategy` referenced KMP — a competing-framework axis no
+    // RN-Expo dev would tick. `native-bridge-perf` used RN-specific "JS thread
+    // budget" terminology that doesn't apply to Flutter. OTA update governance
+    // and two-store release coordination — the two canonical cross-platform
+    // methodologies a 2026 senior cross-platform dev demonstrates — were missing
+    // entirely. Drop the wrong-axis + offline-first chips; add OTA + two-store;
+    // rename native-bridge-perf to vendor-neutral.
     methodologyChips: [
       { id: 'release-automation-xplat', label: 'Release automation (Fastlane / EAS Build / Codemagic)' },
-      { id: 'code-sharing-strategy', label: 'Code-sharing strategy (JS bridge / KMP / shared business logic)' },
+      { id: 'ota-update-governance', label: 'OTA update governance (Expo Updates / CodePush / EAS)' },
       { id: 'feature-flag-sdk', label: 'Feature flag SDK choice + rollout discipline' },
-      { id: 'offline-first-xplat', label: 'Offline-first / sync patterns' },
-      { id: 'native-bridge-perf', label: 'Native bridge / perf tuning + JS thread budget' },
+      { id: 'two-store-release-coordination', label: 'Two-store release coordination + rollout timing' },
+      { id: 'native-perf-tuning', label: 'Native perf tuning (frame budget, profiling, native modules)' },
       { id: 'platform-overrides', label: 'Platform-specific overrides + parity testing' },
     ],
   },
