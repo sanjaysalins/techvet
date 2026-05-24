@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import { ROLE_TEMPLATES } from '../data/roles';
 import { extractTechsFromJD, type ExtractedTech } from '../lib/jdExtractor';
-import { ArrowRight, FileSearch, FileText, Sparkles, Plus } from 'lucide-react';
+import { ArrowRight, FileSearch, FileText, Sparkles, Plus, Lock, Headphones, FileBarChart } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import TechSearch from '../components/TechSearch';
 import type { Technology } from '../types';
@@ -75,12 +75,16 @@ export default function Landing() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 md:py-14">
-      <div className="text-center mb-8">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold mb-6">
+          <Lock className="w-3.5 h-3.5" />
+          Internal recruiter tool · 100% in your browser
+        </div>
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-navy-900 dark:text-white">
           Vet developer skills <span className="text-brand">in minutes</span>
         </h1>
-        <p className="mt-3 text-sm md:text-base text-slate-600 dark:text-slate-300">
-          Paste a job description, or pick a role template. Everything runs in your browser.
+        <p className="mt-4 text-base md:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          Recruiter-led technical screening, end to end. Live guidance on every tech, color-coded verdicts, one-click PDF.
         </p>
       </div>
 
@@ -195,6 +199,67 @@ export default function Landing() {
           )}
         </>
       )}
+
+      <HowItWorks />
+    </div>
+  );
+}
+
+function HowItWorks() {
+  return (
+    <section className="mt-16 pt-10 border-t border-slate-200 dark:border-navy-700">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center mb-6">
+        How it works
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+        <Step
+          icon={<FileSearch className="w-5 h-5" />}
+          number="1"
+          title="Paste the JD"
+          body="We pre-fill the tech checklist. Search to add anything generic mentions miss."
+        />
+        <Step
+          icon={<Headphones className="w-5 h-5" />}
+          number="2"
+          title="Score on the call"
+          body="Type version + depth as you talk. Live colour-coded guidance on every tech."
+        />
+        <Step
+          icon={<FileBarChart className="w-5 h-5" />}
+          number="3"
+          title="Share the PDF"
+          body="One-click export with verdicts grouped by tier. The hiring manager will actually read it."
+        />
+      </div>
+    </section>
+  );
+}
+
+function Step({
+  icon,
+  number,
+  title,
+  body,
+}: {
+  icon: React.ReactNode;
+  number: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="card p-5">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 rounded-lg bg-brand/10 text-brand flex items-center justify-center">
+          {icon}
+        </div>
+        <div className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+          STEP {number}
+        </div>
+      </div>
+      <div className="font-semibold text-navy-900 dark:text-white">{title}</div>
+      <div className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+        {body}
+      </div>
     </div>
   );
 }

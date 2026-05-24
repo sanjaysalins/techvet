@@ -1,12 +1,13 @@
 # TechVet
 
-A 100% client-side, offline-first internal tool for non-technical recruiters
-to do fast, structured technical screening of developer / solution architect
-candidates.
+A 100% client-side, offline-first tool built for recruiters who screen
+developer and solution-architect candidates. Recruiter-led technical
+screening, end to end — live guidance on every tech, color-coded verdicts,
+one-click PDF.
 
 - No backend, no database, no accounts.
 - All data stays in the browser. Optional in-browser draft save.
-- One-click PDF report.
+- One-click PDF report the hiring manager will actually read.
 
 ## Run locally
 
