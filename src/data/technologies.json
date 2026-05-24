@@ -1128,6 +1128,7 @@
     "id": "mysql",
     "name": "MySQL",
     "category": "Database",
+    "vetMode": "hybrid",
     "currentVersion": "9.3",
     "versionTiers": [
       {
@@ -1147,13 +1148,29 @@
         "color": "red"
       }
     ],
+    "services": [
+      { "id": "schema-design", "name": "Schema design (normalization / FK design / migration discipline)" },
+      { "id": "indexing", "name": "Indexing strategy (B-tree / composite / covering / FULLTEXT)" },
+      { "id": "query-planning", "name": "Query planning (EXPLAIN / performance_schema)" },
+      { "id": "innodb-tuning", "name": "InnoDB tuning (buffer pool / log size / page size)" },
+      { "id": "replication", "name": "Replication (async / semi-sync / GTID / group replication)" },
+      { "id": "backup-pitr", "name": "Backup + PITR (mysqldump / xtrabackup / binlog replay)" },
+      { "id": "partitioning", "name": "Partitioning (range / list / hash)" },
+      { "id": "json-columns", "name": "JSON columns (JSON path operators / generated columns / functional indexes)" },
+      { "id": "transactions-isolation", "name": "Transactions + isolation levels (READ COMMITTED / REPEATABLE READ / gap locks)" },
+      { "id": "connection-pooling", "name": "Connection pooling (ProxySQL / app-side pool sizing)" },
+      { "id": "stored-procedures", "name": "Stored procedures + triggers + views" },
+      { "id": "user-management", "name": "User management + grants (least-privilege / role-based grants 8.0+)" }
+    ],
     "enterpriseStillUsed": true,
     "suggestedProbes": [
-      "InnoDB tuning?",
-      "Read replicas / failover?",
-      "Familiar with MySQL 8 features (window functions, CTEs)?"
+      "Walk me through an EXPLAIN you debugged — what changed after the fix?",
+      "Replication topology — async, semi-sync, or group replication?",
+      "InnoDB tuning — buffer pool sizing on your prod box?",
+      "Backup + PITR — xtrabackup or logical?"
     ],
-    "guidanceForUnknownVersion": "Yellow — MySQL 5.7 vs 8 is a meaningful gap."
+    "guidanceForUnknownVersion": "Yellow — MySQL 5.7 vs 8 is a meaningful gap.",
+    "checklistGuidance": "The services axis captures depth-of-operation independent from version era. App-developers tick 4-6 services (schema / indexing / JSON / query planning). DBAs / data engineers tick 9-12 (everything plus replication topology + backup + InnoDB tuning)."
   },
   {
     "id": "mongodb",
@@ -1194,6 +1211,7 @@
     "id": "redis",
     "name": "Redis / Valkey",
     "category": "Database",
+    "vetMode": "hybrid",
     "currentVersion": "8",
     "versionTiers": [
       {
@@ -1217,13 +1235,29 @@
         "color": "red"
       }
     ],
+    "services": [
+      { "id": "data-structures", "name": "Data structures (strings / hashes / lists / sets / sorted sets / bitmaps / HyperLogLog)" },
+      { "id": "persistence", "name": "Persistence (RDB snapshots / AOF / hybrid trade-offs)" },
+      { "id": "replication", "name": "Replication (replica chains / read scaling / failover)" },
+      { "id": "cluster-mode", "name": "Cluster mode (hash slots / cross-slot / resharding)" },
+      { "id": "sentinel", "name": "Sentinel (HA without cluster)" },
+      { "id": "streams", "name": "Streams (XADD / consumer groups / XCLAIM)" },
+      { "id": "pubsub", "name": "Pub/Sub (channels / patterns)" },
+      { "id": "lua-scripting", "name": "Lua scripting + Functions (atomicity / EVAL / function library)" },
+      { "id": "eviction-memory", "name": "Eviction policies + memory mgmt (LRU / LFU / allkeys vs volatile / maxmemory)" },
+      { "id": "transactions-pipelining", "name": "Pipelining + transactions (MULTI / EXEC / WATCH optimistic locking)" },
+      { "id": "security-acl", "name": "TLS + ACL (per-user permissions / per-key patterns)" },
+      { "id": "modules", "name": "Modules / extensions (RedisJSON / RediSearch / RedisBloom / Valkey equivalents)" }
+    ],
     "enterpriseStillUsed": true,
     "suggestedProbes": [
-      "Persistence — RDB vs AOF trade-offs?",
-      "Cluster mode?",
-      "Awareness of Valkey fork after license change?"
+      "Persistence — RDB vs AOF trade-offs in your shop?",
+      "Cluster mode or Sentinel — when did you reach for which?",
+      "Streams vs Pub/Sub — chosen which for what use case?",
+      "Awareness of Valkey fork after the license change?"
     ],
-    "guidanceForUnknownVersion": "Yellow — probe usage patterns."
+    "guidanceForUnknownVersion": "Yellow — probe usage patterns.",
+    "checklistGuidance": "The services axis captures depth-of-operation independent from version era. Cache-only users tick 2-3 services (data structures / eviction / maybe persistence). Platform / data engineers tick 8-12 (replication topology + cluster mode + Lua + ACL + Streams)."
   },
   {
     "id": "elasticsearch",
@@ -1290,6 +1324,7 @@
     "id": "docker",
     "name": "Docker",
     "category": "DevOps",
+    "vetMode": "hybrid",
     "currentVersion": "29",
     "versionTiers": [
       {
@@ -1318,12 +1353,28 @@
         "note": "Pre-18 Docker — long EOL; supply-chain risk."
       }
     ],
-    "suggestedProbes": [
-      "Multi-stage builds?",
-      "Image size optimization?",
-      "Docker Compose v2 / Buildx?"
+    "services": [
+      { "id": "dockerfile-multistage", "name": "Dockerfile + multi-stage builds (build-cache discipline / FROM scratch)" },
+      { "id": "image-optimization", "name": "Image optimization (distroless / Alpine / layer ordering / .dockerignore)" },
+      { "id": "buildkit", "name": "BuildKit features (secrets / SSH forwarding / parallel stages / heredoc)" },
+      { "id": "buildx-multiarch", "name": "Buildx + multi-arch (cross-compile / QEMU / docker-container driver)" },
+      { "id": "compose-v2", "name": "Docker Compose v2 (profiles / depends_on healthchecks / override files)" },
+      { "id": "networking", "name": "Networking (bridge / host / overlay / user-defined networks)" },
+      { "id": "volumes-storage", "name": "Volumes + bind mounts (named volumes / tmpfs / volume drivers)" },
+      { "id": "registries", "name": "Image registries (Docker Hub / ECR / GHCR / private registries / pull-through cache)" },
+      { "id": "image-signing", "name": "Image signing + SBOM (cosign / provenance attestation / Content Trust era)" },
+      { "id": "runtime-security", "name": "Runtime security (seccomp / AppArmor / capabilities / rootless mode)" },
+      { "id": "healthchecks-restart", "name": "Healthchecks + restart policies (HEALTHCHECK directive / orchestrator integration)" },
+      { "id": "swarm-vs-k8s", "name": "Docker Swarm vs Kubernetes (when / why / migration history)" }
     ],
-    "guidanceForUnknownVersion": "Versionless in practice — probe usage."
+    "suggestedProbes": [
+      "Multi-stage builds — what's a non-trivial one you wrote?",
+      "Image size — biggest reduction you've shipped?",
+      "Compose v2 / Buildx — multi-arch builds in CI?",
+      "Image signing or SBOM in your release pipeline?"
+    ],
+    "guidanceForUnknownVersion": "Versionless in practice — probe usage.",
+    "checklistGuidance": "The services axis captures depth-of-operation independent from version era. App-developers tick 2-4 services (Dockerfile / Compose / maybe networking). Platform / DevOps engineers tick 8-12 (BuildKit + Buildx multi-arch + signing + runtime security + registry strategy)."
   },
   {
     "id": "kubernetes",

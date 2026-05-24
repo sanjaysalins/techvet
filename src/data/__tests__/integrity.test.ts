@@ -1067,6 +1067,30 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(serviceIds.has('replication')).toBe(true);
   });
 
+  it('Round-19 follow-up: MySQL / Redis / Docker converted to hybrid mode', () => {
+    // Pattern extension after K8s / Postgres / Storybook landed hybrid:
+    // MySQL = Postgres-shape (app-dev vs DBA depth), Redis = depth + service-
+    // types (cache-only vs platform), Docker = build/run/orchestrate (app-dev
+    // vs platform-eng). Same MIN/weakest-link semantics as the prior three.
+    const cases: Array<{ id: string; minServices: number; loadBearing: string[] }> = [
+      { id: 'mysql', minServices: 10, loadBearing: ['schema-design', 'indexing', 'replication'] },
+      { id: 'redis', minServices: 10, loadBearing: ['data-structures', 'persistence', 'cluster-mode'] },
+      { id: 'docker', minServices: 10, loadBearing: ['dockerfile-multistage', 'buildkit', 'image-signing'] },
+    ];
+    for (const { id, minServices, loadBearing } of cases) {
+      const tech = TECH_BY_ID.get(id);
+      expect(tech, `${id} missing — catalog drift`).toBeDefined();
+      expect(tech!.vetMode, `${id} must be hybrid`).toBe('hybrid');
+      expect((tech!.services ?? []).length, `${id} hybrid needs ≥${minServices} services`).toBeGreaterThanOrEqual(minServices);
+      expect((tech!.versionTiers ?? []).length, `${id} hybrid keeps version tiers`).toBeGreaterThanOrEqual(3);
+      expect(tech!.checklistGuidance, `${id} hybrid needs checklistGuidance for recruiter context`).toBeDefined();
+      const serviceIds = new Set((tech!.services ?? []).map(s => s.id));
+      for (const sid of loadBearing) {
+        expect(serviceIds.has(sid), `${id} missing load-bearing service '${sid}'`).toBe(true);
+      }
+    }
+  });
+
   it('Round-12: Kubernetes is hybrid mode with version tiers AND services (Sven R5 + Lars R9-10)', () => {
     // K8s converted from version-mode-only to hybrid mode so Helm-consumers
     // (Sven shape) get a services-channel verdict and deep-platform-engineers
