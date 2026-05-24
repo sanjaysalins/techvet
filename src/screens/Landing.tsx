@@ -1,13 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import { ROLE_TEMPLATES } from '../data/roles';
-import { ArrowRight, FileText, Shield, Zap, Lock } from 'lucide-react';
+import { ArrowRight, FileText, FileSearch, Shield, Zap, Lock } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import JDExtractModal from '../components/JDExtractModal';
 
 export default function Landing() {
   const navigate = useNavigate();
   const { reset, addTech, setMeta, loadDraft } = useAssessment();
   const [hasDraft, setHasDraft] = useState(false);
+  const [jdModalOpen, setJdModalOpen] = useState(false);
 
   useEffect(() => {
     setHasDraft(!!localStorage.getItem('techvet-draft'));
@@ -36,6 +38,18 @@ export default function Landing() {
     if (loadDraft()) navigate('/assess');
   }
 
+  function applyJDExtraction(techIds: string[]) {
+    reset();
+    setMeta({
+      role: 'Custom (from JD)',
+      startedAt: new Date().toISOString(),
+      templateId: 'custom',
+    });
+    techIds.forEach(t => addTech(t));
+    setJdModalOpen(false);
+    navigate('/assess');
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 md:py-20">
       <div className="text-center max-w-3xl mx-auto mb-16">
@@ -59,6 +73,12 @@ export default function Landing() {
             className="btn-primary text-base px-7 py-3.5"
           >
             Start New Assessment <ArrowRight className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setJdModalOpen(true)}
+            className="btn-secondary text-base px-7 py-3.5"
+          >
+            <FileSearch className="w-4 h-4" /> Paste a JD
           </button>
           {hasDraft && (
             <button onClick={resumeDraft} className="btn-secondary text-base px-7 py-3.5">
@@ -94,6 +114,12 @@ export default function Landing() {
           ))}
         </div>
       </div>
+
+      <JDExtractModal
+        isOpen={jdModalOpen}
+        onClose={() => setJdModalOpen(false)}
+        onApply={applyJDExtraction}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-16">
         <Feature
