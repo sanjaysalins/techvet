@@ -23,14 +23,33 @@ Open http://localhost:5173.
 npm run build
 ```
 
-This produces a static `dist/` folder. Drag it to any free host:
+This produces a static `dist/` folder. The app uses `HashRouter` in
+production (URLs like `/#/assess`) so it works on any static host without
+SPA redirect rules.
 
-- **Cloudflare Pages**: connect repo or upload `dist/`.
-- **GitHub Pages**: push `dist/` to the `gh-pages` branch.
-- **Netlify / Vercel hobby**: drag-and-drop `dist/`.
+### Deploy to Netlify (recommended — free tier)
 
-The app uses relative paths (`base: './'`) and `HashRouter` in production, so
-it works at any subpath without server config.
+The repo is configured for one-click Netlify deploys:
+
+- `netlify.toml` — build command + publish dir + Node version
+- `.nvmrc` — pins Node 18 (matches the toml)
+
+To set up the live site:
+
+1. Push to GitHub (`git push`).
+2. On netlify.com → **Add new site → Import an existing project → GitHub**.
+3. Pick this repo. Build settings auto-detect from `netlify.toml`.
+4. **Deploy site**. First build takes ~1–2 minutes.
+5. Every subsequent `git push` to `main` redeploys automatically.
+
+Free tier covers everything we use: static hosting, HTTPS, 100 GB
+bandwidth/month, 300 build minutes/month, optional custom domain.
+
+### Other deploy targets
+
+- **Cloudflare Pages**: connect repo (similar flow, also free).
+- **GitHub Pages**: push `dist/` to `gh-pages` branch.
+- **Any static host**: upload `dist/`.
 
 ## Tech stack
 

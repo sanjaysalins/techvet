@@ -1,0 +1,29 @@
+# Netlify build configuration for TechVet.
+#
+# This file pins the build command, publish directory, and Node version
+# so deploys are reproducible regardless of any Netlify UI changes or
+# default-version drift. Edit in source rather than in the Netlify UI.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Match local .nvmrc — keep both in lockstep. Vite + the project's
+  # devDependencies are tested against Node 18 LTS.
+  NODE_VERSION = "18"
+  # Use npm ci-style install (deterministic from package-lock.json).
+  # NPM_FLAGS unset means `npm install` runs; this is fine but slower.
+  # If install time matters later, set NETLIFY_USE_PNPM or pre-cache.
+
+# SPA fallback — only relevant if you ever switch from HashRouter to
+# BrowserRouter. HashRouter doesn't need this because every URL the
+# server sees is just "/". Left commented for the future.
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+
+# Cost-control reminder: we deliberately don't enable Functions,
+# Identity, Forms, or Analytics. The site is 100% static. Adding any of
+# those introduces free-tier caps that could surprise.
