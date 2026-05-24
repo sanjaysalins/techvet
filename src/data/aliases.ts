@@ -30,14 +30,14 @@ export const TECH_ALIASES: Record<string, string[]> = {
   vue: ['vue.js', 'vuejs'],
   react: ['react.js', 'reactjs'],
   angular: ['angularjs', 'angular.js'],
-  'react-native': ['react native'],
+  'react-native': ['react native', 'react-native'],
   terraform: ['tf', 'opentofu', 'tofu'],
   docker: ['dockerfile', 'docker compose', 'docker-compose'],
   'github-actions': ['github actions', 'gha'],
   'gitlab-ci': ['gitlab ci', 'gitlab pipelines'],
   aws: ['amazon web services'],
   azure: ['microsoft azure'],
-  gcp: ['google cloud', 'google cloud platform'],
+  gcp: ['gcp', 'google cloud', 'google cloud platform'],
   csharp: ['c#'],
   cpp: ['c++'],
   dotnet: ['.net', 'asp.net', 'asp.net core', '.net core'],
@@ -57,6 +57,7 @@ export const TECH_ALIASES: Record<string, string[]> = {
     'chromadb',
     'chroma db',
     'milvus',
+    'pgvector',
   ],
   'oauth-identity': ['oauth', 'oauth2', 'oidc', 'openid connect'],
   pytorch: ['torch'],
@@ -70,4 +71,17 @@ export const TECH_ALIASES: Record<string, string[]> = {
   grpc: ['grpc protocol'],
   fastapi: ['fast api'],
   'spring-boot': ['spring boot', 'springboot'],
+  // Round-13 F-W1: vendor-prefixed catalog names ("Apache Kafka",
+  // "HashiCorp Vault") never matched a JD's bare form because
+  // nameSearchTerms doesn't whitespace-split. Bare aliases close the gap.
+  kafka: ['kafka'],
+  spark: ['spark'],
+  airflow: ['airflow'],
+  flink: ['flink'],
+  vault: ['vault', 'hcp vault'],
+  // Round-13 sim 03 AI/ML: hyphenated variant of "Pydantic AI".
+  'pydantic-ai': ['pydantic-ai'],
+  // Round-13 sim 01 fintech: full word "OpenTelemetry" wasn't matched by
+  // the catalog's "OTel" search term (word-boundary lookbehind).
+  observability: ['opentelemetry'],
 };

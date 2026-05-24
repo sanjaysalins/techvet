@@ -99,3 +99,100 @@ describe('extractTechsFromJD — Phase 1 rules-based extraction', () => {
     expect(ids(jd).length).toBeGreaterThanOrEqual(6);
   });
 });
+
+describe('extractTechsFromJD — Round-13 validation regressions', () => {
+  it('F-P1: "JUnit (Java)" no longer false-positives on JD mentioning Java', () => {
+    // Pre-fix: catalog name "JUnit (Java)" split into ["JUnit", "Java"],
+    // so any JD mentioning Java extracted JUnit. Fix: paren contents
+    // without `/` are stripped (disambiguators / expansions / hints).
+    const jd = 'Backend in Java 21 with Spring Boot.';
+    const r = ids(jd);
+    expect(r).toContain('java');
+    expect(r).not.toContain('junit');
+  });
+
+  it('F-P1: paren-strip preserves alternatives list when `/` is inside', () => {
+    // "Observability (Prometheus / Grafana / OTel)" — the alternatives
+    // are useful search terms; must NOT be dropped.
+    const r = ids('We use Prometheus and Grafana for monitoring.');
+    expect(r).toContain('observability');
+  });
+
+  it('F-P1: paren-stripped disambiguators no longer match', () => {
+    // "Expo (React Native)" — pre-fix, JD mentioning "React Native" would
+    // extract both `expo` (via the paren content) AND `react-native`.
+    // Post-fix, only `react-native` matches (Expo's name became just "Expo").
+    const r = ids('We ship a React Native app.');
+    expect(r).toContain('react-native');
+    expect(r).not.toContain('expo');
+  });
+
+  it('F-W1: bare "Kafka" / "Flink" / "Vault" (vendor prefix stripped) match', () => {
+    // Pre-fix: catalog name "Apache Kafka" / "Apache Flink" /
+    // "HashiCorp Vault" never matched JDs writing the bare form,
+    // because nameSearchTerms doesn't whitespace-split.
+    expect(ids('We use Kafka 3.7 for messaging.')).toContain('kafka');
+    expect(ids('Stream processing via Flink.')).toContain('flink');
+    expect(ids('Secrets in Vault.')).toContain('vault');
+    expect(ids('Batch via Airflow.')).toContain('airflow');
+    expect(ids('Spark analytics jobs.')).toContain('spark');
+  });
+
+  it('F-W1: full vendor-prefixed forms still match', () => {
+    expect(ids('We use Apache Kafka.')).toContain('kafka');
+    expect(ids('HashiCorp Vault for secrets.')).toContain('vault');
+  });
+
+  it('AI/ML quick wins: "pgvector" and hyphenated "Pydantic-AI" match', () => {
+    expect(ids('We considered pgvector before settling on Pinecone.')).toContain('vector-db');
+    expect(ids('Built our agents in Pydantic-AI.')).toContain('pydantic-ai');
+    expect(ids('Built our agents in Pydantic AI.')).toContain('pydantic-ai');
+  });
+
+  it('fintech: "OpenTelemetry" hits observability', () => {
+    expect(ids('OpenTelemetry instrumentation across all services.')).toContain('observability');
+  });
+
+  it('GCP: bare "GCP" abbreviation matches even after paren-strip', () => {
+    // Catalog name "Google Cloud Platform (GCP)" — paren-strip drops
+    // "GCP" from search terms. Aliases recover.
+    expect(ids('Hosted on GCP with Cloud Run.')).toContain('gcp');
+  });
+
+  it('AWS: paren-stripped "Amazon Web Services" recovered via alias', () => {
+    // Catalog "AWS (Amazon Web Services)" — paren-strip drops "Amazon
+    // Web Services" from search terms. Aliases recover.
+    expect(ids('We run on Amazon Web Services.')).toContain('aws');
+    expect(ids('AWS EKS for orchestration.')).toContain('aws');
+  });
+
+  it('F3: identifier-style tokens with `_` no longer false-positive on short language names', () => {
+    // Pre-fix: "go_router" (Flutter library) extracted Go because the
+    // word boundary treated `_` as non-alphanumeric. Now boundary
+    // excludes `[a-z0-9_]`.
+    expect(ids('Flutter app using go_router for navigation.')).not.toContain('go');
+    expect(ids('Flutter app using go_router; written in Go.')).toContain('go');
+  });
+
+  it('F4: "React" inside "React Native" is suppressed when both could match', () => {
+    // Pre-fix: a JD mentioning ONLY React Native still extracted React
+    // because "React" matched inside "React Native". Span suppression
+    // drops the contained match.
+    const r = ids('We ship a React Native app to iOS and Android.');
+    expect(r).toContain('react-native');
+    expect(r).not.toContain('react');
+  });
+
+  it('F4: bare React + React Native in the same JD both extract', () => {
+    // The suppression is per-match-instance, not per-tech. A standalone
+    // "React" should still extract react even when "React Native" also
+    // appears.
+    const r = ids('Built with React for web and React Native for mobile.');
+    expect(r).toContain('react-native');
+    expect(r).toContain('react');
+  });
+
+  it('F4: hyphenated "react-native" form (npm package shape) matches', () => {
+    expect(ids('Uses the react-native package directly.')).toContain('react-native');
+  });
+});
