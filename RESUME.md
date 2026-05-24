@@ -1,95 +1,105 @@
-# Resume point — TechVet (2026-05-17 EOD — GitHub repo live + 6 AI frameworks + Python "3" fix)
+# Resume point — TechVet (2026-05-24 EOD — backlog cleared + JD-extraction Phase 1 shipped + Landing redesigned)
 
 ---
 
-## 👋 Pick up here tomorrow
+## 👋 Pick up here
 
-**Repo state — clean as of 2026-05-17 ~20:40.**
+**Repo state — clean as of 2026-05-24 ~19:20.**
 
-- **🌐 GitHub:** [`github.com/sanjaysalins/techvet`](https://github.com/sanjaysalins/techvet) — `main` at `ae9e69b`. Standard push workflow: `cd ~/devtools/techvet && git push`.
-- **Working dir:** `~/devtools/techvet/` — fresh clone (was previously a sub-tree of a parent `devtools/` git repo tracking unrelated `spinalelements`; restructured via `git subtree split` to publish the 94 commits as a standalone repo with content at root). Old `techvet-old/` backup deleted.
-- Working tree clean. **12 ship batches today** across rounds 8-12 of adversarial validation + manual-test fixes (Python "3" + 6 AI frameworks).
-- `npx tsc -b` clean. `npm test` → **313/313 pass** (+38 today). `npx vite build` clean (~1.32 MB / ~390 KB gzipped). Catalog **128 entries** / **15 templates**.
-- **Saturation curve across rounds 8-12:** 8: 2/4/0 → 9: 5/1/0 → 10: 5/1/0 → 11: 4/0/0 → 12: 4/1/0 (the 1 was Theo Custom AWS filter bug — closed in batch 18 same cycle).
+- **🌐 GitHub:** [`github.com/sanjaysalins/techvet`](https://github.com/sanjaysalins/techvet) — `main` at `ef1c83a`. Standard push workflow: `cd ~/devtools/techvet && git push`.
+- Working tree clean. **9 commits today**, in two waves: morning was the 2026-05-17 backlog mop-up; afternoon-evening was the JD-extraction feature build, Round-13 validation, and the Landing redesign.
+- `npx tsc -b` clean. `npm test` → **341/341 pass** (+14 today). `npx vite build` clean (~1.33 MB / ~390 KB gzipped). Catalog **128 entries** / **16 role templates** / **6 hybrid entries**.
+- **New top-level feature:** paste a JD on the landing page → rules-based extractor pre-fills the assessment checklist → recruiter reviews + can search-add anything generic mentions ("AI", "Cloud") missed → load into assessment. Built, validated across 6 personas, then promoted to live UI.
+- **Disk-corruption recovery handled at start of session.** May 17 EOD commit `a27e181` was zero-byte locally (3 loose objects + origin/main ref) — but had been pushed to GitHub before the crash. Recovery: `git fetch` + ref reset + `find -size 0 -delete`. No work lost. Snapshot backup at `~/devtools/techvet-backup-20260524-155809/` — can delete once confident.
 
-**What shipped today (high-level):**
+**What shipped today (newest → oldest, 9 commits):**
 
-1. **Rounds 8-12 of adversarial validation** — 5 rounds + 22 sim agents + ~125k words of session notes across ~67 sessions. Saturation marker reached.
-2. **Hybrid `vetMode`** — new scoring mode combining version-tier + coverage-tier via MIN/weakest-link. Used by K8s, Postgres, Storybook. Lets Helm-consumers / app-developers / story-writers read distinctly from deep operators / DBAs / design-system owners on the same catalog entry.
-3. **13 round-11 catalog adds** + 6 **AI engineering frameworks** added late: DevOps (Argo Rollouts / Karpenter / Backstage / Unleash / Crossplane / cosign-sigstore / Kyverno / Port), AI/ML (Braintrust / Evidently / Feast / Langfuse / LangGraph / LlamaIndex / Agno / Pydantic AI / DSPy), QA (Pact / Cucumber), iOS (UIKit), Cloud (GCP Identity Platform service).
-4. **UI polish:** J4 (hide Scope dropdown on junior), J5 (seniority-aware Summary framing), 8A (card-panel verdict parity), 8B (Yellow-base architect scope-bounded), 9B (recruiter-friendlier capped-scope copy), 9C (tautological softener label suppressed).
-5. **AI/ML productionization scope override** (Esme): AI/ML template flips PyTorch / LLM-API-SDK / Vector-DB to operator-default (vs catalog K2 author-default for library-author shape).
-6. **Custom flow AWS filter** + serviceTagFilter threading fix (Theo) — render-side filter now matches scoring denominator (was internally contradictory "3/15 in checklist but 3/26 in label" pre-batch-18).
-7. **Python "3" bare-major bug fix** — typing bare "3" used to fall to Red; now hits a new Yellow tier with "ask for the minor version" guidance.
+*Landing redesign + JD extraction (afternoon → evening):*
+
+9. **`ef1c83a` Promote tabbed Landing to production; remove preview routes + modal** — Simple/Advanced tabs are now the Landing. Default tab = Simple (paste JD → results with "Missing something?" search → load). Advanced tab = the 16 role-template grid + Resume Draft. Removed: `src/screens/preview/` (4 candidate layouts), `src/components/JDExtractModal.tsx`, `/preview/*` routes. Net diff: −850/+24 lines.
+
+8. **`8c71908` Landing redesign — 3 layout previews + JD search-add-missing step + azure fix** — User feedback: Landing felt over-complicated. Built 3 candidate layouts side-by-side at `/preview/{flow,tabs,cards}` for visual comparison. While testing, user pasted a JD with "Azure" / "Cloud" / "AI" — root-caused as the F-W1 vendor-prefix bug recurring for "Microsoft Azure" (also caught Tailwind CSS + Oracle Database). Added a "Missing something?" search-add panel inside the tabs preview's results view; items added via search render with "added manually" tag vs `matched: …` evidence.
+
+7. **`662f679` Round-13 validation artifacts** — 6-agent multi-persona validation of JD extraction Phase 1. 4 fixtures in round-1 (backend / FE / AI-ML / DevOps), 2 added in round-2 after fixes (mobile / AppSec). Each agent inhabits a recruiter persona, grades hits/FPs/FNs, writes F1/F2/… findings. Final distribution post-fix: **6 Safe / 0 At-risk / 0 Unworkable**. Artifacts at `simulations/rounds/2026-05-24-round-13-jd-extraction-phase1/` — fixtures, results, 6 session notes, run-extraction.ts harness, cross-cut synthesis.
+
+6. **`00696a2` JD extractor: 4 rules-layer fixes from Round-13 validation** — F-W1 (Apache Kafka/Spark/Airflow/Flink + HashiCorp Vault bare-form FNs); F-P1 (paren-split FPs like `"JUnit (Java)"` extracting JUnit on any Java mention); **F3** (`go_router` Flutter library FP'd Go because regex boundary treated `_` as non-alphanumeric); **F4** (compound-alias contained-match: bare "React" extracted from inside "React Native"). Also bundles pgvector/Pydantic-AI-hyphen/OpenTelemetry alias quick wins. Tests 327 → 340.
+
+5. **`fe993da` Phase 1: JD-extraction modal (rules-based)** — first cut. `src/lib/jdExtractor.ts` (word-boundary regex match against catalog `name` + alias map), `src/data/aliases.ts` (~40 abbreviations: K8s/Postgres/Valkey/OpenTofu etc.), `src/components/JDExtractModal.tsx` (later removed), `src/screens/Landing.tsx` (Paste-a-JD CTA). 11 unit tests. Browser-verified end-to-end.
+
+*Morning backlog mop-up (4 commits from 2026-05-17's smaller-items list):*
+
+4. **`fca488f` Convert MySQL / Redis / Docker to hybrid vetMode** — extends K8s/Postgres/Storybook pattern. 12 services each. MySQL mirrors Postgres (app-dev vs DBA); Redis splits cache-only vs platform/data-eng; Docker splits app-dev (Dockerfile/Compose) vs platform-eng (BuildKit/Buildx-multi-arch/signing/runtime security).
+
+3. **`20a44dd` Strip persona-leak from langchain + aws checklistGuidance + regression guard** — 2 user-facing strings had "Round-4 Bashir validation:" / "Round-4:" build-time metadata. Rewrote to keep substantive content. Added integrity test scanning name / note / guidance / checklistGuidance / service-names / labels / suggested-probes for Round-N / sim-NN / M<N>-round patterns. Code comments excluded.
+
+2. **`6683e8f` Bare-major audit — Go "1" / Kotlin "1" / PHP "7" → Yellow (not Red)** — same shape as Python "3" fix. Audit determined Rust "1" already Yellow (no fix needed), TS "5" → Good 4.9+ defensible. JS "ES6" → Red is different bug shape (year-vs-edition alias); deferred.
+
+1. **`abba961` Add MIT LICENSE** — closes "if you plan to share externally" item from 05-17.
 
 **What's next (in priority order):**
 
-1. **Stop running validation rounds.** All deferred structural items are shipped. New rounds would mostly confirm prior wins. If you do run one, pick a never-validated terrain slice (Game-engine / Embedded / Blockchain — explicitly out-of-scope per CLAUDE.md "Focused" scope) or a never-validated persona axis (panel format, async-CV-only, contractor-shape, bootcamp-fresh-grad).
+1. **Phase 2: in-browser LLM extraction.** The biggest deferred feature. Convergent recommendation across all 6 Round-13 agents: catches context-blind FPs (TensorFlow from "Not relevant:", Java from "Hands-off the keyboard:", Spring Boot from "you won't write X"), version extraction ("Java 21" → pre-fill card), sub-service pre-ticking ("AWS EKS/RDS/S3" → tick on AWS hybrid card), sense disambiguation ("not just notebooks" → don't flag Jupyter). Architecture per `project_deployment_constraints` memory: WebLLM in-browser (preserves 100% client-side), Phi-3.5-mini or Llama-3.2-3B (~2 GB first-load, cached). Plan in chat history (Phase 2 ~2 days from extractor today). Rules layer becomes the deterministic floor; LLM augments.
 
-2. **Smaller items still open** (each <half-day):
-   - **Add a `LICENSE`** to the GitHub repo if you plan to share it externally. MIT is the typical pick for client-side internal tools; if keeping private, skip.
-   - **Hybrid-mode depth-lift seniority gate** (Lina R12 F11) — design question. `resolveChecklistTier` requires `seniority !== 'junior'` for 6D depth-lift; `resolveHybridTier` doesn't. Should hybrid match for consistency? Verify with a junior+hybrid sim.
-   - **`adjustForDepth` on combined-base vs per-channel** (Sven R12 F9) — currently hybrid runs depth-lift on the combined-base color. The honest alternative is per-channel (depth-lift version OR coverage independently). Needs a Helm-consumer + self-claimed-deep sim.
-   - **UIKit `enterpriseStillUsed` root-vs-tier** (Kenji R11 F2/F3) — design question (root flag fires on every Yellow band incl tutorial-grade thin coverage; tier-level pattern tighter).
-   - **Cucumber `currentVersion` drop UX inconsistency** (batch 12 carryover) — the card no longer shows "current stable: X" since the entry has no unified version. Minor.
-   - **Round-12 sim 02 Lina F9 cross-check:** grep audit for any other catalog `checklistGuidance` strings still carrying persona-leak ("Round-X / Maya M2" etc).
-   - **Bare-major audit on other languages** — Python "3" is fixed; similar bug could exist on TypeScript ("5"), Go ("1"), Rust ("1"). Quick audit + add Yellow "ask for minor" tiers where needed.
+2. **Three design questions** (each <half-day; want your judgement, not auto-sim resolution):
+   - **Hybrid-mode depth-lift seniority gate** (Lina R12 F11) — `resolveChecklistTier` gates 6D depth-lift on `seniority !== 'junior'`; `resolveHybridTier` doesn't. Now applies to **6 hybrid entries** (K8s/Postgres/Storybook/MySQL/Redis/Docker).
+   - **`adjustForDepth` on combined-base vs per-channel** (Sven R12 F9) — currently combined. Honest alternative is per-channel.
+   - **UIKit `enterpriseStillUsed` root-vs-tier** (Kenji R11 F2/F3) — root flag fires on every Yellow band; tier-level pattern tighter.
 
-3. **Bigger items genuinely deferred** (each half-day to day):
-   - **Per-card stack-focus picker** for Custom flow (more granular than the round-17 'general' filter — recruiter picks lens per-card via chip-bar). Defer.
-   - **Hybrid mode for more catalog entries** — rounds 12-14 covered K8s / Postgres / Storybook. Candidates: MySQL (similar to Postgres), Redis (depth+services), Docker (multi-stage / Compose / orchestration). Each ~30min if pattern stays clean.
+3. **Catalog gaps surfaced in Round-13** (each ~10-20 min to add):
+   - **High priority:** Chromatic (FE design-system staple — 3 mentions in JD-02), Datadog (observability sub-service only; Datadog-only JDs extract nothing), Pydantic (the library, distinct from Pydantic-AI).
+   - **Medium:** Vercel, Figma, Linkerd, Istio, Cilium, eBPF, Honeycomb, Quarkus, Envoy, Maven, Sentry, Fastlane, Bedrock-as-standalone.
+   - **Defer:** Tokens Studio, Gatekeeper / OPA, FIX / FAST protocols, LINDDUN, STRIDE, SLSA framework (concepts not tools).
+
+4. **Catalog-shape carryover** (5-min refactor, deferred from Round-13 sim 06):
+   - `Kotlin / Android` + `Swift / iOS` `/`-split makes platform names ("Android", "iOS") extract their language. Either rename the catalog entries to drop the platform half, or filter known platform-name terms (iOS/Android/macOS/Windows/Linux) from being emitted as search terms.
+
+5. **Smaller items still open** (each <half-day):
+   - **Cucumber `currentVersion` drop UX inconsistency** (batch 12 carryover) — minor cosmetic.
+   - **JavaScript "ES6" → Red bug** (surfaced during 2026-05-24 morning bare-major audit) — year-vs-edition alias bug. ~½ day. Phase 2 LLM may also handle this for free.
+
+6. **Bigger items genuinely deferred** (each half-day to day):
+   - **Per-card stack-focus picker** for Custom flow (round-17 'general' filter → recruiter picks lens per-card). Defer.
+   - **Hybrid mode for more entries** — six down. Remaining: Elasticsearch (depth+ILM), MongoDB (depth+aggregation), Kafka (depth+streams), Terraform (depth+state mgmt). Defer until a real recruiter session asks.
 
 **How to verify nothing regressed before starting work:**
 
 ```bash
 cd ~/devtools/techvet
-git status                   # should be clean (ae9e69b is HEAD)
+git status                   # should be clean (ef1c83a is HEAD)
 git pull                     # in case you push from another machine
 npx tsc -b                   # types clean
-npm test                     # 313/313 pass
+npm test                     # 341/341 pass
 npx vite build               # builds clean ~10-15s
 npm run dev                  # boots ~1s; visit http://localhost:5173
-                             # smoke 7 things:
-                             #   1. K8s + Postgres + Storybook cards render dual bodies (version input + services checklist).
-                             #   2. Pick DevOps template → 8 preloaded incl. Vault; K8s in hybrid mode.
-                             #   3. Pick Custom template → search-add AWS → 15 checkboxes (not 26, 'general' filter live); 3 ticks → "Concern — 3/15 services" (matched denominator).
-                             #   4. Pick Frontend template → Storybook now preloaded (hybrid mode).
-                             #   5. Junior seniority + any tech card → Scope dropdown HIDDEN (J4); Summary shows "Junior candidate — Yellows here typically flag probe targets…" (J5, plain text-sm not italic).
-                             #   6. Search Argo Rollouts / Karpenter / Backstage / Crossplane / Kyverno / Port / Pact / UIKit / Braintrust / Evidently / Feast / Langfuse / LangGraph / LlamaIndex / Agno / Pydantic AI / DSPy — all 17 hit catalog.
-                             #   7. Search Python + type bare "3" → "Review / Probe" Yellow with "ask for minor" guidance (NOT Red Concern).
+                             # smoke checks (today's delta):
+                             #   • Landing defaults to Simple tab → big JD textarea visible, Extract button. Click Advanced → 16-card template grid + Resume Draft.
+                             #   • Paste a real JD (e.g. mentions React, Python, Azure, K8s) → Extract → results grouped by category + "Missing something?" search bar.
+                             #   • In the search bar type "lang" → LangChain shows; click to add → row appears with "added manually" tag (vs "matched: …" on extracted rows).
+                             #   • "Load N into assessment" → /assess with all N cards preloaded.
+                             #   • Search Go + type bare "1" → Yellow "ask for minor" (NOT Red). Same for Kotlin "1" + PHP "7". Python "3" still Yellow.
+                             #   • Bare "Azure" / "Tailwind" / "Oracle" in JD → extracted (vendor-prefix bare-alias fix).
+                             # 05-17 smoke checks still apply:
+                             #   • K8s + Postgres + Storybook + MySQL + Redis + Docker cards render dual bodies (version input + services checklist).
+                             #   • Junior seniority + any tech card → Scope dropdown HIDDEN (J4); Summary shows "Junior candidate — Yellows here typically flag probe targets…" (J5).
 ```
 
 **Pointers:**
 - `CLAUDE.md` — codebase notes (stack, scoring quirks, Tailwind config gotchas, what's verified).
-- `simulations/rounds/` — **12 rounds** of adversarial agent findings (~125k+ words across ~67 sessions). `cross-cut.md` in each round is the synthesis + priority list. Most recent: `2026-05-17-round-12-structural-validation/sessions/` (cross-cut not formalized for round 12; session notes are self-explanatory).
-- **Today's commits on GitHub** (newest first):
-  - `ae9e69b` round-12 session notes (housekeeping)
-  - `8e9ae3e` Python "3" Yellow tier + 6 AI engineering frameworks
-  - `1b9bff7` RESUME.md autonomous-block summary
-  - `db2e7cc` batch 18 (round-12 closure: serviceTagFilter scoring + J5 polish + Storybook preload + persona-leak cleanup)
-  - `de4c0d6` batches 13-17 (Postgres hybrid + Storybook hybrid + catalog adds + J4/J5 + Custom AWS filter)
-  - `7c1c0bb` K8s hybrid vetMode (Sven R5 + Lars R9-10 closure)
-  - ...earlier: batch 8 / 9 / 10 / 11 / 12 commits
-  - (commit hashes shifted vs original `~/devtools/` repo because `git subtree split` rewrote history; the work is identical, just reparented.)
-- The numbered log below this section is reverse-chronological history.
+- `simulations/rounds/` — **13 rounds** now. Latest: `2026-05-24-round-13-jd-extraction-phase1/` — 6 fixtures + 6 sessions + cross-cut + `run-extraction.ts` re-runnable harness. Pattern is reusable for future Phase 2 LLM validation.
+- **Today's commits on GitHub** (newest first): `ef1c83a` Landing promotion → `8c71908` previews + Azure fix → `662f679` Round-13 artifacts → `00696a2` 4 rules-layer fixes → `fe993da` Phase 1 → `fca488f` MySQL/Redis/Docker hybrid → `20a44dd` persona-leak → `6683e8f` bare-major audit → `abba961` LICENSE.
+- The numbered log below this section is reverse-chronological history from prior sessions.
 
-**Flagged for review (autonomous-session caveats):**
-- **AI engineering frameworks shipped operator-default per user selection.** LangChain rebased from "LangChain / LangGraph" combined entry → standalone "LangChain" (operator-default, was author-default). LangGraph carved out as separate first-class catalog entry. LlamaIndex / Agno / Pydantic AI / DSPy added as new. All 6 added to `MLOPS_OPERATOR_TOOLS` integrity exception list so K2 author-default guard doesn't fire on them. If you'd rather some of these stay author-default (Vikram library-author shape), pull from the exception list + flip `defaultScope` back.
-- **Round-18 serviceTagFilter scoring fix changed verdict semantics** for AWS-on-Backend / AWS-on-Custom (and any tech with template `serviceTagFilters`). Pre-18 some recruiters may have been calibrating to "3/26 services" labels; post-18 those become "3/15 services" same Red but different denominator. Verdict color usually unchanged but the label reads different. Flag if external workflow expects the old labels.
-- **Hybrid-mode depth-lift inconsistency** (Lina R12 F11) — `resolveChecklistTier` gates 6D depth-lift on `seniority !== 'junior'`; `resolveHybridTier` doesn't. Junior+hybrid currently CAN get depth-lift. Probably wrong-axis; needs a junior+K8s sim to confirm.
-- **'general' tag filter on Custom (batch 17/18)** is opinionated — security-shaped candidates on Custom lose access to KMS/GuardDuty/SecurityHub from AWS unless the recruiter manually adds those via name. Acceptable trade-off (Security template exists for that lens) but worth surfacing if a security-on-Custom sim ever surfaces friction.
-- **`design-system-discipline` chip ID (10A)** is new vs FE's existing `design-system-ownership`. Different concept (contribution vs ownership) but worth sanity-checking the naming if you intend to unify.
-- **9A scope override on AI/ML template** assumes the template signals "productionization shape." If a library-author candidate picks AI/ML template (instead of Custom), they hit the operator override and may need to manually flip back to author. HuggingFace stays at catalog default for this exact reason.
-- **MLOPS_OPERATOR_TOOLS exception list** in `integrity.test.ts`: Braintrust / Evidently / Feast / Langfuse + the 6 new AI frameworks are AI/ML category but operator-default. If you add more MLOps operator-shape entries, update the exception list.
-- **Crossplane categorized as DevOps** (not IaC or Cloud). Defensible (no IaC category exists; Terraform/Ansible/Pulumi sit there too) but worth a sanity check.
+**Flagged for review (caveats from today + still-open prior):**
+- **Phase 1 extractor is rules-only.** Context-blind FPs are an accepted limitation (TensorFlow flagged from "Not relevant:" in JD-03 example; Java/.NET from DevOps "Hands-off" section). The "Missing something?" search-add UX is the recruiter's safety net for FNs (generic "AI" / "Cloud" mentions). Phase 2 LLM should suppress negation-context FPs and surface section-aware exclusion ("Not relevant:", "Hands-off:", "Probably not for you:", "Pet peeves:" blocks).
+- **JD-extraction live entry is now top-of-funnel.** Landing defaults to Simple tab; recruiters with a JD will hit JD-paste first by design. Recruiters without a JD have an in-page hint ("Don't have a JD? Switch to Advanced") + Advanced tab visible in the tab control. Watch for any user feedback that they didn't see the tab switcher.
+- **Hybrid-mode depth-lift inconsistency spans 6 entries**, not 3. `resolveHybridTier` doesn't gate the 6D depth-lift on `seniority !== 'junior'` like `resolveChecklistTier` does. Junior+hybrid can still get depth-lift. Probably wrong-axis; design question above.
+- **Persona-leak regression guard** (`integrity.test.ts` Round-19 follow-up) — scans all user-facing catalog string fields for Round-N / sim-NN / M<N>-round patterns. Code comments excluded.
+- **Catalog-shape FPs** — `Kotlin / Android` + `Swift / iOS` slash-split makes "Android" / "iOS" extract their languages. Round-13 sim 06 surfaced this; 5-min catalog rename or extractor refinement listed in "What's next #4".
+- **05-17 caveats still hold:** AI engineering frameworks shipped operator-default; Round-18 serviceTagFilter changed verdict labels; 'general' tag filter on Custom is opinionated; `design-system-discipline` chip naming; 9A scope override on AI/ML; MLOPS_OPERATOR_TOOLS exception list; Crossplane categorized as DevOps.
 
-**Git workflow note for future pushes:**
-The fresh clone at `~/devtools/techvet/` has `origin` → `git@github.com:sanjaysalins/techvet.git`. Standard workflow:
-```bash
-cd ~/devtools/techvet
-git add <files> && git commit -m "..." && git push
-```
-The old subtree-split dance from the original `~/devtools/.git` repo is no longer needed — that parent repo still exists and tracks unrelated `spinalelements`; ignore it.
+**Disk-corruption + git workflow notes (from this session):**
+- May 17 EOD commit `a27e181` was zero-byte locally for 7 days because the system crashed mid-`git commit`. Recovery clean (`git fetch` restores objects from origin; `find .git -type f -size 0 -delete` removes corrupt artefacts). **If you ever see "loose object … is corrupt": check `find .git -type f -size 0`, then re-fetch.** Backup snapshot at `~/devtools/techvet-backup-20260524-155809/` — can delete once confident.
+- `Bash(git push)` + `Bash(git push *)` allow rules added to `.claude/settings.local.json` mid-session. Permission classifier blocks self-modifying agent config, so the user had to type the addition; future sessions will have it allowlisted (settings reload at session-start, not mid-session).
 
 ---
 

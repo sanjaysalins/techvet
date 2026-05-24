@@ -2,8 +2,9 @@ import type { AssessmentItem, Depth, Scope, Technology } from '../types';
 import { resolveTier, depthLabel, scopeLabel, tierBadgeClass } from '../lib/scoring';
 import { useAssessment } from '../store/assessment';
 import { ROLE_TEMPLATES } from '../data/roles';
-import { X, HelpCircle, Slash } from 'lucide-react';
+import { X, HelpCircle, Slash, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '../lib/cn';
+import { useState } from 'react';
 
 interface Props {
   tech: Technology;
@@ -17,6 +18,11 @@ const SCOPE_OPTIONS: Scope[] = ['operator', 'author', 'reviewer', 'architect'];
 
 export default function TechCard({ tech, item, focused, onFocus }: Props) {
   const { updateItem, removeTech, meta } = useAssessment();
+  // Lever B — collapse Scope / Last-used / Notes behind a "More options"
+  // toggle. Auto-open when any of those fields already has content so
+  // resumed drafts don't hide what the recruiter previously entered.
+  const hasMoreContent = !!(item.scope || item.lastUsed?.trim() || item.notes?.trim());
+  const [moreOpen, setMoreOpen] = useState(hasMoreContent);
   // Round-8 8A: pass seniority so the card badge matches the GuidancePanel verdict.
   // Pre-8A, 7D's junior+shallow lowering fired on the side-panel (Assessment.tsx:67
   // passes seniority) but not on the card badge — Mei's TS 5.3 card showed Green
@@ -91,95 +97,110 @@ export default function TechCard({ tech, item, focused, onFocus }: Props) {
         <VersionBody tech={tech} item={item} />
       )}
 
-      {/* Round-16 J4 (Mei + Eitan across rounds 6-10): junior screens have
-          no use for the Scope dropdown — a junior is operator-by-default
-          (they didn't author or architect anything yet, and "review" is
-          mid+ shape). Hide on `meta.seniority === 'junior'`; reclaim ~15-20s
-          per screen by dropping the grid from 3-col to 2-col. The catalog
-          default still applies if one's set. */}
-      <div className={cn('grid grid-cols-1 gap-3 mt-4', meta.seniority === 'junior' ? 'md:grid-cols-2' : 'md:grid-cols-3')}>
-        <div>
-          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-            Depth
-          </label>
-          <select
-            value={item.depth}
-            onChange={e =>
-              updateItem(tech.id, { depth: e.target.value as Depth })
-            }
-            onClick={e => e.stopPropagation()}
-            className="input"
-          >
-            {DEPTH_OPTIONS.map(d => (
-              <option key={d} value={d}>
-                {depthLabel(d)}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Lever B — Depth stays visible; Scope / Last-used / Notes fold
+          behind a "More options" toggle. Junior screens still hide Scope
+          entirely (Round-16 J4) — the toggle then reveals only Last-used
+          + Notes for juniors. */}
+      <div className="mt-4">
+        <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+          Depth
+        </label>
+        <select
+          value={item.depth}
+          onChange={e =>
+            updateItem(tech.id, { depth: e.target.value as Depth })
+          }
+          onClick={e => e.stopPropagation()}
+          className="input"
+        >
+          {DEPTH_OPTIONS.map(d => (
+            <option key={d} value={d}>
+              {depthLabel(d)}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        {meta.seniority !== 'junior' && (
+      <button
+        type="button"
+        onClick={e => {
+          e.stopPropagation();
+          setMoreOpen(o => !o);
+        }}
+        className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand transition mt-3"
+        aria-expanded={moreOpen}
+      >
+        {moreOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+        More options
+        {!moreOpen && (
+          <span className="font-normal text-slate-400 dark:text-slate-500">
+            — {meta.seniority === 'junior' ? 'last used, notes' : 'scope, last used, notes'}
+          </span>
+        )}
+      </button>
+
+      {moreOpen && (
+        <div className={cn('grid grid-cols-1 gap-3 mt-3', meta.seniority === 'junior' ? 'md:grid-cols-2' : 'md:grid-cols-3')}>
+          {meta.seniority !== 'junior' && (
+            <div>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+                Scope of use
+              </label>
+              <select
+                value={item.scope ?? ''}
+                onChange={e =>
+                  updateItem(tech.id, {
+                    scope: (e.target.value || undefined) as Scope | undefined,
+                  })
+                }
+                onClick={e => e.stopPropagation()}
+                className="input"
+              >
+                <option value="">
+                  {tech.defaultScope
+                    ? `— Use default: ${tech.defaultScope}`
+                    : '— Not specified'}
+                </option>
+                {SCOPE_OPTIONS.map(s => (
+                  <option key={s} value={s}>
+                    {scopeLabel(s)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div>
             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-              Scope of use
+              Last used
             </label>
-            <select
-              value={item.scope ?? ''}
+            <input
+              type="text"
+              value={item.lastUsed}
               onChange={e =>
-                updateItem(tech.id, {
-                  scope: (e.target.value || undefined) as Scope | undefined,
-                })
+                updateItem(tech.id, { lastUsed: e.target.value })
               }
               onClick={e => e.stopPropagation()}
+              placeholder="e.g. current role, 2 years ago"
               className="input"
-            >
-              {/* Fix K: surface the catalog default so the recruiter knows
-                  the chosen scope without opening the dropdown. AI/ML libs
-                  default to "author" so the depth-game stops earning Green. */}
-              <option value="">
-                {tech.defaultScope
-                  ? `— Use default: ${tech.defaultScope}`
-                  : '— Not specified'}
-              </option>
-              {SCOPE_OPTIONS.map(s => (
-                <option key={s} value={s}>
-                  {scopeLabel(s)}
-                </option>
-              ))}
-            </select>
+            />
           </div>
-        )}
 
-        <div>
-          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-            Last used
-          </label>
-          <input
-            type="text"
-            value={item.lastUsed}
-            onChange={e =>
-              updateItem(tech.id, { lastUsed: e.target.value })
-            }
-            onClick={e => e.stopPropagation()}
-            placeholder="e.g. current role, 2 years ago"
-            className="input"
-          />
+          <div className={meta.seniority === 'junior' ? '' : 'md:col-span-1'}>
+            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+              Notes
+            </label>
+            <input
+              type="text"
+              value={item.notes}
+              onChange={e => updateItem(tech.id, { notes: e.target.value })}
+              onClick={e => e.stopPropagation()}
+              placeholder="Anything noteworthy from the call"
+              className="input"
+            />
+          </div>
         </div>
-
-        <div className={meta.seniority === 'junior' ? 'md:col-span-2' : 'md:col-span-3'}>
-          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-            Notes
-          </label>
-          <input
-            type="text"
-            value={item.notes}
-            onChange={e => updateItem(tech.id, { notes: e.target.value })}
-            onClick={e => e.stopPropagation()}
-            placeholder="Anything noteworthy from the call"
-            className="input"
-          />
-        </div>
-      </div>
+      )}
 
       {resolved.scopeCapped && resolved.cappedFromColor && (
         <div className="mt-3 text-xs text-amber-700 dark:text-amber-300 italic">

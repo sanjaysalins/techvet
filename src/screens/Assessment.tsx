@@ -15,7 +15,7 @@ import TechSearch from '../components/TechSearch';
 import CategoryPrompt from '../components/CategoryPrompt';
 import GuidancePanel from '../components/GuidancePanel';
 import { resolveTier } from '../lib/scoring';
-import { Save, FileBarChart, Sparkles, Phone, Video, FileText, X, MessageSquarePlus } from 'lucide-react';
+import { Save, FileBarChart, Sparkles, Phone, Video, FileText, X, MessageSquarePlus, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '../lib/cn';
 
 const CHANNELS: { id: Channel; label: string; icon: typeof Phone; hint: string }[] = [
@@ -73,6 +73,25 @@ export default function Assessment() {
 
   const alreadyAdded = new Set(items.map(i => i.techId));
 
+  // Lever A — collapse advanced metadata behind a "Candidate details" expander.
+  // Auto-open when any of the hidden fields has content (resumed draft / JD
+  // mandate / role / context — recruiter shouldn't have to discover their own
+  // saved input).
+  const hasDetailContent = !!(
+    meta.role.trim() ||
+    meta.notes.trim() ||
+    meta.yearsInIndustry.trim() ||
+    (meta.pathType && meta.pathType !== 'unspecified') ||
+    meta.candidateContext.trim() ||
+    meta.mandate.trim()
+  );
+  const [detailsOpen, setDetailsOpen] = useState(hasDetailContent);
+  useEffect(() => {
+    // If draft loads after first render, sync the open state once.
+    if (hasDetailContent && !detailsOpen) setDetailsOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasDetailContent]);
+
   function handleSaveDraft() {
     saveDraft();
     alert('Draft saved to this browser. Resume from the home screen anytime.');
@@ -87,44 +106,13 @@ export default function Assessment() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
-      {/* Candidate header */}
+      {/* Candidate header — Lever A: only Name + Channel + Seniority by
+          default. Everything else (Role, CV link, Years, Path, Additional
+          context, Mandate) folds behind the "Candidate details" expander
+          to drop the above-the-fold form weight by ~⅔. Auto-opens when
+          any hidden field already has content. */}
       <div className="card p-5 mb-6 space-y-4">
-        {/* Fix Q: channel pill — drives per-channel empty-field semantics
-            on the Summary report. Phone is the primary use case (default);
-            async needs different framing because the recruiter never spoke
-            to the candidate. */}
-        <div>
-          <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-            Screening channel
-          </label>
-          <div className="flex flex-wrap gap-1.5">
-            {CHANNELS.map(c => {
-              const Icon = c.icon;
-              const active = meta.channel === c.id;
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => setMeta({ channel: c.id })}
-                  type="button"
-                  title={c.hint}
-                  className={cn(
-                    'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium border transition',
-                    active
-                      ? 'bg-brand text-white border-brand shadow-sm'
-                      : 'bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-navy-700 hover:border-slate-300 dark:hover:border-navy-600'
-                  )}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  {c.label}
-                </button>
-              );
-            })}
-            <span className="text-xs text-slate-500 dark:text-slate-400 italic self-center ml-2">
-              {CHANNELS.find(c => c.id === meta.channel)?.hint}
-            </span>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-start">
           <div>
             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
               Candidate name
@@ -139,114 +127,162 @@ export default function Assessment() {
           </div>
           <div>
             <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-              Role
+              Screening channel
             </label>
-            <input
-              type="text"
-              value={meta.role}
-              onChange={e => setMeta({ role: e.target.value })}
-              placeholder="e.g. Senior Full-Stack"
-              className="input"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-              CV link / notes
-            </label>
-            <input
-              type="text"
-              value={meta.notes}
-              onChange={e => setMeta({ notes: e.target.value })}
-              placeholder="Anything top-of-mind"
-              className="input"
-            />
-          </div>
-        </div>
-        {/* Fix M (round-3): candidate context row. Renders inline on
-            Summary header so HM reads it before the verdicts. All optional;
-            defaults hide the line. */}
-        <div className="grid grid-cols-1 md:grid-cols-[auto_120px_1fr_1.5fr] gap-3">
-          <div>
-            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-              Seniority
-            </label>
-            <div className="flex flex-wrap gap-1">
-              {SENIORITY_OPTIONS.map(s => {
-                const active = meta.seniority === s;
+            <div className="flex flex-wrap gap-1.5">
+              {CHANNELS.map(c => {
+                const Icon = c.icon;
+                const active = meta.channel === c.id;
                 return (
                   <button
-                    key={s}
+                    key={c.id}
+                    onClick={() => setMeta({ channel: c.id })}
                     type="button"
-                    onClick={() => setMeta({ seniority: s as Seniority })}
+                    title={c.hint}
                     className={cn(
-                      'px-2.5 py-1.5 rounded-md text-sm font-medium border transition',
+                      'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium border transition',
                       active
                         ? 'bg-brand text-white border-brand shadow-sm'
                         : 'bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-navy-700 hover:border-slate-300 dark:hover:border-navy-600'
                     )}
                   >
-                    {s === 'unspecified' ? '—' : seniorityLabel(s)}
+                    <Icon className="w-3.5 h-3.5" />
+                    {c.label}
                   </button>
                 );
               })}
             </div>
           </div>
-          <div>
-            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-              Years in industry
-            </label>
-            <input
-              type="text"
-              value={meta.yearsInIndustry}
-              onChange={e => setMeta({ yearsInIndustry: e.target.value })}
-              placeholder="e.g. 8, 0.3, 10+"
-              className="input"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-              Path
-            </label>
-            <select
-              value={meta.pathType}
-              onChange={e => setMeta({ pathType: e.target.value as PathType })}
-              className="input"
-            >
-              {PATH_TYPE_OPTIONS.map(p => (
-                <option key={p} value={p}>
-                  {p === 'unspecified' ? '— Not specified' : pathTypeLabel(p)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-              Additional context <span className="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
-            </label>
-            <input
-              type="text"
-              value={meta.candidateContext}
-              onChange={e => setMeta({ candidateContext: e.target.value })}
-              placeholder="e.g. 3 yr career break, ex-teacher, ex-Salesforce dev"
-              className="input"
-            />
-          </div>
         </div>
+
         <div>
           <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
-            Client mandate
-            <span className="ml-1.5 font-normal text-slate-400 dark:text-slate-500">
-              — what the client asked for (paste the JD bullets or short summary)
-            </span>
+            Seniority
           </label>
-          <textarea
-            value={meta.mandate}
-            onChange={e => setMeta({ mandate: e.target.value })}
-            placeholder="e.g. Senior backend on AWS (Lambda + RDS), React FE, 5+ yrs TypeScript, Postgres at scale"
-            rows={2}
-            className="input resize-y min-h-[64px]"
-          />
+          <div className="flex flex-wrap gap-1">
+            {SENIORITY_OPTIONS.map(s => {
+              const active = meta.seniority === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setMeta({ seniority: s as Seniority })}
+                  className={cn(
+                    'px-2.5 py-1.5 rounded-md text-sm font-medium border transition',
+                    active
+                      ? 'bg-brand text-white border-brand shadow-sm'
+                      : 'bg-white dark:bg-navy-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-navy-700 hover:border-slate-300 dark:hover:border-navy-600'
+                  )}
+                >
+                  {s === 'unspecified' ? '—' : seniorityLabel(s)}
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        <div className="pt-2 border-t border-slate-200 dark:border-navy-700">
+          <button
+            type="button"
+            onClick={() => setDetailsOpen(o => !o)}
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-brand transition"
+            aria-expanded={detailsOpen}
+          >
+            {detailsOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            Candidate details
+            <span className="font-normal text-slate-400 dark:text-slate-500">
+              role, CV link, path, context, mandate
+            </span>
+          </button>
+        </div>
+
+        {detailsOpen && (
+          <div className="space-y-4 pt-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+                  Role
+                </label>
+                <input
+                  type="text"
+                  value={meta.role}
+                  onChange={e => setMeta({ role: e.target.value })}
+                  placeholder="e.g. Senior Full-Stack"
+                  className="input"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+                  CV link / notes
+                </label>
+                <input
+                  type="text"
+                  value={meta.notes}
+                  onChange={e => setMeta({ notes: e.target.value })}
+                  placeholder="Anything top-of-mind"
+                  className="input"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-[120px_1fr_1.5fr] gap-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+                  Years in industry
+                </label>
+                <input
+                  type="text"
+                  value={meta.yearsInIndustry}
+                  onChange={e => setMeta({ yearsInIndustry: e.target.value })}
+                  placeholder="e.g. 8, 0.3, 10+"
+                  className="input"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+                  Path
+                </label>
+                <select
+                  value={meta.pathType}
+                  onChange={e => setMeta({ pathType: e.target.value as PathType })}
+                  className="input"
+                >
+                  {PATH_TYPE_OPTIONS.map(p => (
+                    <option key={p} value={p}>
+                      {p === 'unspecified' ? '— Not specified' : pathTypeLabel(p)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+                  Additional context <span className="font-normal text-slate-400 dark:text-slate-500">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={meta.candidateContext}
+                  onChange={e => setMeta({ candidateContext: e.target.value })}
+                  placeholder="e.g. 3 yr career break, ex-teacher, ex-Salesforce dev"
+                  className="input"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5 block">
+                Client mandate
+                <span className="ml-1.5 font-normal text-slate-400 dark:text-slate-500">
+                  — what the client asked for (paste the JD bullets or short summary)
+                </span>
+              </label>
+              <textarea
+                value={meta.mandate}
+                onChange={e => setMeta({ mandate: e.target.value })}
+                placeholder="e.g. Senior backend on AWS (Lambda + RDS), React FE, 5+ yrs TypeScript, Postgres at scale"
+                rows={2}
+                className="input resize-y min-h-[64px]"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <MethodologySection />
