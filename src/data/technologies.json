@@ -1930,7 +1930,7 @@
       "Why LangChain over direct SDK calls?",
       "Tool-calling agents — how do you bound tool calls + prevent runaway costs?"
     ],
-    "checklistGuidance": "LangChain moves fast — the version isn't the signal, the *services exercised* are. Round-4 Bashir validation: version-mode let a 6-week tutorial user score Excellent at v1.x. Coverage of LCEL + RAG retrieval + tool use + structured output + evals separates 'I built a hobby RAG' from 'I run an agentic feature in prod'. LangGraph is a separate catalog entry — add both for candidates who use stateful agent graphs."
+    "checklistGuidance": "LangChain moves fast — the version isn't the signal, the *services exercised* are. Version-mode lets a 6-week tutorial user score Excellent at v1.x; coverage of LCEL + RAG retrieval + tool use + structured output + evals is what separates 'I built a hobby RAG' from 'I run an agentic feature in prod'. LangGraph is a separate catalog entry — add both for candidates who use stateful agent graphs."
   },
   {
     "id": "graphql",
@@ -2023,7 +2023,7 @@
       "Have you debugged a production outage in AWS? Which service was the culprit?",
       "How do you keep AWS costs visible and under control?"
     ],
-    "checklistGuidance": "AWS spans dozens of services. Coverage of core compute + storage + DB + IAM tells you whether they have real production exposure or just touched one corner. Round-4: architect-shaped (Landing Zone / Organizations / IAM Identity Center), security-shaped (KMS / Macie / GuardDuty / Security Hub / Inspector), CI/CD-shaped (CodeBuild / CodePipeline), and data-ML-shaped (SageMaker / Bedrock) services added; templates surface different subsets via `serviceTagFilters`."
+    "checklistGuidance": "AWS spans dozens of services. Coverage of core compute + storage + DB + IAM tells you whether they have real production exposure or just touched one corner. The service list spans architect-shaped (Landing Zone / Organizations / IAM Identity Center), security-shaped (KMS / Macie / GuardDuty / Security Hub / Inspector), CI/CD-shaped (CodeBuild / CodePipeline), and data-ML-shaped (SageMaker / Bedrock) — templates surface different subsets via `serviceTagFilters`."
   },
   {
     "id": "azure",

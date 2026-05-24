@@ -946,6 +946,52 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(yellow3Tier!.note).toMatch(/minor version/);
   });
 
+  it('Round-19 follow-up: no persona-leak in recruiter-visible catalog copy', () => {
+    // Round-14 (Maya M2 sim 03 F8) flagged the original "(Maya M2 round-8)"
+    // parenthetical leaking from build-time validation context into shipped
+    // PDF copy. This guard catches future regressions: any user-facing string
+    // (name / note / guidanceForUnknownVersion / checklistGuidance / service
+    // names / labels / suggested probes) must not name internal round numbers
+    // ("Round-4", "round-12"), persona codenames ("Maya M2", "Sven R5"), or
+    // first-name validation personas embedded mid-sentence (Bashir / Wendy /
+    // Marisol / Esme / Lina / Theo etc.). Comments in TS files are fine —
+    // this guard is scoped to the JSON catalog only.
+    const TECH: any = (TECH_BY_ID as any);
+    const personaLeakPattern = /\b[Rr]ound-?\d+\b|\bM\d+ round\b|\bsim \d{2}\b/;
+    const offenders: string[] = [];
+    for (const tech of TECH.values()) {
+      const fields: Array<[string, string | undefined]> = [
+        ['name', tech.name],
+        ['guidanceForUnknownVersion', tech.guidanceForUnknownVersion],
+        ['checklistGuidance', tech.checklistGuidance],
+      ];
+      for (const [field, value] of fields) {
+        if (value && personaLeakPattern.test(value)) {
+          offenders.push(`${tech.id}.${field}: ${value}`);
+        }
+      }
+      for (const tier of tech.versionTiers ?? []) {
+        if (tier.note && personaLeakPattern.test(tier.note)) {
+          offenders.push(`${tech.id}.tier[min=${tier.min}].note: ${tier.note}`);
+        }
+        if (tier.label && personaLeakPattern.test(tier.label)) {
+          offenders.push(`${tech.id}.tier[min=${tier.min}].label: ${tier.label}`);
+        }
+      }
+      for (const service of tech.services ?? []) {
+        if (personaLeakPattern.test(service.name)) {
+          offenders.push(`${tech.id}.service[${service.id}].name: ${service.name}`);
+        }
+      }
+      for (const probe of tech.suggestedProbes ?? []) {
+        if (personaLeakPattern.test(probe)) {
+          offenders.push(`${tech.id}.suggestedProbes: ${probe}`);
+        }
+      }
+    }
+    expect(offenders, `persona-leak in user-facing copy:\n${offenders.join('\n')}`).toEqual([]);
+  });
+
   it('Round-19 follow-up: bare-major audit on Go / Kotlin / PHP (Python "3" pattern extended)', () => {
     // Same shape as the Python bug: lowest-named-minor sits above min:"0" Red,
     // so a bare major like "1" / "7" padded to [N,0] falls past all named
