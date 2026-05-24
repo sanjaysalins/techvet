@@ -195,4 +195,13 @@ describe('extractTechsFromJD — Round-13 validation regressions', () => {
   it('F4: hyphenated "react-native" form (npm package shape) matches', () => {
     expect(ids('Uses the react-native package directly.')).toContain('react-native');
   });
+
+  it('user-found: bare "Azure" / "Tailwind" / "Oracle" match (vendor-prefix names)', () => {
+    // Catalog names: "Microsoft Azure", "Tailwind CSS", "Oracle Database".
+    // Same F-W1 shape as Apache Kafka — bare form needs an explicit alias
+    // because nameSearchTerms doesn't whitespace-split.
+    expect(ids('Cloud experience (Azure desirable)')).toContain('azure');
+    expect(ids('Styled with Tailwind.')).toContain('tailwind');
+    expect(ids('Legacy Oracle backend.')).toContain('oracle-db');
+  });
 });

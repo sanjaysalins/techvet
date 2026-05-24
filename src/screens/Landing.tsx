@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAssessment } from '../store/assessment';
 import { ROLE_TEMPLATES } from '../data/roles';
-import { ArrowRight, FileText, FileSearch, Shield, Zap, Lock } from 'lucide-react';
+import { ArrowRight, FileText, FileSearch, Shield, Zap, Lock, Layers } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import JDExtractModal from '../components/JDExtractModal';
 
@@ -52,6 +52,12 @@ export default function Landing() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 md:py-20">
+      {/* Temporary — link to the 3 candidate landing redesigns. */}
+      <div className="flex justify-end mb-2">
+        <Link to="/preview" className="text-xs text-slate-500 hover:text-brand inline-flex items-center gap-1">
+          <Layers className="w-3 h-3" /> Compare landing layouts
+        </Link>
+      </div>
       <div className="text-center max-w-3xl mx-auto mb-16">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold mb-6">
           <Zap className="w-3.5 h-3.5" />
