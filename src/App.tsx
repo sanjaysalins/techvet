@@ -2,10 +2,6 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import Landing from './screens/Landing';
 import Assessment from './screens/Assessment';
 import Summary from './screens/Summary';
-import PreviewIndex from './screens/preview/PreviewIndex';
-import LandingFlow from './screens/preview/LandingFlow';
-import LandingTabs from './screens/preview/LandingTabs';
-import LandingCards from './screens/preview/LandingCards';
 import { ShieldCheck, Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -59,11 +55,6 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/assess" element={<Assessment />} />
           <Route path="/summary" element={<Summary />} />
-          {/* Temporary landing-redesign previews — remove once a layout is picked. */}
-          <Route path="/preview" element={<PreviewIndex />} />
-          <Route path="/preview/flow" element={<LandingFlow />} />
-          <Route path="/preview/tabs" element={<LandingTabs />} />
-          <Route path="/preview/cards" element={<LandingCards />} />
         </Routes>
       </main>
 
