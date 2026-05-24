@@ -720,6 +720,12 @@
         "color": "yellow"
       },
       {
+        "min": "1",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Bare \"Go 1\" typed — ask the candidate for the minor version (1.18 / 1.21 / 1.24). Go ships a new minor every 6 months; the minor is what disambiguates."
+      },
+      {
         "min": "0",
         "label": "Concern",
         "color": "red"
@@ -900,6 +906,12 @@
         "color": "yellow"
       },
       {
+        "min": "7",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Bare \"PHP 7\" typed — ask for the minor version (7.0 / 7.4 / 8.0). PHP 7.x is EOL but a real production era; the minor disambiguates pre/post-strict-types."
+      },
+      {
         "min": "0",
         "label": "Concern",
         "color": "red"
@@ -1038,6 +1050,12 @@
         "min": "1.4",
         "label": "Review / Probe",
         "color": "yellow"
+      },
+      {
+        "min": "1",
+        "label": "Review / Probe",
+        "color": "yellow",
+        "note": "Bare \"Kotlin 1\" typed — ask for the minor version (1.4 / 1.8 / 2.0). Kotlin 1.x spans coroutines, multiplatform, and the K2 transition — the minor matters."
       },
       {
         "min": "0",

@@ -946,6 +946,25 @@ describe('Round-6 6F — Mobile + DBA catalog/template additions', () => {
     expect(yellow3Tier!.note).toMatch(/minor version/);
   });
 
+  it('Round-19 follow-up: bare-major audit on Go / Kotlin / PHP (Python "3" pattern extended)', () => {
+    // Same shape as the Python bug: lowest-named-minor sits above min:"0" Red,
+    // so a bare major like "1" / "7" padded to [N,0] falls past all named
+    // minors to the Red catch-all. Fix: insert a Yellow min:"<major>" tier
+    // with "ask for minor" guidance between the lowest specific tier and Red.
+    const cases: Array<{ id: string; bareMajor: string }> = [
+      { id: 'go', bareMajor: '1' },
+      { id: 'kotlin', bareMajor: '1' },
+      { id: 'php', bareMajor: '7' },
+    ];
+    for (const { id, bareMajor } of cases) {
+      const tech = TECH_BY_ID.get(id);
+      const tier = (tech?.versionTiers ?? []).find(t => t.min === bareMajor);
+      expect(tier, `${id} bare-major Yellow tier (min:"${bareMajor}") missing — regression on bare-major audit`).toBeDefined();
+      expect(tier!.color).toBe('yellow');
+      expect(tier!.note).toMatch(/minor version/);
+    }
+  });
+
   it('Round-15: Catalog adds — Kyverno + Port + GCP Identity Platform + Feast materialization split', () => {
     // Kyverno (Lars R11 F7): policy engine for K8s admission control.
     const kyv = TECH_BY_ID.get('kyverno');
