@@ -1,0 +1,177 @@
+{
+  "fixture": "06-security-engineer-appsec.md",
+  "extractedCount": 21,
+  "extracted": [
+    {
+      "id": "auth0",
+      "name": "Auth0",
+      "category": "Auth / Identity",
+      "matched": [
+        "Auth0"
+      ]
+    },
+    {
+      "id": "oauth-identity",
+      "name": "OAuth / OIDC / Identity Concepts",
+      "category": "Auth / Identity",
+      "matched": [
+        "OAuth",
+        "OIDC"
+      ]
+    },
+    {
+      "id": "okta",
+      "name": "Okta",
+      "category": "Auth / Identity",
+      "matched": [
+        "Okta"
+      ]
+    },
+    {
+      "id": "dotnet",
+      "name": ".NET / ASP.NET Core",
+      "category": "Backend",
+      "matched": [
+        ".NET"
+      ]
+    },
+    {
+      "id": "aws",
+      "name": "AWS (Amazon Web Services)",
+      "category": "Cloud",
+      "matched": [
+        "AWS"
+      ]
+    },
+    {
+      "id": "cosign-sigstore",
+      "name": "Cosign / Sigstore",
+      "category": "DevOps",
+      "matched": [
+        "Cosign",
+        "Sigstore"
+      ]
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "category": "DevOps",
+      "matched": [
+        "GitHub Actions"
+      ]
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "category": "Frontend",
+      "matched": [
+        "TypeScript"
+      ]
+    },
+    {
+      "id": "go",
+      "name": "Go (Golang)",
+      "category": "Language",
+      "matched": [
+        "Go"
+      ]
+    },
+    {
+      "id": "java",
+      "name": "Java",
+      "category": "Language",
+      "matched": [
+        "Java"
+      ]
+    },
+    {
+      "id": "php",
+      "name": "PHP",
+      "category": "Language",
+      "matched": [
+        "PHP"
+      ]
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "category": "Language",
+      "matched": [
+        "Python"
+      ]
+    },
+    {
+      "id": "kotlin",
+      "name": "Kotlin / Android",
+      "category": "Mobile",
+      "matched": [
+        "Android"
+      ]
+    },
+    {
+      "id": "swift",
+      "name": "Swift / iOS",
+      "category": "Mobile",
+      "matched": [
+        "iOS"
+      ]
+    },
+    {
+      "id": "burp-suite",
+      "name": "Burp Suite",
+      "category": "Security",
+      "matched": [
+        "Burp Suite"
+      ]
+    },
+    {
+      "id": "falco",
+      "name": "Falco",
+      "category": "Security",
+      "matched": [
+        "Falco"
+      ]
+    },
+    {
+      "id": "vault",
+      "name": "HashiCorp Vault",
+      "category": "Security",
+      "matched": [
+        "HashiCorp Vault",
+        "vault"
+      ]
+    },
+    {
+      "id": "owasp-zap",
+      "name": "OWASP ZAP",
+      "category": "Security",
+      "matched": [
+        "OWASP ZAP"
+      ]
+    },
+    {
+      "id": "semgrep",
+      "name": "Semgrep",
+      "category": "Security",
+      "matched": [
+        "Semgrep"
+      ]
+    },
+    {
+      "id": "snyk",
+      "name": "Snyk",
+      "category": "Security",
+      "matched": [
+        "Snyk"
+      ]
+    },
+    {
+      "id": "trivy",
+      "name": "Trivy",
+      "category": "Security",
+      "matched": [
+        "Trivy"
+      ]
+    }
+  ]
+}

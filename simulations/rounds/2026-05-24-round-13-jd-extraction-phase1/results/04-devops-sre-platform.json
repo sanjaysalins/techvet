@@ -1,0 +1,154 @@
+{
+  "fixture": "04-devops-sre-platform.md",
+  "extractedCount": 18,
+  "extracted": [
+    {
+      "id": "dotnet",
+      "name": ".NET / ASP.NET Core",
+      "category": "Backend",
+      "matched": [
+        ".NET"
+      ]
+    },
+    {
+      "id": "aws",
+      "name": "AWS (Amazon Web Services)",
+      "category": "Cloud",
+      "matched": [
+        "AWS"
+      ]
+    },
+    {
+      "id": "argo-rollouts",
+      "name": "Argo Rollouts",
+      "category": "DevOps",
+      "matched": [
+        "Argo Rollouts"
+      ]
+    },
+    {
+      "id": "argocd",
+      "name": "ArgoCD",
+      "category": "DevOps",
+      "matched": [
+        "ArgoCD"
+      ]
+    },
+    {
+      "id": "backstage",
+      "name": "Backstage",
+      "category": "DevOps",
+      "matched": [
+        "Backstage"
+      ]
+    },
+    {
+      "id": "cosign-sigstore",
+      "name": "Cosign / Sigstore",
+      "category": "DevOps",
+      "matched": [
+        "Cosign",
+        "Sigstore"
+      ]
+    },
+    {
+      "id": "crossplane",
+      "name": "Crossplane",
+      "category": "DevOps",
+      "matched": [
+        "Crossplane"
+      ]
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "category": "DevOps",
+      "matched": [
+        "GitHub Actions"
+      ]
+    },
+    {
+      "id": "gitlab-ci",
+      "name": "GitLab CI",
+      "category": "DevOps",
+      "matched": [
+        "GitLab CI"
+      ]
+    },
+    {
+      "id": "helm",
+      "name": "Helm",
+      "category": "DevOps",
+      "matched": [
+        "Helm"
+      ]
+    },
+    {
+      "id": "karpenter",
+      "name": "Karpenter",
+      "category": "DevOps",
+      "matched": [
+        "Karpenter"
+      ]
+    },
+    {
+      "id": "kubernetes",
+      "name": "Kubernetes",
+      "category": "DevOps",
+      "matched": [
+        "Kubernetes",
+        "k8s"
+      ]
+    },
+    {
+      "id": "kyverno",
+      "name": "Kyverno",
+      "category": "DevOps",
+      "matched": [
+        "Kyverno"
+      ]
+    },
+    {
+      "id": "observability",
+      "name": "Observability (Prometheus / Grafana / OTel)",
+      "category": "DevOps",
+      "matched": [
+        "Prometheus",
+        "Grafana"
+      ]
+    },
+    {
+      "id": "pulumi",
+      "name": "Pulumi",
+      "category": "DevOps",
+      "matched": [
+        "Pulumi"
+      ]
+    },
+    {
+      "id": "terraform",
+      "name": "Terraform / OpenTofu",
+      "category": "DevOps",
+      "matched": [
+        "Terraform",
+        "tf"
+      ]
+    },
+    {
+      "id": "java",
+      "name": "Java",
+      "category": "Language",
+      "matched": [
+        "Java"
+      ]
+    },
+    {
+      "id": "vault",
+      "name": "HashiCorp Vault",
+      "category": "Security",
+      "matched": [
+        "vault"
+      ]
+    }
+  ]
+}

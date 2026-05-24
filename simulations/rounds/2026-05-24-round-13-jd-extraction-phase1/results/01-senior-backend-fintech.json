@@ -1,0 +1,104 @@
+{
+  "fixture": "01-senior-backend-fintech.md",
+  "extractedCount": 12,
+  "extracted": [
+    {
+      "id": "grpc",
+      "name": "gRPC",
+      "category": "Backend",
+      "matched": [
+        "gRPC"
+      ]
+    },
+    {
+      "id": "spring-boot",
+      "name": "Spring Boot",
+      "category": "Backend",
+      "matched": [
+        "Spring Boot"
+      ]
+    },
+    {
+      "id": "aws",
+      "name": "AWS (Amazon Web Services)",
+      "category": "Cloud",
+      "matched": [
+        "AWS"
+      ]
+    },
+    {
+      "id": "flink",
+      "name": "Apache Flink",
+      "category": "Data",
+      "matched": [
+        "flink"
+      ]
+    },
+    {
+      "id": "kafka",
+      "name": "Apache Kafka",
+      "category": "Data",
+      "matched": [
+        "kafka"
+      ]
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "category": "Database",
+      "matched": [
+        "PostgreSQL"
+      ]
+    },
+    {
+      "id": "redis",
+      "name": "Redis / Valkey",
+      "category": "Database",
+      "matched": [
+        "Redis"
+      ]
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "category": "DevOps",
+      "matched": [
+        "GitHub Actions"
+      ]
+    },
+    {
+      "id": "observability",
+      "name": "Observability (Prometheus / Grafana / OTel)",
+      "category": "DevOps",
+      "matched": [
+        "Prometheus",
+        "Grafana",
+        "opentelemetry"
+      ]
+    },
+    {
+      "id": "terraform",
+      "name": "Terraform / OpenTofu",
+      "category": "DevOps",
+      "matched": [
+        "Terraform"
+      ]
+    },
+    {
+      "id": "java",
+      "name": "Java",
+      "category": "Language",
+      "matched": [
+        "Java"
+      ]
+    },
+    {
+      "id": "kotlin",
+      "name": "Kotlin / Android",
+      "category": "Mobile",
+      "matched": [
+        "Kotlin"
+      ]
+    }
+  ]
+}

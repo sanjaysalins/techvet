@@ -1,0 +1,70 @@
+{
+  "fixture": "02-frontend-design-system.md",
+  "extractedCount": 8,
+  "extracted": [
+    {
+      "id": "nextjs",
+      "name": "Next.js",
+      "category": "Frontend",
+      "matched": [
+        "Next.js"
+      ]
+    },
+    {
+      "id": "react",
+      "name": "React",
+      "category": "Frontend",
+      "matched": [
+        "React"
+      ]
+    },
+    {
+      "id": "storybook",
+      "name": "Storybook",
+      "category": "Frontend",
+      "matched": [
+        "Storybook"
+      ]
+    },
+    {
+      "id": "tailwind",
+      "name": "Tailwind CSS",
+      "category": "Frontend",
+      "matched": [
+        "Tailwind CSS"
+      ]
+    },
+    {
+      "id": "typescript",
+      "name": "TypeScript",
+      "category": "Frontend",
+      "matched": [
+        "TypeScript"
+      ]
+    },
+    {
+      "id": "vite",
+      "name": "Vite",
+      "category": "Frontend",
+      "matched": [
+        "Vite"
+      ]
+    },
+    {
+      "id": "playwright",
+      "name": "Playwright",
+      "category": "Testing",
+      "matched": [
+        "Playwright"
+      ]
+    },
+    {
+      "id": "vitest",
+      "name": "Vitest",
+      "category": "Testing",
+      "matched": [
+        "Vitest"
+      ]
+    }
+  ]
+}

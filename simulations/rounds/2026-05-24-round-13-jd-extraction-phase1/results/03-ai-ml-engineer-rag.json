@@ -1,0 +1,204 @@
+{
+  "fixture": "03-ai-ml-engineer-rag.md",
+  "extractedCount": 24,
+  "extracted": [
+    {
+      "id": "braintrust",
+      "name": "Braintrust",
+      "category": "AI/ML",
+      "matched": [
+        "Braintrust"
+      ]
+    },
+    {
+      "id": "dspy",
+      "name": "DSPy",
+      "category": "AI/ML",
+      "matched": [
+        "DSPy"
+      ]
+    },
+    {
+      "id": "huggingface-transformers",
+      "name": "Hugging Face Transformers",
+      "category": "AI/ML",
+      "matched": [
+        "huggingface"
+      ]
+    },
+    {
+      "id": "jupyter",
+      "name": "JupyterLab / Notebooks",
+      "category": "AI/ML",
+      "matched": [
+        "Notebooks"
+      ]
+    },
+    {
+      "id": "langchain",
+      "name": "LangChain",
+      "category": "AI/ML",
+      "matched": [
+        "LangChain"
+      ]
+    },
+    {
+      "id": "langfuse",
+      "name": "Langfuse",
+      "category": "AI/ML",
+      "matched": [
+        "Langfuse"
+      ]
+    },
+    {
+      "id": "langgraph",
+      "name": "LangGraph",
+      "category": "AI/ML",
+      "matched": [
+        "LangGraph"
+      ]
+    },
+    {
+      "id": "llamaindex",
+      "name": "LlamaIndex",
+      "category": "AI/ML",
+      "matched": [
+        "LlamaIndex"
+      ]
+    },
+    {
+      "id": "llm-api-sdk",
+      "name": "LLM API Integration (OpenAI / Anthropic / etc.)",
+      "category": "AI/ML",
+      "matched": [
+        "OpenAI",
+        "Anthropic"
+      ]
+    },
+    {
+      "id": "numpy",
+      "name": "NumPy",
+      "category": "AI/ML",
+      "matched": [
+        "NumPy"
+      ]
+    },
+    {
+      "id": "pandas",
+      "name": "pandas",
+      "category": "AI/ML",
+      "matched": [
+        "pandas"
+      ]
+    },
+    {
+      "id": "pydantic-ai",
+      "name": "Pydantic AI",
+      "category": "AI/ML",
+      "matched": [
+        "pydantic-ai"
+      ]
+    },
+    {
+      "id": "pytorch",
+      "name": "PyTorch",
+      "category": "AI/ML",
+      "matched": [
+        "PyTorch"
+      ]
+    },
+    {
+      "id": "scikit-learn",
+      "name": "scikit-learn",
+      "category": "AI/ML",
+      "matched": [
+        "scikit-learn",
+        "scikit"
+      ]
+    },
+    {
+      "id": "tensorflow",
+      "name": "TensorFlow",
+      "category": "AI/ML",
+      "matched": [
+        "TensorFlow",
+        "keras"
+      ]
+    },
+    {
+      "id": "vector-db",
+      "name": "Vector Databases (RAG)",
+      "category": "AI/ML",
+      "matched": [
+        "pinecone",
+        "weaviate",
+        "qdrant",
+        "pgvector"
+      ]
+    },
+    {
+      "id": "fastapi",
+      "name": "FastAPI",
+      "category": "Backend",
+      "matched": [
+        "FastAPI"
+      ]
+    },
+    {
+      "id": "aws",
+      "name": "AWS (Amazon Web Services)",
+      "category": "Cloud",
+      "matched": [
+        "AWS"
+      ]
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "category": "Database",
+      "matched": [
+        "postgres"
+      ]
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "category": "DevOps",
+      "matched": [
+        "Docker"
+      ]
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "category": "DevOps",
+      "matched": [
+        "GitHub Actions"
+      ]
+    },
+    {
+      "id": "kubernetes",
+      "name": "Kubernetes",
+      "category": "DevOps",
+      "matched": [
+        "Kubernetes"
+      ]
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "category": "Language",
+      "matched": [
+        "Python"
+      ]
+    },
+    {
+      "id": "pytest",
+      "name": "pytest",
+      "category": "Testing",
+      "matched": [
+        "pytest"
+      ]
+    }
+  ]
+}

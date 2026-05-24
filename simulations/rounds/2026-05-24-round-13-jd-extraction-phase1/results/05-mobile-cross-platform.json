@@ -1,0 +1,96 @@
+{
+  "fixture": "05-mobile-cross-platform.md",
+  "extractedCount": 11,
+  "extracted": [
+    {
+      "id": "spring-boot",
+      "name": "Spring Boot",
+      "category": "Backend",
+      "matched": [
+        "Spring Boot"
+      ]
+    },
+    {
+      "id": "firebase",
+      "name": "Firebase",
+      "category": "Database",
+      "matched": [
+        "Firebase"
+      ]
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "category": "Database",
+      "matched": [
+        "postgres"
+      ]
+    },
+    {
+      "id": "github-actions",
+      "name": "GitHub Actions",
+      "category": "DevOps",
+      "matched": [
+        "GitHub Actions"
+      ]
+    },
+    {
+      "id": "expo",
+      "name": "Expo (React Native)",
+      "category": "Mobile",
+      "matched": [
+        "Expo"
+      ]
+    },
+    {
+      "id": "flutter",
+      "name": "Flutter",
+      "category": "Mobile",
+      "matched": [
+        "Flutter"
+      ]
+    },
+    {
+      "id": "jetpack-compose",
+      "name": "Jetpack Compose",
+      "category": "Mobile",
+      "matched": [
+        "Jetpack Compose"
+      ]
+    },
+    {
+      "id": "kotlin",
+      "name": "Kotlin / Android",
+      "category": "Mobile",
+      "matched": [
+        "Kotlin",
+        "Android"
+      ]
+    },
+    {
+      "id": "react-native",
+      "name": "React Native",
+      "category": "Mobile",
+      "matched": [
+        "React Native"
+      ]
+    },
+    {
+      "id": "swift",
+      "name": "Swift / iOS",
+      "category": "Mobile",
+      "matched": [
+        "Swift",
+        "iOS"
+      ]
+    },
+    {
+      "id": "swiftui",
+      "name": "SwiftUI",
+      "category": "Mobile",
+      "matched": [
+        "SwiftUI"
+      ]
+    }
+  ]
+}
